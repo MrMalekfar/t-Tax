@@ -1,0 +1,10 @@
+var wage = 5
+var profit = 5
+var weight = 5
+var price_gram = 68000000
+var price_whole = 0
+var Tax_10 = 0.1
+document.getElementById('max-ip').value = localStorage.getItem('max-ip') || 50;
+document.getElementById('max-latency').value = localStorage.getItem('max-latency') || 1700;
+document.getElementById('max-difference').value = localStorage.getItem('max-difference') || 1400;
+document.getElementById('ip-regex').value = localStorage.getItem('ip-regex');
