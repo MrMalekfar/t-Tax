@@ -8,3 +8,4 @@ document.getElementById('Final-Price').value = localStorage.getItem('Final-Price
 document.getElementById('wage').value = localStorage.getItem(wage') || 1700;
 document.getElementById('profit').value = localStorage.getItem('profit') || 1400;
 document.getElementById('price_gram').value = localStorage.getItem('price_gram');
+weight = price_whole/(price_gram + 0.01 * wage * price_gram + (price_gram + 0.01 * wage * price_gram) * profit / 100 )
