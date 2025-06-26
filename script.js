@@ -46,7 +46,7 @@ function calculateAndSave() {
     // --- Core Calculation for Weight ---
     let labor_cost_per_gram = 0.01 * wage * price_gram;
     let profit_markup_per_gram = (price_gram + labor_cost_per_gram) * profit / 100;
-    let taxless_price_per_gram_calc = price_gram + labor_cost_per_gram + profit_markup_per_gram;
+    let taxless_price_per_gram_calc = price_gram + labor_cost_per_gram + profit_markup_per_gram + (labor_cost_per_gram + profit_markup_per_gram) * VAT_rate / 100 ;
 
     let calculated_weight = 0;
     if (taxless_price_per_gram_calc !== 0) {
