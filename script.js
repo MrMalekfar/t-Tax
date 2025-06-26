@@ -2,7 +2,7 @@
 function getInputValue(id, defaultValue) {
     const element = document.getElementById(id);
     let value = parseFloat(element.value);
-    if (isNaN(value)) {
+    if (isNaN(value) || element.value.trim() === '') { // Also check for empty string
         value = defaultValue;
         element.value = defaultValue; // Set the input field to the default if invalid
     }
@@ -17,7 +17,6 @@ function setInputValueAndLocalStorage(id, value) {
 
 // Function to load values from localStorage when the page loads
 function loadValuesFromLocalStorage() {
-    // We can set default values directly in the HTML or here if we prefer JS to manage them
     document.getElementById('profit').value = localStorage.getItem('profit') || '5';
     document.getElementById('wage').value = localStorage.getItem('wage') || '5';
     document.getElementById('VAT').value = localStorage.getItem('VAT') || '10'; // Value Added Tax
@@ -31,54 +30,62 @@ function calculateAndSave() {
     // Get values from input fields
     let profit = getInputValue('profit', 5);
     let wage = getInputValue('wage', 5);
-    let VAT = getInputValue('VAT', 10);
+    let VAT_rate = getInputValue('VAT', 10); // Renamed to VAT_rate to avoid conflict
     let price_gram = getInputValue('price_gram', 68000000);
-    let price_whole = getInputValue('price_whole', 68000000); // Get price_whole from input
-    let final_price = getInputValue('Final-Price', 50);
+    let price_whole = getInputValue('price_whole', 68000000);
+    let final_price_user_input = getInputValue('Final-Price', 50); // Renamed for clarity
 
     // Save current values to localStorage
     setInputValueAndLocalStorage('profit', profit);
     setInputValueAndLocalStorage('wage', wage);
-    setInputValueAndLocalStorage('VAT', VAT);
+    setInputValueAndLocalStorage('VAT', VAT_rate);
     setInputValueAndLocalStorage('price_gram', price_gram);
-    setInputValueAndLocalStorage('price_whole', price_whole); // Save price_whole
-    setInputValueAndLocalStorage('Final-Price', final_price);
+    setInputValueAndLocalStorage('price_whole', price_whole);
+    setInputValueAndLocalStorage('Final-Price', final_price_user_input);
 
     // --- Core Calculation for Weight ---
-    // Ensure that the taxless_price_gram is not zero to prevent errors
-    let weight = 1;
-    let Raw_gold_price = price_gram * weight;
-    let VAT_gram_price =  ((0.01 * wage * price_gram) + ((price_gram + (0.01 * wage * price_gram)) * profit / 100)) * VAT / 100;
-    let taxless_price_gram = price_gram + (0.01 * wage * price_gram) + ((price_gram + (0.01 * wage * price_gram)) * profit / 100);// + VAT_gram_price;
-    let  taxless_price = taxless_price_gram * weight;
-    let taxe = (taxless_price - Raw_gold_price) * VAT / 100;
+    // Calculate the components that determine the taxless price per gram
+    let labor_cost_per_gram = 0.01 * wage * price_gram;
+    let profit_markup_per_gram = (price_gram + labor_cost_per_gram) * profit / 100;
+    let taxless_price_per_gram_calc = price_gram + labor_cost_per_gram + profit_markup_per_gram;
 
-    if (taxless_price_gram !== 0) {
-        weight = price_whole / taxless_price_gram;
+    let calculated_weight = 0; // Initialize calculated_weight
+    if (taxless_price_per_gram_calc !== 0) {
+        calculated_weight = price_whole / taxless_price_per_gram_calc;
     } else {
-        console.warn("taxless_price_gram is zero, cannot calculate weight.");
+        console.warn("taxless_price_per_gram_calc is zero, cannot calculate weight.");
     }
-    // --- End Core Calculation ---
 
-    // --- Tax Calculation (assuming 10% of Final-Price for now) ---
-    const Tax_10_Rate = 0.1;
-    let calculatedTax = final_price * Tax_10_Rate;
-    let priceAfterTax = final_price - calculatedTax; // Simple deduction for now
+    // Now that 'calculated_weight' is defined, use it for subsequent calculations
+    let Raw_gold_price = price_gram * calculated_weight;
+    let taxless_total_price = taxless_price_per_gram_calc * calculated_weight;
+
+    // --- Tax Calculation based on your new definitions ---
+    // This 'taxe' calculation seems to be the tax on the difference between taxless_total_price and Raw_gold_price
+    let calculated_tax_amount = (taxless_total_price - Raw_gold_price) * VAT_rate / 100;
+
+    // The 'final_price_user_input' is what the user *wants* the final price to be.
+    // Let's assume you want to display the tax based on your calculated internal costs.
+    let price_after_calculated_tax = taxless_total_price + calculated_tax_amount;
+
+    // --- How to "reduce the tax" based on calculated_weight? ---
+    // This is still unclear. Let's assume a hypothetical scenario:
+    // For every gram of 'calculated_weight', the 'calculated_tax_amount' is reduced by a fixed amount (e.g., 1 unit of currency per gram)
+    // You need to define this rule. For example:
+    // let tax_reduction_per_gram = 0.5; // Example: reduce tax by 0.5 per gram of calculated_weight
+    // let total_tax_reduction = calculated_weight * tax_reduction_per_gram;
+    // let final_tax_to_display = Math.max(0, calculated_tax_amount - total_tax_reduction); // Ensure tax doesn't go below 0
+    // let final_price_display = taxless_total_price + final_tax_to_display;
+
+    // For now, I'll display the calculated_tax_amount and price_after_calculated_tax based on your current formulas.
+    // If you want to use the 'final_price_user_input' for tax, please specify how it relates to 'taxless_total_price'
 
     // Update the display
-    document.getElementById('display-weight').textContent = weight.toFixed(2); // Display weight with 4 decimal places
-    document.getElementById('display-tax').textContent = calculatedTax.toFixed(2);
-    document.getElementById('display-price-after-tax').textContent = priceAfterTax.toFixed(2);
-    //document.getElementById('display-raw-gold-price').textContent = Raw_gold_price.toFixed(2);
-
-    // --- Where to "reduce the tax based on weight"? ---
-    // This is the part that needs your input. For example:
-    // If weight *some_factor* reduces the tax:
-    // let taxReduction = weight * 0.05; // Example: 5 cents reduction per unit of weight
-    // calculatedTax = Math.max(0, calculatedTax - taxReduction); // Ensure tax doesn't go below 0
-    // priceAfterTax = final_price - calculatedTax;
-    // document.getElementById('display-tax').textContent = calculatedTax.toFixed(2);
-    // document.getElementById('display-price-after-tax').textContent = priceAfterTax.toFixed(2);
+    document.getElementById('display-weight').textContent = calculated_weight.toFixed(2);
+    document.getElementById('display-tax').textContent = calculated_tax_amount.toFixed(2);
+    document.getElementById('display-price-after-tax').textContent = price_after_calculated_tax.toFixed(2);
+    // You can uncomment this if you want to display Raw_gold_price
+    // document.getElementById('display-raw-gold-price').textContent = Raw_gold_price.toFixed(2);
 }
 
 // Load values when the script loads (i.e., when the page loads)
