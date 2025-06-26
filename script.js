@@ -65,7 +65,7 @@ function calculateAndSave() {
     let priceAfterTax = final_price - calculatedTax; // Simple deduction for now
 
     // Update the display
-    document.getElementById('display-weight').textContent = weight.toFixed(4); // Display weight with 4 decimal places
+    document.getElementById('display-weight').textContent = weight.toFixed(2); // Display weight with 4 decimal places
     document.getElementById('display-tax').textContent = calculatedTax.toFixed(2);
     document.getElementById('display-price-after-tax').textContent = priceAfterTax.toFixed(2);
     //document.getElementById('display-raw-gold-price').textContent = Raw_gold_price.toFixed(2);
