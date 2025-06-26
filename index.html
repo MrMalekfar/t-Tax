@@ -1,110 +1,55 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <meta charset="utf8">
-  <title>Tax Calculator</title>
-  <link href="https://fonts.cdnfonts.com/css/iranian-sans" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-  <style type="text/css">
-    body {
-      font-family: 'Iranian Sans', sans-serif;
-      font-size: 14px;
-      direction: rtl;
-      color: #333; /* Add a default text color */
-      background-color: color(xyz 0.82 0.89 0.98); /* Add a background color */
-    }
-      .container {
-      max-width: 960px; /* Limit the width of the container */
-      margin: 0 auto; /* Center the container */
-      padding: 0.5rem; /* Add some padding */
-      box-shadow: 0 0 10px color(xyz-d50 0.84 0.85 0.68 / 0.1); /* Add a subtle shadow */
-    }
-      .btn {
-      transition: all 0.3s cubic-bezier(0.33, 0.03, 0.26, 0.94); /* Add a transition for hover effects */
-    }
-      .btn:hover {
-      transform: scale(1.1); /* Slightly scale up buttons on hover */
-    }
-            /* New styles */
-    .btn:active {
-      transform: scale(0.95); /* Slightly scale down buttons on active */
-    }
-    .form-control:focus {
-      border-color: #007bff; /* Change border color on focus */
-      box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25); /* Add a glow effect on focus */
-    }
-    .text-primary {
-      color: #007bff !important; /* Change the primary color */
-    }
-    .glass-btn {
-      background-color: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      color: lab(30 4.38 1.64);
-      transition: all 0.3s ease;
-    }
-    .glass-btn:hover {
-      background-color: rgba(255, 255, 255, 0.2);
-      transform: scale(1.05);
-    }
-    .glass-btn:active {
-      transform: scale(0.95);
-    }
-    .rounded-table {
-      border-radius: 15px;
-      overflow: hidden;
-    }
-    .custom-table-header {
-      background-color: #495057;
-      color: white;
-    }
-
-    /* Add more styles... */
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Price Calculator</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; }
+        div { margin-bottom: 10px; }
+        label { display: inline-block; width: 120px; }
+        input[type="number"] { width: 150px; padding: 5px; }
+        button { padding: 10px 20px; cursor: pointer; }
+        #results { margin-top: 20px; padding: 15px; border: 1px solid #ccc; background-color: #f9f9f9; }
+    </style>
 </head>
-<body id="body">
-    <div class="container border rounded-2 mt-2 border-dark">
-        <div class="row">
-            <div class="col-12 p-2 text-center border-bottom border-dark text-primary">
-                <span class="lang-field lang-fa fw-bold">محاسبه مالیات</span>
-                <span class="lang-field lang-en fw-bold">TAX calculation</span>
-                <div class="btn-group float-end" role="group" dir="ltr">
-                    <button id="btn-fa" class="btn btn-lang btn-outline-primary btn-sm rounded-2" type="button">FA</button>&nbsp;
-                    <button id="btn-en" class="btn btn-lang btn-outline-primary btn-sm rounded-2" type="button">EN</button>
-                </div>
-            </div>
-        </div>
-                <div class="row my-2">
-            <label for="max-ip" class="col-sm-12 col-md-4 col-lg-2 col-form-label">
-                <span class="lang-field lang-fa">قیمت کل</span>
-                <span class="lang-field lang-en">Final Price</span>
-            </label>
-            <div class="col-sm-12 col-md-8 col-lg-4">
-                <input class="form-control" type="number" id="max-ip" min="0" max="1000000000000" step="1" value="0" placeholder="Enter number of IPs">
-            </div>
-            <label for="max-latency" class="col-sm-12 col-md-4 col-lg-2 col-form-label">
-                <span class="lang-field lang-fa">وزن</span>
-                <span class="lang-field lang-en">Weight:</span>
-            </label>
-            <div class="col-sm-12 col-md-8 col-lg-4">
-                <input class="form-control" type="number" id="Weight-gram" min="0" max="1000" step="0.01" value="0">
-            </div>
-            <label for="max-difference" class="col-sm-12 col-md-4 col-lg-2 col-form-label">
-                <span class="lang-field lang-fa">اجرت:</span>
-                <span class="lang-field lang-en">Wage</span>
-            </label>
-            <div class="col-sm-12 col-md-8 col-lg-4">
-                <input class="form-control" type="number" id="Wage-percent" min="0" max="100" step="0.1" value="5">
-            </div>
-        </div>
-        <div class="col-sm-12 col-md-8 col-lg-4">
-            <label for="ip-regex" class="col-sm-12 col-md-4 col-lg-2 col-form-label">
-                <span class="lang-field lang-fa">سود:</span>
-                <span class="lang-field lang-en">Profit:</span>
-            </label>
-            <div class="col-sm-12 col-md-8 col-lg-10">
-                <input class="form-control" type="number" id="ip-regex" min="0" max="100" step="0.1" value="5">
-            </div>
-        </div>
+<body>
+    <h1>Price and Weight Calculator</h1>
+
+    <div>
+        <label for="profit">Profit (%):</label>
+        <input type="number" id="profit" value="5">
+    </div>
+
+    <div>
+        <label for="wage">Wage (per gram):</label>
+        <input type="number" id="wage" value="5">
+    </div>
+
+    <div>
+        <label for="price_gram">Price per Gram:</label>
+        <input type="number" id="price_gram" value="68000000">
+    </div>
+
+    <div>
+        <label for="price_whole">Whole Price (e.g., Target Price):</label>
+        <input type="number" id="price_whole" value="0">
+    </div>
+
+    <div>
+        <label for="Final-Price">Final Price:</label>
+        <input type="number" id="Final-Price" value="50">
+    </div>
+
+    <button onclick="calculateAndSave()">Calculate & Save</button>
+
+    <div id="results">
+        <h2>Calculation Results:</h2>
+        <p>Calculated Weight: <span id="display-weight">0</span></p>
+        <p>Calculated Tax (10% of Final Price): <span id="display-tax">0</span></p>
+        <p>Price after Tax: <span id="display-price-after-tax">0</span></p>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
