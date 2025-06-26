@@ -31,6 +31,7 @@ function calculateAndSave() {
     // Get values from input fields
     let profit = getInputValue('profit', 5);
     let wage = getInputValue('wage', 5);
+    let VAT = getInputValue('VAT', 5);
     let price_gram = getInputValue('price_gram', 68000000);
     let price_whole = getInputValue('price_whole', 0); // Get price_whole from input
     let final_price = getInputValue('Final-Price', 50);
@@ -38,6 +39,7 @@ function calculateAndSave() {
     // Save current values to localStorage
     setInputValueAndLocalStorage('profit', profit);
     setInputValueAndLocalStorage('wage', wage);
+    setInputValueAndLocalStorage('VAT', VAT);
     setInputValueAndLocalStorage('price_gram', price_gram);
     setInputValueAndLocalStorage('price_whole', price_whole); // Save price_whole
     setInputValueAndLocalStorage('Final-Price', final_price);
@@ -45,8 +47,8 @@ function calculateAndSave() {
     // --- Core Calculation for Weight ---
     // Ensure that the taxless_price_geram is not zero to prevent errors
     let Raw_gold_price = price_gram * weight;
-    let VAT_geram_price =  ((0.01 * wage * price_gram) + ((price_gram + (0.01 * wage * price_gram)) * profit / 100)) * VAT / 100;
-    let taxless_price_geram = price_gram + (0.01 * wage * price_gram) + ((price_gram + (0.01 * wage * price_gram)) * profit / 100) + VAT_geram_price;
+    let VAT_gram_price =  ((0.01 * wage * price_gram) + ((price_gram + (0.01 * wage * price_gram)) * profit / 100)) * VAT / 100;
+    let taxless_price_geram = price_gram + (0.01 * wage * price_gram) + ((price_gram + (0.01 * wage * price_gram)) * profit / 100) + VAT_gram_price;
     let  taxless_price = taxless_price_geram * weight;
     let taxe = (taxless_price - Raw_gold_price) * VAT / 100;
     let weight = 0;
