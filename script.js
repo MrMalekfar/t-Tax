@@ -65,7 +65,7 @@ function calculateAndSave() {
 
     // Update the display with formatted numbers
     // Weight can still be fractional, so use toFixed for precision and then toLocaleString
-    document.getElementById('display-weight').textContent = calculated_weight.toFixed(6);
+    document.getElementById('display-weight').textContent = calculated_weight.toFixed(2);
     // For monetary values, use toLocaleString directly for currency formatting
     // or toFixed for specific decimal places, then toLocaleString for grouping.
     // I'm using toFixed(2) for currency-like values and then toLocaleString for formatting.
