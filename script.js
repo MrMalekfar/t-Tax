@@ -20,8 +20,8 @@ function loadValuesFromLocalStorage() {
     document.getElementById('profit').value = localStorage.getItem('profit') || '5';
     document.getElementById('wage').value = localStorage.getItem('wage') || '5';
     document.getElementById('VAT').value = localStorage.getItem('VAT') || '10';
-    document.getElementById('price_gram').value = localStorage.getItem('price_gram') || '680000000'; // Changed default to match your input
-    document.getElementById('price_whole').value = localStorage.getItem('price_whole') || '386958812'; // Changed default to match your input
+    document.getElementById('price_gram').value = localStorage.getItem('price_gram') || '680000000';
+    document.getElementById('price_whole').value = localStorage.getItem('price_whole') || '386958812';
     document.getElementById('Final-Price').value = localStorage.getItem('Final-Price') || '50';
 }
 
@@ -31,8 +31,8 @@ function calculateAndSave() {
     let profit = getInputValue('profit', 5);
     let wage = getInputValue('wage', 5);
     let VAT_rate = getInputValue('VAT', 10);
-    let price_gram = getInputValue('price_gram', 680000000); // Using your large number here
-    let price_whole = getInputValue('price_whole', 386958812); // Using your large number here
+    let price_gram = getInputValue('price_gram', 680000000);
+    let price_whole = getInputValue('price_whole', 386958812);
     let final_price_user_input = getInputValue('Final-Price', 50);
 
     // Save current values to localStorage
@@ -63,11 +63,18 @@ function calculateAndSave() {
 
     let price_after_calculated_tax = taxless_total_price + calculated_tax_amount;
 
-    // Update the display
-    // Display weight with more decimal places to show fractional values
-    document.getElementById('display-weight').textContent = calculated_weight.toFixed(6); // Changed to 6 decimal places
-    document.getElementById('display-tax').textContent = calculated_tax_amount.toFixed(2);
-    document.getElementById('display-price-after-tax').textContent = price_after_calculated_tax.toFixed(2);
+    // Update the display with formatted numbers
+    // Weight can still be fractional, so use toFixed for precision and then toLocaleString
+    document.getElementById('display-weight').textContent = calculated_weight.toFixed(6);
+    // For monetary values, use toLocaleString directly for currency formatting
+    // or toFixed for specific decimal places, then toLocaleString for grouping.
+    // I'm using toFixed(2) for currency-like values and then toLocaleString for formatting.
+    document.getElementById('display-tax').textContent = calculated_tax_amount.toFixed(2).toLocaleString('en-US'); // Formats with commas
+    document.getElementById('display-price-after-tax').textContent = price_after_calculated_tax.toFixed(2).toLocaleString('en-US'); // Formats with commas
+
+    // You might also want to display Raw_gold_price and taxless_total_price with formatting
+    // For example, if you add a span for Raw Gold Price in your HTML:
+    // document.getElementById('display-raw-gold-price').textContent = Raw_gold_price.toFixed(2).toLocaleString('en-US');
 }
 
 // Load values when the script loads (i.e., when the page loads)
