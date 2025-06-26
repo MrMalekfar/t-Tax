@@ -66,7 +66,7 @@ function calculateAndSave() {
     document.getElementById('display-weight').textContent = weight.toFixed(4); // Display weight with 4 decimal places
     document.getElementById('display-tax').textContent = calculatedTax.toFixed(2);
     document.getElementById('display-price-after-tax').textContent = priceAfterTax.toFixed(2);
-    document.getElementById('display-raw-gold-price').textContent = Raw_gold_price.toFixed(2);
+    //document.getElementById('display-raw-gold-price').textContent = Raw_gold_price.toFixed(2);
 
     // --- Where to "reduce the tax based on weight"? ---
     // This is the part that needs your input. For example:
