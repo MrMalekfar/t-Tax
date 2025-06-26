@@ -51,7 +51,7 @@ function calculateAndSave() {
     let taxless_price_gram = price_gram + (0.01 * wage * price_gram) + ((price_gram + (0.01 * wage * price_gram)) * profit / 100) + VAT_gram_price;
     let  taxless_price = taxless_price_gram * weight;
     let taxe = (taxless_price - Raw_gold_price) * VAT / 100;
-    let weight = 0;
+    let weight = 1;
     if (taxless_price_gram !== 0) {
         weight = price_whole / taxless_price_gram;
     } else {
