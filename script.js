@@ -22,7 +22,7 @@ function loadValuesFromLocalStorage() {
     document.getElementById('wage').value = localStorage.getItem('wage') || '5';
     document.getElementById('VAT').value = localStorage.getItem('VAT') || '10'; // Value Added Tax
     document.getElementById('price_gram').value = localStorage.getItem('price_gram') || '68000000';
-    document.getElementById('price_whole').value = localStorage.getItem('price_whole') || '0'; // Added price_whole to localStorage
+    document.getElementById('price_whole').value = localStorage.getItem('price_whole') || '68000000'; // Added price_whole to localStorage
     document.getElementById('Final-Price').value = localStorage.getItem('Final-Price') || '50';
 }
 
