@@ -45,8 +45,8 @@ function calculateAndSave() {
     // --- Core Calculation for Weight ---
     // Ensure that the taxless_price_geram is not zero to prevent errors
     let Raw_gold_price = price_gram * weight;
-    
-    let taxless_price_geram = price_gram + (0.01 * wage * price_gram) + ((price_gram + (0.01 * wage * price_gram)) * profit / 100);
+    let VAT_geram_price =  ((0.01 * wage * price_gram) + ((price_gram + (0.01 * wage * price_gram)) * profit / 100)) * VAT / 100;
+    let taxless_price_geram = price_gram + (0.01 * wage * price_gram) + ((price_gram + (0.01 * wage * price_gram)) * profit / 100) + VAT_geram_price;
     let  taxless_price = taxless_price_geram * weight;
     let taxe = (taxless_price - Raw_gold_price) * VAT / 100;
     let weight = 0;
