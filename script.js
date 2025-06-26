@@ -33,7 +33,7 @@ function calculateAndSave() {
     let wage = getInputValue('wage', 5);
     let VAT = getInputValue('VAT', 10);
     let price_gram = getInputValue('price_gram', 68000000);
-    let price_whole = getInputValue('price_whole', 0); // Get price_whole from input
+    let price_whole = getInputValue('price_whole', 68000000); // Get price_whole from input
     let final_price = getInputValue('Final-Price', 50);
 
     // Save current values to localStorage
