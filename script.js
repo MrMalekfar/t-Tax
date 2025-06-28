@@ -64,17 +64,10 @@ function calculateAndSave() {
     let price_after_calculated_tax = taxless_total_price + calculated_tax_amount;
 
     // Update the display with formatted numbers
-    // Weight can still be fractional, so use toFixed for precision and then toLocaleString
-    document.getElementById('display-weight').textContent = calculated_weight.toFixed(2);
-    // For monetary values, use toLocaleString directly for currency formatting
-    // or toFixed for specific decimal places, then toLocaleString for grouping.
-    // I'm using toFixed(2) for currency-like values and then toLocaleString for formatting.
-    document.getElementById('display-tax').textContent = calculated_tax_amount.toFixed(0).toLocaleString('en-US'); // Formats with commas
-    document.getElementById('display-price-after-tax').textContent = price_after_calculated_tax.toFixed(0).toLocaleString('en-US'); // Formats with commas
-
-    // You might also want to display Raw_gold_price and taxless_total_price with formatting
-    // For example, if you add a span for Raw Gold Price in your HTML:
-    // document.getElementById('display-raw-gold-price').textContent = Raw_gold_price.toFixed(2).toLocaleString('en-US');
+    // Use 'fa-IR' locale for Persian number formatting
+    document.getElementById('display-weight').textContent = calculated_weight.toFixed(3).replace('.', '/') + ' گرم'; // Using / as decimal separator for Persian style if preferred
+    document.getElementById('display-tax').textContent = calculated_tax_amount.toFixed(0).toLocaleString('fa-IR') + ' تومان';
+    document.getElementById('display-price-after-tax').textContent = price_after_calculated_tax.toFixed(0).toLocaleString('fa-IR') + ' تومان';
 }
 
 // Load values when the script loads (i.e., when the page loads)
