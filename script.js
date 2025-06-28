@@ -69,8 +69,8 @@ function calculateAndSave() {
     // For monetary values, use toLocaleString directly for currency formatting
     // or toFixed for specific decimal places, then toLocaleString for grouping.
     // I'm using toFixed(2) for currency-like values and then toLocaleString for formatting.
-    document.getElementById('display-tax').textContent = calculated_tax_amount.toFixed(2).toLocaleString('en-US'); // Formats with commas
-    document.getElementById('display-price-after-tax').textContent = price_after_calculated_tax.toFixed(2).toLocaleString('en-US'); // Formats with commas
+    document.getElementById('display-tax').textContent = calculated_tax_amount.toFixed(0).toLocaleString('en-US'); // Formats with commas
+    document.getElementById('display-price-after-tax').textContent = price_after_calculated_tax.toFixed(0).toLocaleString('en-US'); // Formats with commas
 
     // You might also want to display Raw_gold_price and taxless_total_price with formatting
     // For example, if you add a span for Raw Gold Price in your HTML:
