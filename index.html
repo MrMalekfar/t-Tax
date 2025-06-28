@@ -1,84 +1,61 @@
-// Function to get a number value from an input field, defaulting if not found or invalid
-function getInputValue(id, defaultValue) {
-    const element = document.getElementById(id);
-    let value = parseFloat(element.value);
-    if (isNaN(value) || element.value.trim() === '') {
-        value = defaultValue;
-        element.value = defaultValue; // Set the input field to the default if invalid
-    }
-    return value;
-}
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ماشین حساب قیمت</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; direction: rtl; text-align: right;} /* Added direction and text-align for RTL */
+        div { margin-bottom: 10px; }
+        label { display: inline-block; width: 120px; }
+        input[type="number"] { width: 150px; padding: 5px; }
+        button { padding: 10px 20px; cursor: pointer; }
+        #results { margin-top: 20px; padding: 15px; border: 1px solid #ccc; background-color: #f9f9f9; }
+    </style>
+</head>
+<body>
+    <h1>ماشین حساب قیمت و وزن</h1>
 
-// Function to set a number value to an input field and localStorage
-function setInputValueAndLocalStorage(id, value) {
-    document.getElementById(id).value = value;
-    localStorage.setItem(id, value);
-}
+    <div>
+        <label for="profit">سود (%):</label>
+        <input type="number" id="profit" value="5">
+	<span style="margin-right: 5px;">درصد</span> 
+    </div>
 
-// Function to load values from localStorage when the page loads
-function loadValuesFromLocalStorage() {
-    document.getElementById('profit').value = localStorage.getItem('profit') || '5';
-    document.getElementById('wage').value = localStorage.getItem('wage') || '5';
-    document.getElementById('VAT').value = localStorage.getItem('VAT') || '10';
-    document.getElementById('price_gram').value = localStorage.getItem('price_gram') || '680000000';
-    document.getElementById('price_whole').value = localStorage.getItem('price_whole') || '386958812';
-    document.getElementById('Final-Price').value = localStorage.getItem('Final-Price') || '50';
-}
+    <div>
+        <label for="wage">اجرت (%):</label>
+        <input type="number" id="wage" value="5">
+	<span style="margin-right: 5px;">درصد</span> 
+    </div>
 
-// Function to perform the calculation and update the display
-function calculateAndSave() {
-    // Get values from input fields
-    let profit = getInputValue('profit', 5);
-    let wage = getInputValue('wage', 5);
-    let VAT_rate = getInputValue('VAT', 10);
-    let price_gram = getInputValue('price_gram', 680000000);
-    let price_whole = getInputValue('price_whole', 386958812);
-    let final_price_user_input = getInputValue('Final-Price', 50);
+    <div>
+        <label for="price_gram"> قیمت هر گرم:</label>
+        <input type="number" id="price_gram" value="68000000">
+	<span style="margin-right: 5px;">تومان</span> 
+    </div>
 
-    // Save current values to localStorage
-    setInputValueAndLocalStorage('profit', profit);
-    setInputValueAndLocalStorage('wage', wage);
-    setInputValueAndLocalStorage('VAT', VAT_rate);
-    setInputValueAndLocalStorage('price_gram', price_gram);
-    setInputValueAndLocalStorage('price_whole', price_whole);
-    setInputValueAndLocalStorage('Final-Price', final_price_user_input);
+    <div>
+        <label for="price_whole">قیمت هدف :</label>
+        <input type="number" id="price_whole" value="68000000">
+	<span style="margin-right: 5px;">تومان</span> 
+    </div>
 
-    // --- Core Calculation for Weight ---
-    let labor_cost_per_gram = 0.01 * wage * price_gram;
-    let profit_markup_per_gram = (price_gram + labor_cost_per_gram) * profit / 100;
-    let taxless_price_per_gram_calc = price_gram + labor_cost_per_gram + profit_markup_per_gram + (labor_cost_per_gram + profit_markup_per_gram) * VAT_rate / 100 ;
 
-    let calculated_weight = 0;
-    if (taxless_price_per_gram_calc !== 0) {
-        calculated_weight = price_whole / taxless_price_per_gram_calc;
-    } else {
-        console.warn("taxless_price_per_gram_calc is zero, cannot calculate weight.");
-    }
+    <div>
+        <label for="VAT">مالیات بر ارزش افزوده (%):</label>
+        <input type="number" id="VAT" value="10">
+	<span style="margin-right: 5px;">درصد</span> 
+    </div>
 
-    let Raw_gold_price = price_gram * calculated_weight;
-    let taxless_total_price = taxless_price_per_gram_calc * calculated_weight;
+    <button onclick="calculateAndSave()">محاسبه و ذخیره</button>
 
-    // --- Tax Calculation ---
-    let calculated_tax_amount = (taxless_total_price - Raw_gold_price) * VAT_rate / 100;
+    <div id="results">
+        <h2>نتایج محاسبه:</h2>
+        <p>وزن محاسبه شده: <span id="display-weight">0</span> گرم</p>
+        <p>مالیات بر ارزش افزوده: <span id="display-tax">0</span> تومان</p>
+        <p>قیمت قبل از محاسبه مالیات: <span id="display-price-after-tax">0</span> تومان</p>
+    </div>
 
-    let price_after_calculated_tax = taxless_total_price + calculated_tax_amount;
-
-    // Update the display with formatted numbers
-    // Weight can still be fractional, so use toFixed for precision and then toLocaleString
-    document.getElementById('display-weight').textContent = calculated_weight.toFixed(2);
-    // For monetary values, use toLocaleString directly for currency formatting
-    // or toFixed for specific decimal places, then toLocaleString for grouping.
-    // I'm using toFixed(2) for currency-like values and then toLocaleString for formatting.
-    document.getElementById('display-tax').textContent = calculated_tax_amount.toFixed(0).toLocaleString('en-US'); // Formats with commas
-    document.getElementById('display-price-after-tax').textContent = price_after_calculated_tax.toFixed(0).toLocaleString('en-US'); // Formats with commas
-
-    // You might also want to display Raw_gold_price and taxless_total_price with formatting
-    // For example, if you add a span for Raw Gold Price in your HTML:
-    // document.getElementById('display-raw-gold-price').textContent = Raw_gold_price.toFixed(2).toLocaleString('en-US');
-}
-
-// Load values when the script loads (i.e., when the page loads)
-document.addEventListener('DOMContentLoaded', () => {
-    loadValuesFromLocalStorage();
-    calculateAndSave();
-});
+    <script src="script.js"></script>
+</body>
+</html>
