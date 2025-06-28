@@ -60,9 +60,9 @@ function calculateAndSave() {
     let tax_total_price = tax_price_per_gram_calc * calculated_weight;
 
     // --- Tax Calculation ---
-    let calculated_tax_amount = 0.1 * (tax_price_per_gram * calculated_weight);
+    let calculated_tax_amount =  (tax_price_per_gram * calculated_weight);
 
-    let price_after_calculated_tax = 0.1 * (tax_total_price - calculated_tax_amount);
+    let price_after_calculated_tax =  (tax_total_price - calculated_tax_amount);
 
     // Update the display with formatted numbers
     // For weight, first ensure it's a number, then apply toLocaleString, and then toFixed if needed.
