@@ -64,8 +64,9 @@ function calculateAndSave() {
     let price_after_calculated_tax = taxless_total_price + calculated_tax_amount;
 
     // Update the display with formatted numbers
-    // Use 'fa-IR' locale for Persian number formatting
-    document.getElementById('display-weight').textContent = calculated_weight.toFixed(3).replace('.', '/') + ' گرم'; // Using / as decimal separator for Persian style if preferred
+    // Use 'fa-IR' locale for Persian number formatting.
+    // toLocaleString will handle decimal and grouping separators based on the locale.
+    document.getElementById('display-weight').textContent = calculated_weight.toFixed(3).toLocaleString('fa-IR') + ' گرم';
     document.getElementById('display-tax').textContent = calculated_tax_amount.toFixed(0).toLocaleString('fa-IR') + ' تومان';
     document.getElementById('display-price-after-tax').textContent = price_after_calculated_tax.toFixed(0).toLocaleString('fa-IR') + ' تومان';
 }
