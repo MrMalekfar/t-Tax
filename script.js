@@ -74,8 +74,8 @@ function calculateAndSave(columnId) {
 
     } else if (columnId === 'column2') {
         // --- Column 2 Calculation: Price vs Weight, Profit, Wage, VAT (Original logic) ---
-        let profit = getInputValue('profit2', 5);
-        let wage = getInputValue('wage2', 5);
+        let profit = getInputValue('profit2', 7);
+        let wage = getInputValue('wage2', 20);
         let VAT_rate = getInputValue('VAT2', 10);
         let price_gram = getInputValue('price_gram2', 68000000);
         let weight2 = getInputValue('weight2', 0);
