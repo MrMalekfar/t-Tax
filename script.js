@@ -25,8 +25,8 @@ function loadValuesFromLocalStorage() {
     document.getElementById('price_whole1').value = localStorage.getItem('price_whole1') || '6800000';
 
     // Column 2
-    document.getElementById('profit2').value = localStorage.getItem('profit2') || '5';
-    document.getElementById('wage2').value = localStorage.getItem('wage2') || '5';
+    document.getElementById('profit2').value = localStorage.getItem('profit2') || '7';
+    document.getElementById('wage2').value = localStorage.getItem('wage2') || '20';
     document.getElementById('VAT2').value = localStorage.getItem('VAT2') || '10';
     document.getElementById('price_gram2').value = localStorage.getItem('price_gram2') || '6800000';
     document.getElementById('price_whole2').value = localStorage.getItem('price_whole2') || '6800000';
