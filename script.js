@@ -20,7 +20,7 @@ function loadValuesFromLocalStorage() {
     document.getElementById('profit').value = localStorage.getItem('profit') || '5';
     document.getElementById('wage').value = localStorage.getItem('wage') || '5';
     document.getElementById('VAT').value = localStorage.getItem('VAT') || '10';
-    document.getElementById('price_gram').value = localStorage.getItem('price_gram')  * 0.1 || '68000000';
+    document.getElementById('price_gram').value = localStorage.getItem('price_gram')  * 0.1 || '6800000';
     document.getElementById('price_whole').value = localStorage.getItem('price_whole') * 0.1 || '38695881';
    // document.getElementById('Final-Price').value = localStorage.getItem('Final-Price') || '50';
 }
@@ -31,7 +31,7 @@ function calculateAndSave() {
     let profit = getInputValue('profit', 5);
     let wage = getInputValue('wage', 5);
     let VAT_rate = getInputValue('VAT', 10);
-    let price_gram = getInputValue('price_gram', 68000000);
+    let price_gram = getInputValue('price_gram', 6800000);
     let price_whole = getInputValue('price_whole', 38695881);
     //let final_price_user_input = getInputValue('Final-Price', 50);
 
