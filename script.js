@@ -20,8 +20,8 @@ function loadValuesFromLocalStorage() {
     document.getElementById('profit').value = localStorage.getItem('profit') || '5';
     document.getElementById('wage').value = localStorage.getItem('wage') || '5';
     document.getElementById('VAT').value = localStorage.getItem('VAT') || '10';
-    document.getElementById('price_gram').value = localStorage.getItem('price_gram')  * 0.1 || '6800000';
-    document.getElementById('price_whole').value = localStorage.getItem('price_whole') * 0.1 || '38695881';
+    document.getElementById('price_gram').value = localStorage.getItem('price_gram') || '6800000';
+    document.getElementById('price_whole').value = localStorage.getItem('price_whole') || '38695881';
    // document.getElementById('Final-Price').value = localStorage.getItem('Final-Price') || '50';
 }
 
@@ -60,9 +60,9 @@ function calculateAndSave() {
     let tax_total_price = tax_price_per_gram_calc * calculated_weight;
 
     // --- Tax Calculation ---
-    let calculated_tax_amount =  (tax_price_per_gram * calculated_weight);
+    let calculated_tax_amount = (tax_price_per_gram * calculated_weight);
 
-    let price_after_calculated_tax =  (tax_total_price - calculated_tax_amount);
+    let price_after_calculated_tax = (tax_total_price - calculated_tax_amount);
 
     // Update the display with formatted numbers
     // For weight, first ensure it's a number, then apply toLocaleString, and then toFixed if needed.
