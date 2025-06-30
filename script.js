@@ -92,7 +92,7 @@ function calculateAndSave(columnId) {
         let tax_price_per_gram = (labor_cost_per_gram + profit_markup_per_gram) * VAT_rate / 100;
         let total_price_per_gram_with_vat = base_price_per_gram_before_vat + tax_price_per_gram;
 	let total_price_with_vat = total_price_per_gram_with_vat * weight2;
-
+	
         let calculated_tax_amount = tax_price_per_gram * weight2;
         let price_after_calculated_tax = (total_price_per_gram_with_vat * weight2);
 	let price_before_calculated_tax = (base_price_per_gram_before_vat * weight2);
@@ -100,6 +100,7 @@ function calculateAndSave(columnId) {
         document.getElementById('display-weight2').textContent = price_before_calculated_tax.toLocaleString('fa-IR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
         document.getElementById('display-tax2').textContent = calculated_tax_amount.toLocaleString('fa-IR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
         document.getElementById('display-price-after-tax2').textContent = price_after_calculated_tax.toLocaleString('fa-IR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+	document.getElementById('display-gram-price-after-tax2').textContent = total_price_per_gram_with_vat.toLocaleString('fa-IR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
 
     } else if (columnId === 'column3') {
         // --- Column 3 Calculation: Price only vs Weight ---
