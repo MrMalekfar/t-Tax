@@ -81,6 +81,17 @@ def fetch_gold_price():
             print("WARNING: Could not find Gold Mesghal price or it was zero.")
             # print(f"Full 'gold_mesghal_usd' section: {json.dumps(data.get('gold', {}).get('gold_mesghal_usd'), indent=2)}") # Uncomment for deep debug
 
+        # --- Extract Gold Mesghal (Mesghal Gold) Price ---
+        gold_ounce_price_string = data.get('gold', {}).get('gold_ounce', {}).get('v')
+        if gold_ounce_price_string and gold_ounce_price_string != "0":
+            gold_ounce_price = float(gold_ounce_price_string.replace(',', ''))
+            extracted_prices["gold_ounce_toman"] = gold_ounce_price
+            print(f"DEBUG: Successfully found Gold Ounce 'v' key with value: {gold_ounce_price_string}")
+        else:
+            print("WARNING: Could not find Gold Ounce price or it was zero.")
+            # print(f"Full 'gold_mesghal_usd' section: {json.dumps(data.get('gold', {}).get('gold_mesghal_usd'), indent=2)}") # Uncomment for deep debug
+
+
 
         # Check if any prices were extracted
         if extracted_prices:
