@@ -31,6 +31,7 @@
             display: flex;
             flex-direction: column;
             padding: 10px; /* Reduced padding for mobile */
+            padding-top: 60px; /* Added padding-top to account for fixed navbar */
         }
         .highlighted-result {
             font-size: 1.5rem; /* Bigger font size */
@@ -45,6 +46,9 @@
         @media (max-width: 767px) {
             .highlighted-result {
                 font-size: 1.25rem;
+            }
+            body {
+                padding-top: 80px; /* Adjust padding for smaller navbar on mobile */
             }
         }
         /* Custom button gradient for a more luxurious feel */
@@ -192,9 +196,59 @@
         .results p {
             @apply text-base sm:text-lg mb-1 sm:mb-2 text-dark-text;
         }
+
+        /* Navbar specific styles */
+        .navbar-top {
+            background-color: var(--color-gold-dark); /* Darker gold background */
+            color: white;
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000; /* Ensure it's on top */
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap; /* Allow items to wrap on smaller screens */
+        }
+
+        .navbar-top span {
+            margin: 0 10px;
+            white-space: nowrap; /* Prevent text wrapping within a price item */
+            font-weight: 500;
+            padding: 5px 0; /* Add vertical padding for touch targets */
+        }
+
+        .navbar-top span strong {
+            font-weight: 700;
+            color: var(--color-gold-light); /* Lighter gold for the actual price */
+        }
+
+        @media (max-width: 767px) {
+            .navbar-top {
+                font-size: 0.75rem; /* Smaller font on mobile */
+                padding: 5px 10px; /* Reduced padding on mobile */
+                justify-content: center; /* Center items on mobile */
+            }
+            .navbar-top span {
+                margin: 0 5px; /* Reduced margin on mobile */
+                padding: 3px 0;
+            }
+        }
     </style>
 </head>
 <body class="antialiased">
+
+    <!-- Fixed Navbar for Live Prices -->
+    <div class="navbar-top">
+        <span>دلار: <strong id="display-dollar-price">N/A</strong> تومان</span>
+        <span>مثقال: <strong id="display-mesghal-price">N/A</strong> تومان</span>
+        <span>سکه: <strong id="display-sekke-jadid-price">N/A</strong> تومان</span>
+        <span>نیم سکه: <strong id="display-sekke-nim-price">N/A</strong> تومان</span>
+        <span>ربع سکه: <strong id="display-sekke-rob-price">N/A</strong> تومان</span>
+    </div>
 
     <div class="main-app-container flex flex-col md:flex-row md:justify-center gap-4 md:gap-10 max-w-7xl mx-auto w-full p-4 md:p-8 rounded-3xl shadow-[0_15px_60px_rgba(0,0,0,0.1)] bg-card-light-bg border border-gold-dark/20 transition-all duration-500">
         
@@ -274,8 +328,8 @@
                 </button>
 
                 <div class="results mt-4 sm:mt-6 p-3 sm:p-5 bg-results-bg rounded-lg border border-results-border">
-                    <p class="highlighted-result">وزن محاسبه شده: <span id="display-weight1" class="font-bold text-gold-dark">0</span> گرم</p>                        <p>مالیات بر ارزش افزوده : <span id="display-tax1" class="font-extrabold text-gold-dark">0</span> تومان</p>
-                    <p>قیمت قبل از محاسبه مالیات : <span id="display-price-before-tax1" class="font-extrabold text-gold-dark">0</span> تومان</p>
+                    <p class="highlighted-result">وزن محاسبه شده: <span id="display-weight1" class="font-bold text-gold-dark">0</span> گرم</p>                        <p>مالیات بر ارزش افزوده : <span id="display-tax1" class="font-bold text-gold-dark">0</span> تومان</p>
+                    <p>قیمت قبل از محاسبه مالیات : <span id="display-price-before-tax1" class="font-bold text-gold-dark">0</span> تومان</p>
                 </div>
             </div>
 
@@ -335,9 +389,9 @@
 
                 <div class="results mt-4 sm:mt-6 p-3 sm:p-5 bg-results-bg rounded-lg border border-results-border">
                     <p class="highlighted-result">قیمت نهایی: <span id="display-price-after-tax2" class="font-bold text-gold-dark">0</span> تومان</p>
-                    <p>مالیات بر ارزش افزوده: <span id="display-tax2" class="font-extrabold text-gold-dark">0</span> تومان</p>
-                    <p>قیمت قبل از محاسبه مالیات: <span id="display-weight2" class="font-extrabold text-gold-dark">0</span> تومان</p>
-                    <p>قیمت هر گرم خسام: <span id="display-gram-price-after-tax2" class="font-extrabold text-gold-dark">0</span> تومان</p>
+                    <p>مالیات بر ارزش افزوده: <span id="display-tax2" class="font-bold text-gold-dark">0</span> تومان</p>
+                    <p>قیمت قبل از محاسبه مالیات: <span id="display-weight2" class="font-bold text-gold-dark">0</span> تومان</p>
+                    <p>قیمت هر گرم خسام: <span id="display-gram-price-after-tax2" class="font-bold text-gold-dark">0</span> تومان</p>
                 </div>
             </div>
 
@@ -419,18 +473,17 @@
         }
         
 /**
- * Fetches the current gold price from your GitHub-hosted JSON file and updates the input fields.
+ * Fetches the current gold and currency prices from your GitHub-hosted JSON file and updates the input fields.
  */
 async function fetchGoldPrice() {
     try {
-        // Construct the URL to your GitHub-hosted JSON file
-        // Replace 'MrMalekfar/t-Tax' with your actual repository path
-        // and 'main' with your branch if different (e.g., 'gh-pages')
         const repoOwner = 'MrMalekfar'; // Your GitHub username
         const repoName = 't-Tax'; // Your repository name
         const branch = 'main'; // The branch where the data/gold-price.json file will be
-        const jsonUrl = `https://raw.githubusercontent.com/${repoOwner}/${repoName}/${branch}/data/gold-price.json`;
-        
+        const jsonUrl = `https://raw.githubusercontent.com/${repoOwner}/${repoName}/${branch}/data/gold-price.json?${new Date().getTime()}`; // Added cache-buster
+
+        console.log(`Fetching prices from: ${jsonUrl}`); // Debugging URL
+
         const response = await fetch(jsonUrl);
         
         if (!response.ok) {
@@ -438,23 +491,47 @@ async function fetchGoldPrice() {
         }
         const data = await response.json();
         
+        console.log("Successfully fetched and parsed prices from GitHub:", data); // Debugging fetched data
+
+        // Update 18k Gold Price (existing logic)
         const goldPriceToman = data.gold_18k_toman;
-        
-        // Update the price_gram input fields in all three columns
-        // Only update if the field is not currently focused by the user
-        if (document.activeElement.id !== 'price_gram1') {
+        if (goldPriceToman !== undefined && document.activeElement.id !== 'price_gram1') {
             document.getElementById('price_gram1').value = formatNumber(goldPriceToman);
         }
-        if (document.activeElement.id !== 'price_gram2') {
+        if (goldPriceToman !== undefined && document.activeElement.id !== 'price_gram2') {
             document.getElementById('price_gram2').value = formatNumber(goldPriceToman);
         }
-        if (document.activeElement.id !== 'price_gram3') {
+        if (goldPriceToman !== undefined && document.activeElement.id !== 'price_gram3') {
             document.getElementById('price_gram3').value = formatNumber(goldPriceToman);
         }
-        
-        console.log(`Gold price updated from GitHub: ${goldPriceToman} Toman per gram`);
-        
-        // Recalculate based on the new price
+
+        // --- NEW: Display other prices in the fixed navbar ---
+        const displayDollarPrice = document.getElementById('display-dollar-price');
+        if (displayDollarPrice && data.dollar_toman !== undefined) {
+            displayDollarPrice.textContent = formatNumber(data.dollar_toman);
+        }
+
+        const displaySekkeJadidPrice = document.getElementById('display-sekke-jadid-price');
+        if (displaySekkeJadidPrice && data.sekke_jadid_toman !== undefined) {
+            displaySekkeJadidPrice.textContent = formatNumber(data.sekke_jadid_toman);
+        }
+
+        const displaySekkeNimPrice = document.getElementById('display-sekke-nim-price');
+        if (displaySekkeNimPrice && data.sekke_nim_toman !== undefined) {
+            displaySekkeNimPrice.textContent = formatNumber(data.sekke_nim_toman);
+        }
+
+        const displaySekkeRobPrice = document.getElementById('display-sekke-rob-price');
+        if (displaySekkeRobPrice && data.sekke_rob_toman !== undefined) {
+            displaySekkeRobPrice.textContent = formatNumber(data.sekke_rob_toman);
+        }
+
+        const displayMesghalPrice = document.getElementById('display-mesghal-price');
+        if (displayMesghalPrice && data.gold_mesghal_toman !== undefined) {
+            displayMesghalPrice.textContent = formatNumber(data.gold_mesghal_toman);
+        }
+
+        // Recalculate based on the new price (still uses price_gram fields)
         const activeTab = document.querySelector('.tab-content.active');
         if (activeTab) {
             const columnId = activeTab.id.replace('tab-', 'column');
@@ -462,9 +539,8 @@ async function fetchGoldPrice() {
         }
 
     } catch (error) {
-        console.error("Error fetching gold price from GitHub:", error);
-        // Optionally, display an error message to the user
-        // alert("امکان دریافت قیمت لحظه‌ای طلا از گیت‌هاب وجود ندارد. لطفا صفحه را مجددا بارگذاری کنید یا قیمت را به صورت دستی وارد نمایید.");
+        console.error("Error fetching gold/currency prices from GitHub:", error);
+        //alert("امکان دریافت قیمت لحظه‌ای طلا و ارز وجود ندارد. لطفا صفحه را مجددا بارگذاری کنید یا قیمت‌ها را به صورت دستی وارد نمایید.");
     }
 }
 
@@ -475,8 +551,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setInterval(fetchGoldPrice, 60000); // Fetch every 60 seconds (adjust as needed)
     showTab('tab-column1');
 });
-  
-
+ 
         // Function to show the selected tab and hide others
         function showTab(tabId) {
             // Hide all tab contents
