@@ -3,241 +3,592 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ماشین حساب قیمت</title>
+    <title>ماشین حساب قیمت طلا</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <style>
+        /* Custom styles for gradients and specific gold colors */
+        :root {
+            --color-gold-light: #FFD700; /* Gold */
+            --color-gold-dark: #DAA520; /* Goldenrod */
+            --color-light-bg: #F8F8F8; /* Very light gray/off-white for body */
+            --color-card-light-bg: #FFFFFF; /* White for cards */
+            --color-dark-text: #333333; /* Dark gray for general text */
+            --color-gold-accent: #FFC107; /* Amber for accents */
+            --color-input-bg-light: #F0F0F0; /* Light gray for input background */
+            --color-input-border-light: #E0E0E0; /* Lighter gray for input border */
+            --color-results-bg: #FFFBF0; /* Very light gold for results background */
+            --color-results-border: #FFD700; /* Gold for results border */
+        }
+
         body {
-            font-family: sans-serif;
-            margin: 20px;
+            font-family: "Inter", sans-serif;
             direction: rtl;
             text-align: right;
-            background-color: #f4f4f4;
-            color: #333;
-        }
-
-        .calculator-container {
-            display: flex; /* Use flexbox for columns */
-            justify-content: space-around; /* Distribute space evenly */
-            gap: 20px; /* Space between columns */
-            flex-wrap: wrap; /* Allow columns to wrap on smaller screens */
-        }
-
-        .calculator-column {
-            flex: 1; /* Allow columns to grow and shrink */
-            min-width: 300px; /* Minimum width for each column before wrapping */
-            background-color: #fff;
-            padding: 25px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px; /* Space between columns if they wrap */
-        }
-
-        h1 {
-            text-align: center;
-            color: #0056b3;
-            margin-bottom: 30px;
-        }
-
-        h2 {
-            font-size: 1.3em;
-            color: #007bff;
-            margin-bottom: 15px;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 5px;
-        }
-
-        div {
-            margin-bottom: 15px;
-        }
-
-        label {
-            display: block; /* Make labels take full width */
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-
-        input[type="number"] {
-            width: calc(100% - 70px); /* Adjust width for span */
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box; /* Include padding in width */
-            text-align: left; /* Align input text to left for numbers */
-            float: right; /* Align input to the right in RTL */
-        }
-
-        .input-group {
+            background-color: var(--color-light-bg);
+            color: var(--color-dark-text);
+            min-height: 100vh;
             display: flex;
+            flex-direction: column;
+            padding: 10px; /* Reduced padding for mobile */
+        }
+        .highlighted-result {
+            font-size: 1.5rem; /* Bigger font size */
+            color: var(--color-gold-dark); /* Darker gold color */
+            font-weight: bold; /* Make it bold */
+            margin-bottom: 1rem; /* Add some space below */
+            border-bottom: 2px solid var(--color-gold-light); /* Underline for emphasis */
+            padding-bottom: 0.5rem; /* Padding for the underline */
+        }
+
+        /* Adjust font size for mobile for the highlighted result */
+        @media (max-width: 767px) {
+            .highlighted-result {
+                font-size: 1.25rem;
+            }
+        }
+        /* Custom button gradient for a more luxurious feel */
+        .btn-gold-gradient {
+            background: linear-gradient(145deg, var(--color-gold-light), var(--color-gold-dark));
+            color: var(--color-dark-text);
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+        }
+
+        .btn-gold-gradient:hover {
+            background: linear-gradient(145deg, var(--color-gold-dark), var(--color-gold-light));
+            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.6);
+            transform: translateY(-2px);
+        }
+
+        /* Input focus style */
+        input:focus {
+            outline: none;
+            border-color: var(--color-gold-accent);
+            box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.5);
+        }
+
+        /* Style for the vertical tabs */
+        .tab-button {
+            @apply flex items-center p-3 sm:p-4 my-1 sm:my-2 rounded-r-xl cursor-pointer transition-all duration-300 transform border-l-4 border-transparent; /* Adjusted padding for mobile */
+            font-weight: 600;
+            background-color: var(--color-card-light-bg);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            font-size: 0.9rem; /* Smaller font for mobile tabs */
+        }
+        
+        /* Mobile-specific styles for tab buttons */
+        @media (max-width: 767px) { /* For screens smaller than md */
+            .tab-button {
+                @apply rounded-xl border-t-4 border-l-0 border-transparent; /* Rounded on all sides, border on top */
+                flex-direction: row-reverse; /* Icons on the right for horizontal tabs */
+                justify-content: center;
+                padding: 10px; /* Adjust padding for horizontal layout */
+                font-size: 0.8rem;
+            }
+            .tab-button-content {
+                padding-right: 0.5rem; /* Reduced padding for content */
+            }
+            .tab-button.active {
+                @apply border-gold-dark; /* Active border on top */
+                box-shadow: 0 4px 20px rgba(255, 193, 7, 0.4);
+            }
+        }
+
+
+        .tab-button .tab-button-content,
+        .tab-button .icon-placeholder {
+            color: var(--color-dark-text); /* Default color for text and icon */
+            transition: color 0.3s ease; /* Smooth transition for color */
+        }
+
+        .tab-button:hover {
+            @apply transform translate-x-1;
+            background-color: #fcfcfc;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .tab-button:hover .tab-button-content,
+        .tab-button:hover .icon-placeholder {
+            color: var(--color-gold-light); /* Gold color on hover */
+        }
+
+        .tab-button.active {
+            @apply border-gold-dark;
+            background-color: var(--color-results-bg); /* Use light gold background for active state */
+            box-shadow: -4px 0 20px rgba(255, 193, 7, 0.4);
+        }
+
+        /* PERMANENT GOLD COLOR FOR ACTIVE TAB'S CONTENT */
+        .tab-button.active .tab-button-content,
+        .tab-button.active .icon-placeholder {
+            color: var(--color-gold-dark); /* This ensures the gold color persists on click */
+        }
+        
+        /* Ensure active tab's color stays gold on hover */
+        .tab-button.active:hover .tab-button-content,
+        .tab-button.active:hover .icon-placeholder {
+            color: var(--color-gold-dark); /* Keep gold color on hover */
+        }
+
+        .tab-button .icon-placeholder {
+            width: 2.5rem; /* Adjusted width for icon container */
+            display: flex;
+            justify-content: center;
             align-items: center;
-            justify-content: flex-end; /* Align items to the right in RTL */
+        }
+        
+        .tab-button-content {
+            flex-grow: 1;
+            text-align: right;
+            padding-right: 0.5rem; /* Adjusted padding */
+            font-size: 0.9rem; /* Adjusted font size */
         }
 
-        .input-group label {
-            margin-left: 10px; /* Space between label and input in RTL */
-            margin-bottom: 0;
-            flex-shrink: 0; /* Prevent label from shrinking */
+        .tab-content {
+            display: none;
+            animation: fadeInSlideUp 0.5s ease-in-out forwards;
         }
 
-        .input-group input {
-            flex-grow: 1; /* Allow input to take available space */
+        .tab-content.active {
+            display: block;
         }
 
-        .input-group span {
-            margin-right: 5px; /* Space for the unit */
+        /* Fade-in and slide-up animation for content */
+        @keyframes fadeInSlideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        button {
-            padding: 12px 25px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1em;
-            transition: background-color 0.3s ease;
-            width: 100%; /* Full width button */
-            margin-top: 20px;
+        /* Responsive input group */
+        .responsive-input-group {
+            @apply flex flex-col sm:flex-row items-stretch sm:items-center justify-between mb-4 sm:mb-5;
         }
 
-        button:hover {
-            background-color: #0056b3;
+        .responsive-input-group label {
+            @apply text-base sm:text-lg font-semibold text-dark-text mb-2 sm:mb-0; /* Adjusted font size for label */
         }
 
-        .results {
-            margin-top: 25px;
-            padding: 20px;
-            border: 1px solid #e0e0e0;
-            background-color: #f9f9f9;
-            border-radius: 5px;
+        .responsive-input-group .input-wrapper {
+            @apply flex-1 flex items-center w-full;
         }
 
+        .responsive-input-group input {
+            @apply w-full p-2 sm:p-3 rounded-md bg-input-bg-light text-dark-text border border-input-border-light text-left text-base; /* Adjusted padding and font size for input */
+        }
+        .responsive-input-group span {
+            @apply text-gold-dark ml-2 sm:ml-2 text-base; /* Adjusted font size for unit */
+        }
+
+        /* Adjustments for headers */
+        h2 {
+            @apply text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-gold-dark border-b border-gold-dark pb-2 sm:pb-3;
+        }
+
+        /* Adjustments for result text */
         .results p {
-            margin-bottom: 8px;
-            font-size: 1.1em;
-        }
-
-        .results p span {
-            font-weight: bold;
-            color: #28a745; /* Green for results */
+            @apply text-base sm:text-lg mb-1 sm:mb-2 text-dark-text;
         }
     </style>
 </head>
-<body>
-    <h1>ماشین حساب طلا</h1>
+<body class="antialiased">
 
-    <div class="calculator-container">
-        <div class="calculator-column">
-            <h2>محاسبه وزن طلا (بر اساس قیمت هدف)</h2>
-
-            <div class="input-group">
-                <label for="price_gram1"> قیمت هر گرم:</label>
-                <input type="number" id="price_gram1" value="68000000">
-                <span>تومان</span>
-            </div>
-
-            <div class="input-group">
-                <label for="wage1">اجرت (%):</label>
-                <input type="number" id="wage1" value="5">
-                <span>درصد</span>
-            </div>
-
-            <div class="input-group">
-                <label for="profit1">سود (%):</label>
-                <input type="number" id="profit1" value="5">
-                <span>درصد</span>
-            </div>
-
-
-            <div class="input-group">
-                <label for="VAT1">مالیات بر ارزش افزوده(%):</label>
-                <input type="number" id="VAT1" value="10">
-                <span>درصد</span>
-            </div>
-
-
-            <div class="input-group">
-                <label for="price_whole1">قیمت هدف :</label>
-                <input type="number" id="price_whole1" value="68000000">
-                <span>تومان</span>
-            </div>
-
-            <button onclick="calculateAndSave('column1')">محاسبه و ذخیره</button>
-
-            <div class="results">
-                <p>وزن محاسبه شده: <span id="display-weight1">0</span> گرم</p>
-                <p>مالیات بر ارزش افزوده : <span id="display-tax1">0</span> تومان</p>
-                <p>قیمت قبل از محاسبه مالیات : <span id="display-price-before-tax1">0</span> تومان</p>
+    <div class="main-app-container flex flex-col md:flex-row-reverse md:justify-center gap-4 md:gap-10 max-w-7xl mx-auto w-full p-4 md:p-8 rounded-3xl shadow-[0_15px_60px_rgba(0,0,0,0.1)] bg-card-light-bg border border-gold-dark/20 transition-all duration-500">
+        
+        <div class="w-full md:w-1/4 flex flex-col justify-start items-stretch min-w-[unset] md:min-w-[200px]">
+            <h2 class="text-xl md:text-2xl font-bold mb-4 md:mb-8 text-gold-dark border-b-2 border-gold-dark pb-2 md:pb-3 text-center">
+                محاسبه‌گرها
+            </h2>
+            <div class="flex flex-row justify-center md:flex-col">
+                <button id="btn-tab1" class="tab-button active group flex-1 md:flex-none" onclick="showTab('tab-column1')">
+                    <div class="tab-button-content">محاسبه وزن طلا</div>
+                    <span class="icon-placeholder"><i class="fas fa-balance-scale-left text-xl md:text-2xl"></i></span>
+                </button>
+                <button id="btn-tab2" class="tab-button group flex-1 md:flex-none" onclick="showTab('tab-column2')">
+                    <div class="tab-button-content">محاسبه‌گر جامع</div>
+                    <span class="icon-placeholder"><i class="fas fa-calculator text-xl md:text-2xl"></i></span>
+                </button>
+                <button id="btn-tab3" class="tab-button group flex-1 md:flex-none" onclick="showTab('tab-column3')">
+                    <div class="tab-button-content">محاسبه طلای کهنه</div>
+                    <span class="icon-placeholder"><i class="fas fa-ring text-xl md:text-2xl"></i></span>
+                </button>
             </div>
         </div>
 
-        <div class="calculator-column">
-            <h2>محاسبه‌گر</h2>
+        <div class="w-full md:w-3/4 relative mt-4 md:mt-0"> <div id="tab-column1" class="tab-content active p-2 sm:p-4">
+                <h2 class="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-gold-dark border-b border-gold-dark pb-2 md:pb-3">
+                    محاسبه وزن طلا (بر اساس قیمت هدف)
+                </h2>
 
-            <div class="input-group">
-                <label for="price_gram2"> قیمت هر گرم:</label>
-                <input type="number" id="price_gram2" value="68000000">
-                <span>تومان</span>
+                <div class="responsive-input-group">
+                    <label for="price_gram1">قیمت هر گرم:</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="price_gram1" value="" oninput="formatNumberInput(this)"
+                               class="text-left">
+                        <span>تومان</span>
+                    </div>
+                </div>
+
+                <div class="responsive-input-group">
+                    <label for="wage1">اجرت (%):</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="wage1" value="5"
+                               class="text-left">
+                        <span>درصد</span>
+                    </div>
+                </div>
+
+                <div class="responsive-input-group">
+                    <label for="profit1">سود (%):</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="profit1" value="5"
+                               class="text-left">
+                        <span>درصد</span>
+                    </div>
+                </div>
+
+                <div class="responsive-input-group">
+                    <label for="VAT1">مالیات بر ارزش افزوده(%):</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="VAT1" value="10"
+                               class="text-left">
+                        <span>درصد</span>
+                    </div>
+                </div>
+
+                <div class="responsive-input-group">
+                    <label for="price_whole1">قیمت هدف :</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="price_whole1" value="68,000,000" oninput="formatNumberInput(this)"
+                               class="text-left">
+                        <span>تومان</span>
+                    </div>
+                </div>
+
+                <button onclick="calculateAndSave('column1')" class="btn-gold-gradient w-full py-2 sm:py-3 rounded-lg text-base sm:text-lg font-bold mt-4 sm:mt-6">
+                    محاسبه و ذخیره
+                </button>
+
+                <div class="results mt-4 sm:mt-6 p-3 sm:p-5 bg-results-bg rounded-lg border border-results-border">
+                    <p class="highlighted-result">وزن محاسبه شده: <span id="display-weight1" class="font-bold text-gold-dark">0</span> گرم</p>                    <p>مالیات بر ارزش افزوده : <span id="display-tax1" class="font-extrabold text-gold-dark">0</span> تومان</p>
+                    <p>قیمت قبل از محاسبه مالیات : <span id="display-price-before-tax1" class="font-extrabold text-gold-dark">0</span> تومان</p>
+                </div>
             </div>
 
-            <div class="input-group">
-                <label for="price_whole2">وزن :</label>
-                <input type="number" id="weight2" value="0">
-                <span>تومان</span>
+            <div id="tab-column2" class="tab-content hidden p-2 sm:p-4">
+                <h2 class="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-gold-dark border-b border-gold-dark pb-2 md:pb-3">
+                    محاسبه‌گر جامع
+                </h2>
+
+                <div class="responsive-input-group">
+                    <label for="price_gram2">قیمت هر گرم:</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="price_gram2" value="" oninput="formatNumberInput(this)"
+                               class="text-left">
+                        <span>تومان</span>
+                    </div>
+                </div>
+
+                <div class="responsive-input-group">
+                    <label for="weight2">وزن:</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="weight2" value="0"
+                               class="text-left">
+                        <span>گرم</span>
+                    </div>
+                </div>
+
+                <div class="responsive-input-group">
+                    <label for="wage2">اجرت (%):</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="wage2" value="20"
+                               class="text-left">
+                        <span>درصد</span>
+                    </div>
+                </div>
+
+                <div class="responsive-input-group">
+                    <label for="profit2">سود (%):</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="profit2" value="7"
+                               class="text-left">
+                        <span>درصد</span>
+                    </div>
+                </div>
+
+                <div class="responsive-input-group">
+                    <label for="VAT2">مالیات بر ارزش افزوده (%):</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="VAT2" value="10"
+                               class="text-left">
+                        <span>درصد</span>
+                    </div>
+                </div>
+
+                <button onclick="calculateAndSave('column2')" class="btn-gold-gradient w-full py-2 sm:py-3 rounded-lg text-base sm:text-lg font-bold mt-4 sm:mt-6">
+                    محاسبه و ذخیره
+                </button>
+
+                <div class="results mt-4 sm:mt-6 p-3 sm:p-5 bg-results-bg rounded-lg border border-results-border">
+                    <p class="highlighted-result">قیمت نهایی: <span id="display-price-after-tax2" class="font-bold text-gold-dark">0</span> تومان</p>
+                    <p>مالیات بر ارزش افزوده: <span id="display-tax2" class="font-extrabold text-gold-dark">0</span> تومان</p>
+                    <p>قیمت قبل از محاسبه مالیات: <span id="display-weight2" class="font-extrabold text-gold-dark">0</span> تومان</p>
+                    <p>قیمت هر گرم خسام: <span id="display-gram-price-after-tax2" class="font-extrabold text-gold-dark">0</span> تومان</p>
+                </div>
             </div>
 
-            <div class="input-group">
-                <label for="wage2">اجرت (%):</label>
-                <input type="number" id="wage2" value="20">
-                <span>درصد</span>
-            </div>
+            <div id="tab-column3" class="tab-content hidden p-2 sm:p-4">
+                <h2 class="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-gold-dark border-b border-gold-dark pb-2 md:pb-3">
+                    محاسبه طلای کهنه
+                </h2>
 
-            <div class="input-group">
-                <label for="profit2">سود (%):</label>
-                <input type="number" id="profit2" value="7">
-                <span>درصد</span>
-            </div>
+                <div class="responsive-input-group">
+                    <label for="price_gram3">قیمت هر گرم:</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="price_gram3" value="" oninput="formatNumberInput(this)"
+                               class="text-left">
+                        <span>تومان</span>
+                    </div>
+                </div>
 
+                <div class="responsive-input-group">
+                    <label for="weight_input3">وزن:</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="weight_input3" value="1"
+                               class="text-left">
+                        <span>گرم</span>
+                    </div>
+                </div>
 
-            <div class="input-group">
-                <label for="VAT2">مالیات بر ارزش افزوده (%):</label>
-                <input type="number" id="VAT2" value="10">
-                <span>درصد</span>
-            </div>
+                <button onclick="calculateAndSave('column3')" class="btn-gold-gradient w-full py-2 sm:py-3 rounded-lg text-base sm:text-lg font-bold mt-4 sm:mt-6">
+                    محاسبه و ذخیره
+                </button>
 
-            <button onclick="calculateAndSave('column2')">محاسبه و ذخیره</button>
-
-            <div class="results">
- 
-                <p>قیمت قبل از محاسبه مالیات: <span id="display-weight2">0</span> گرم</p>
-                <p>مالیات بر ارزش افزوده: <span id="display-tax2">0</span> تومان</p>
-		<p>قیمت بعد از محاسبه مالیات: <span id="display-price-after-tax2">0</span> تومان</p>
-		<p>قیمت هر گرم خسام: <span id="display-gram-price-after-tax2">0</span> تومان</p>
-
-            </div>
-        </div>
-
-        <div class="calculator-column">
-            <h2>محاسبه طلای کهنه</h2>
-
-            <div class="input-group">
-                <label for="price_gram3"> قیمت هر گرم:</label>
-                <input type="number" id="price_gram3" value="68000000">
-                <span>تومان</span>
-            </div>
-
-            <div class="input-group">
-                <label for="weight_input3">وزن (گرم):</label>
-                <input type="number" id="weight_input3" value="1">
-                <span>گرم</span>
-            </div>
-
-            <button onclick="calculateAndSave('column3')">محاسبه و ذخیره</button>
-
-            <div class="results">
-                <p>قیمت کل محاسبه شده: <span id="display-total-price3">0</span> تومان</p>
+                <div class="results mt-4 sm:mt-6 p-3 sm:p-5 bg-results-bg rounded-lg border border-results-border">
+                    <p class="highlighted-result">قیمت نهایی: <span id="display-total-price3" class="font-bold text-gold-dark">0</span> تومان</p>
+                </div>
             </div>
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        // Function to format a number with comma separators for thousands
+        function formatNumber(number) {
+            return new Intl.NumberFormat('en-US').format(number);
+        }
+
+        // Function to unformat a number string by removing commas
+        function unformatNumber(string) {
+            return parseFloat(string.replace(/,/g, ''));
+        }
+
+        // Function to format input value as the user types
+        function formatNumberInput(input) {
+            let value = input.value.replace(/,/g, ''); // Remove existing commas
+            if (!isNaN(value) && value.trim() !== '') {
+                input.value = formatNumber(value);
+            }
+        }
+
+        // Function to get a number value from an input field, defaulting if not found or invalid
+        function getInputValue(id, defaultValue) {
+            const element = document.getElementById(id);
+            // Use the unformatNumber function for inputs that are formatted
+            const value = element.type === 'text' ? unformatNumber(element.value) : parseFloat(element.value);
+
+            if (isNaN(value) || element.value.trim() === '') {
+                return defaultValue;
+            }
+            return value;
+        }
+
+        // Function to set a number value to an input field and localStorage
+        function setInputValueAndLocalStorage(id, value) {
+            const element = document.getElementById(id);
+            // Format the value before setting it to the input field if it's a text type
+            if (element.type === 'text') {
+                element.value = formatNumber(value);
+            } else {
+                element.value = value;
+            }
+            localStorage.setItem(id, value);
+        }
+        
+        /**
+         * Fetches the current gold price from a reliable API and updates the input fields.
+         */
+        async function fetchGoldPrice() {
+            try {
+                // Fetch data from the https://www.tala.ir/ajax/price
+                const response = await fetch('https://www.tala.ir/ajax/price');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                
+                // Extract the gold price from the JSON data, removing commas and converting to number
+                // Path is data.gold.gold_18k.v
+                // The 'v' value is a string with commas, e.g., "7,342,600"
+                const goldPriceString = data.gold.gold_18k.v;
+                const goldPriceToman = unformatNumber(goldPriceString); // Use unformatNumber to remove commas
+                
+                // Update the price_gram input fields in all three columns
+                // Only update if the field is not currently focused by the user
+                if (document.activeElement.id !== 'price_gram1') {
+                    document.getElementById('price_gram1').value = formatNumber(goldPriceToman);
+                }
+                if (document.activeElement.id !== 'price_gram2') {
+                    document.getElementById('price_gram2').value = formatNumber(goldPriceToman);
+                }
+                if (document.activeElement.id !== 'price_gram3') {
+                    document.getElementById('price_gram3').value = formatNumber(goldPriceToman);
+                }
+                
+                console.log(`Gold price updated from tala.ir: ${goldPriceToman} Toman per gram`);
+                
+                // Recalculate based on the new price
+                const activeTab = document.querySelector('.tab-content.active');
+                if (activeTab) {
+                    const columnId = activeTab.id.replace('tab-', 'column');
+                    calculateAndSave(columnId);
+                }
+
+            } catch (error) {
+                console.error("Error fetching gold price:", error);
+                // Optionally, display an error message to the user
+                //alert("امکان دریافت قیمت لحظه‌ای طلا از tala.ir وجود ندارد. لطفا صفحه را مجددا بارگذاری کنید یا قیمت را به صورت دستی وارد نمایید. (شاید مشکل شبکه یا محدودیت دسترسی باشد)");
+            }
+        }
+
+        // Function to show the selected tab and hide others
+        function showTab(tabId) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.add('hidden');
+                content.classList.remove('active');
+            });
+
+            // Deactivate all tab buttons
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('active');
+            });
+
+            // Show the selected tab content and activate its button
+            document.getElementById(tabId).classList.remove('hidden');
+            document.getElementById(tabId).classList.add('active');
+            // FIX: Correctly get the ID of the button based on the tabId
+            document.getElementById(tabId.replace('tab-column', 'btn-tab')).classList.add('active'); 
+        }
+
+        // Function to perform the calculation and update the display for a specific column
+        function calculateAndSave(columnId) {
+            if (columnId === 'column1') {
+                // --- Column 1 Calculation: Weight vs Price, Profit, Wage (VAT) ---
+                let profit = getInputValue('profit1', 5);
+                let wage = getInputValue('wage1', 5);
+                let VAT_rate = getInputValue('VAT1', 10);
+                let price_gram = getInputValue('price_gram1', 6800000);
+                let price_whole = getInputValue('price_whole1', 68000000); // Corrected default value to be consistent with placeholder
+
+                setInputValueAndLocalStorage('profit1', profit);
+                setInputValueAndLocalStorage('wage1', wage);
+                setInputValueAndLocalStorage('VAT1', VAT_rate);
+                setInputValueAndLocalStorage('price_gram1', price_gram); // Now saving to local storage
+                setInputValueAndLocalStorage('price_whole1', price_whole);
+
+                let labor_cost_per_gram = 0.01 * wage * price_gram;
+                let profit_markup_per_gram = (price_gram + labor_cost_per_gram) * profit / 100;
+                let tax_price_per_gram = (labor_cost_per_gram + profit_markup_per_gram) * VAT_rate / 100 ;
+                let total_cost_per_gram_vat = price_gram + labor_cost_per_gram + profit_markup_per_gram + tax_price_per_gram;
+
+                let calculated_weight = 0;
+                if (total_cost_per_gram_vat !== 0) {
+                    calculated_weight = price_whole / total_cost_per_gram_vat;
+                } else {
+                    console.warn("total_cost_per_gram_vat is zero, cannot calculate weight for column 1.");
+                }
+
+                let calculated_tax_amount = tax_price_per_gram * calculated_weight;
+                let price_before_calculated_tax = total_cost_per_gram_vat * calculated_weight - calculated_tax_amount;
+
+                document.getElementById('display-weight1').textContent = calculated_weight.toLocaleString('fa-IR', { minimumFractionDigits: 2, maximumFractionDigits: 3 });
+                document.getElementById('display-tax1').textContent = calculated_tax_amount.toLocaleString('fa-IR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+                document.getElementById('display-price-before-tax1').textContent = price_before_calculated_tax.toLocaleString('fa-IR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+
+            } else if (columnId === 'column2') {
+                // --- Column 2 Calculation: Price vs Weight, Profit, Wage, VAT (Original logic) ---
+                let profit = getInputValue('profit2', 7);
+                let wage = getInputValue('wage2', 20);
+                let VAT_rate = getInputValue('VAT2', 10);
+                let price_gram = getInputValue('price_gram2', 6800000); // Corrected default value
+                let weight2 = getInputValue('weight2', 0);
+
+                setInputValueAndLocalStorage('profit2', profit);
+                setInputValueAndLocalStorage('wage2', wage);
+                setInputValueAndLocalStorage('VAT2', VAT_rate);
+                setInputValueAndLocalStorage('price_gram2', price_gram); // Now saving to local storage
+                setInputValueAndLocalStorage('weight2', weight2);
+
+                let labor_cost_per_gram = 0.01 * wage * price_gram;
+                let profit_markup_per_gram = (price_gram + labor_cost_per_gram) * profit / 100;
+                let base_price_per_gram_before_vat = price_gram + labor_cost_per_gram + profit_markup_per_gram;
+                let tax_price_per_gram = (labor_cost_per_gram + profit_markup_per_gram) * VAT_rate / 100;
+                let total_price_per_gram_with_vat = base_price_per_gram_before_vat + tax_price_per_gram;
+                
+                let calculated_tax_amount = tax_price_per_gram * weight2;
+                let price_after_calculated_tax = total_price_per_gram_with_vat * weight2;
+                let price_before_calculated_tax = base_price_per_gram_before_vat * weight2;
+
+                document.getElementById('display-weight2').textContent = price_before_calculated_tax.toLocaleString('fa-IR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+                document.getElementById('display-tax2').textContent = calculated_tax_amount.toLocaleString('fa-IR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+                document.getElementById('display-price-after-tax2').textContent = price_after_calculated_tax.toLocaleString('fa-IR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+                document.getElementById('display-gram-price-after-tax2').textContent = total_price_per_gram_with_vat.toLocaleString('fa-IR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+
+            } else if (columnId === 'column3') {
+                // --- Column 3 Calculation: Price only vs Weight ---
+                let price_gram = getInputValue('price_gram3', 6800000); // Corrected default value
+                let weight = getInputValue('weight_input3', 1);
+
+                setInputValueAndLocalStorage('price_gram3', price_gram); // Now saving to local storage
+                setInputValueAndLocalStorage('weight_input3', weight);
+
+                // Calculation for used gold (old gold)
+                // Assuming a purity ratio for old gold (e.g., 735/750 or 0.98)
+                let total_price = price_gram * weight * 735 / 750;
+
+                document.getElementById('display-total-price3').textContent = total_price.toLocaleString('fa-IR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+            }
+        }
+
+        // Function to load values from localStorage on page load
+        function loadValuesFromLocalStorage() {
+            // Include price_gram fields in the list of inputs to load from localStorage
+            const inputs = ['price_whole1', 'wage1', 'profit1', 'VAT1', 'price_gram1', 'weight2', 'wage2', 'profit2', 'VAT2', 'price_gram2', 'weight_input3', 'price_gram3'];
+            inputs.forEach(id => {
+                const savedValue = localStorage.getItem(id);
+                if (savedValue !== null) {
+                    const element = document.getElementById(id);
+                    if (element) {
+                        if (element.type === 'text') {
+                            element.value = formatNumber(parseFloat(savedValue));
+                        } else {
+                            element.value = savedValue;
+                        }
+                    }
+                }
+            });
+        }
+
+        // Load values and perform initial calculations for the active tab when the script loads
+        document.addEventListener('DOMContentLoaded', () => {
+            loadValuesFromLocalStorage();
+            // Fetch gold price on load and then every 60 seconds
+            fetchGoldPrice();
+            setInterval(fetchGoldPrice, 60000); // Update every 60 seconds
+            // Show the first tab by default
+            showTab('tab-column1');
+        });
+    </script>
 </body>
 </html>
