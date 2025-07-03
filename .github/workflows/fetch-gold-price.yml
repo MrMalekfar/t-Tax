@@ -2,12 +2,14 @@ name: Fetch Gold Price
 
 on:
   schedule:
-    - cron: '* * * * *' # Runs approximately every minute (closest to every 60 seconds)
+    - cron: '* * * * *' # Runs approximately every minute
   workflow_dispatch: # Allows manual trigger
 
 jobs:
   fetch-price:
     runs-on: ubuntu-latest
+    permissions: # Ensure write permissions are set
+      contents: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -21,10 +23,12 @@ jobs:
         run: pip install requests
 
       - name: Fetch and save gold price
-        run: python fetch_price.py
+        run: python fetch_price.py # This is already running from the repo root
 
       - name: Commit and push if changes
+        # IMPORTANT: Add 'cd ${{ github.workspace }}' to explicitly move to the repo root
         run: |
+          cd ${{ github.workspace }}
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           git add data/gold-price.json
