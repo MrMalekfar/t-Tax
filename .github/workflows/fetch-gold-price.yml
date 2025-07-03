@@ -8,8 +8,8 @@ on:
 jobs:
   fetch-price:
     runs-on: ubuntu-latest
-    permissions: # Ensure write permissions are set
-      contents: write
+    permissions:
+      contents: write # <--- ADD THIS LINE (or ensure it's set)
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -23,10 +23,9 @@ jobs:
         run: pip install requests
 
       - name: Fetch and save gold price
-        run: python fetch_price.py # This is already running from the repo root
+        run: python fetch_price.py
 
       - name: Commit and push if changes
-        # IMPORTANT: Add 'cd ${{ github.workspace }}' to explicitly move to the repo root
         run: |
           cd ${{ github.workspace }}
           git config --global user.name 'github-actions[bot]'
