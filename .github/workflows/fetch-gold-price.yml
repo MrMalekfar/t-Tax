@@ -2,7 +2,7 @@ name: Fetch Gold Price
 
 on:
   schedule:
-    - cron: '0 * * * *' # Runs every hour
+    - cron: '* * * * *' # Runs approximately every minute (closest to every 60 seconds)
   workflow_dispatch: # Allows manual trigger
 
 jobs:
