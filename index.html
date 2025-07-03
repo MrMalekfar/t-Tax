@@ -70,7 +70,8 @@
 
         /* Style for the vertical tabs */
         .tab-button {
-            @apply flex items-center p-3 sm:p-4 my-1 sm:my-2 rounded-r-xl cursor-pointer transition-all duration-300 transform border-l-4 border-transparent; /* Adjusted padding for mobile */
+            /* در حالت RTL، برای نمایش در سمت راست، rounded-l-xl و border-r-4 استفاده می‌شود */
+            @apply flex items-center p-3 sm:p-4 my-1 sm:my-2 rounded-l-xl cursor-pointer transition-all duration-300 transform border-r-4 border-transparent;
             font-weight: 600;
             background-color: var(--color-card-light-bg);
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
@@ -80,7 +81,7 @@
         /* Mobile-specific styles for tab buttons */
         @media (max-width: 767px) { /* For screens smaller than md */
             .tab-button {
-                @apply rounded-xl border-t-4 border-l-0 border-transparent; /* Rounded on all sides, border on top */
+                @apply rounded-xl border-t-4 border-r-0 border-transparent; /* Rounded on all sides, border on top */
                 flex-direction: row-reverse; /* Icons on the right for horizontal tabs */
                 justify-content: center;
                 padding: 10px; /* Adjust padding for horizontal layout */
@@ -103,7 +104,8 @@
         }
 
         .tab-button:hover {
-            @apply transform translate-x-1;
+            /* برای هاور، تب به سمت چپ حرکت کند (از راست به چپ) */
+            @apply transform -translate-x-1; 
             background-color: #fcfcfc;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
@@ -116,7 +118,8 @@
         .tab-button.active {
             @apply border-gold-dark;
             background-color: var(--color-results-bg); /* Use light gold background for active state */
-            box-shadow: -4px 0 20px rgba(255, 193, 7, 0.4);
+            /* سایه به سمت راست بیفتد */
+            box-shadow: 4px 0 20px rgba(255, 193, 7, 0.4); 
         }
 
         /* PERMANENT GOLD COLOR FOR ACTIVE TAB'S CONTENT */
@@ -141,7 +144,7 @@
         .tab-button-content {
             flex-grow: 1;
             text-align: right;
-            padding-right: 0.5rem; /* Adjusted padding */
+            padding-left: 0.5rem; /* Changed to padding-left */
             font-size: 0.9rem; /* Adjusted font size */
         }
 
@@ -193,7 +196,7 @@
 </head>
 <body class="antialiased">
 
-    <div class="main-app-container flex flex-col md:flex-row-reverse md:justify-center gap-4 md:gap-10 max-w-7xl mx-auto w-full p-4 md:p-8 rounded-3xl shadow-[0_15px_60px_rgba(0,0,0,0.1)] bg-card-light-bg border border-gold-dark/20 transition-all duration-500">
+    <div class="main-app-container flex flex-col md:flex-row md:justify-center gap-4 md:gap-10 max-w-7xl mx-auto w-full p-4 md:p-8 rounded-3xl shadow-[0_15px_60px_rgba(0,0,0,0.1)] bg-card-light-bg border border-gold-dark/20 transition-all duration-500">
         
         <div class="w-full md:w-1/4 flex flex-col justify-start items-stretch min-w-[unset] md:min-w-[200px]">
             <h2 class="text-xl md:text-2xl font-bold mb-4 md:mb-8 text-gold-dark border-b-2 border-gold-dark pb-2 md:pb-3 text-center">
@@ -215,7 +218,8 @@
             </div>
         </div>
 
-        <div class="w-full md:w-3/4 relative mt-4 md:mt-0"> <div id="tab-column1" class="tab-content active p-2 sm:p-4">
+        <div class="w-full md:w-3/4 relative mt-4 md:mt-0"> 
+            <div id="tab-column1" class="tab-content active p-2 sm:p-4">
                 <h2 class="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-gold-dark border-b border-gold-dark pb-2 md:pb-3">
                     محاسبه وزن طلا (بر اساس قیمت هدف)
                 </h2>
@@ -270,7 +274,7 @@
                 </button>
 
                 <div class="results mt-4 sm:mt-6 p-3 sm:p-5 bg-results-bg rounded-lg border border-results-border">
-                    <p class="highlighted-result">وزن محاسبه شده: <span id="display-weight1" class="font-bold text-gold-dark">0</span> گرم</p>                    <p>مالیات بر ارزش افزوده : <span id="display-tax1" class="font-extrabold text-gold-dark">0</span> تومان</p>
+                    <p class="highlighted-result">وزن محاسبه شده: <span id="display-weight1" class="font-bold text-gold-dark">0</span> گرم</p>                        <p>مالیات بر ارزش افزوده : <span id="display-tax1" class="font-extrabold text-gold-dark">0</span> تومان</p>
                     <p>قیمت قبل از محاسبه مالیات : <span id="display-price-before-tax1" class="font-extrabold text-gold-dark">0</span> تومان</p>
                 </div>
             </div>
