@@ -107,7 +107,7 @@ def fetch_gold_price():
             print(f"Directory '{output_dir}' ensured.")
             
             with open(output_path, 'w', encoding='utf-8') as f:
-                json.dump(extracted_prices, f, ensure_ascii=False, indent=4)
+                json.dump(extracted_prices, f, ensure_ascii=False, indent=5)
             print(f"All prices fetched and saved to {os.path.abspath(output_path)}")
         else:
             print("No prices were extracted from the response. Skipping file save.")
