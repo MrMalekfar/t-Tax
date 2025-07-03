@@ -13,43 +13,81 @@ def fetch_gold_price():
     
     try:
         response = requests.get(url, headers=headers, timeout=10)
-        response.raise_for_status()
+        response.raise_for_status() # Raise an exception for HTTP errors
         
         print(f"Successfully fetched data. Status Code: {response.status_code}")
-        print(f"Response content (first 500 chars): {response.text[:500]}...")
+        # print(f"Response content (first 500 chars): {response.text[:500]}...") # Keep commented unless needed for deep debug
         
         data = response.json()
-        print(f"Parsed JSON data successfully. Top-level keys: {list(data.keys())}") # DEBUG: Show top-level keys
+        print(f"Parsed JSON data successfully. Top-level keys: {list(data.keys())}")
 
-        # Debugging the path step-by-step
-        gold_data = data.get('gold')
-        if gold_data is None:
-            print("DEBUG: 'gold' key not found in response.")
-            print(f"Full JSON data received: {json.dumps(data, indent=2)}") # Essential if 'gold' is missing
-            gold_18k_price_string = None # Ensure it's None to trigger the else block
-        else:
-            print(f"DEBUG: 'gold' key found. Its keys: {list(gold_data.keys())}") # DEBUG: Show keys under 'gold'
-            gold_18k_section = gold_data.get('gold_18k')
-            if gold_18k_section is None:
-                print("DEBUG: 'gold_18k' key not found under 'gold'.")
-                gold_18k_price_string = None
-            else:
-                print(f"DEBUG: 'gold_18k' key found. Its keys: {list(gold_18k_section.keys())}") # DEBUG: Show keys under 'gold_18k'
-                gold_18k_price_string = gold_18k_section.get('v')
-                if gold_18k_price_string is None:
-                    print("DEBUG: 'v' key not found under 'gold_18k'.")
-                else:
-                    print(f"DEBUG: Successfully found 'v' key with value: {gold_18k_price_string}")
+        # Initialize a dictionary to store all extracted prices
+        extracted_prices = {}
 
-
+        # --- Extract 18k Gold Price ---
+        gold_18k_price_string = data.get('gold', {}).get('gold_18k', {}).get('v')
         if gold_18k_price_string:
             gold_18k_price = float(gold_18k_price_string.replace(',', ''))
+            extracted_prices["gold_18k_toman"] = gold_18k_price
+            print(f"DEBUG: Successfully found 18k Gold 'v' key with value: {gold_18k_price_string}")
+        else:
+            print("WARNING: Could not find 18k gold price.")
+            # print(f"Full 'gold' section: {json.dumps(data.get('gold'), indent=2)}") # Uncomment for deeper debug if this fails
+
+        # --- Extract Dollar Price ---
+        dollar_price_string = data.get('arz', {}).get('arz_dolar', {}).get('v')
+        if dollar_price_string and dollar_price_string != "0": # Some entries are '0' when market is closed or no valid price
+            dollar_price = float(dollar_price_string.replace(',', ''))
+            extracted_prices["dollar_toman"] = dollar_price
+            print(f"DEBUG: Successfully found Dollar 'v' key with value: {dollar_price_string}")
+        else:
+            print("WARNING: Could not find Dollar price or it was zero.")
+            # print(f"Full 'arz_dolar' section: {json.dumps(data.get('arz', {}).get('arz_dolar'), indent=2)}") # Uncomment for deep debug
+
+        # --- Extract Sekke Jadid (Full Coin) Price ---
+        sekke_jad_price_string = data.get('sekke', {}).get('sekke-jad', {}).get('v')
+        if sekke_jad_price_string and sekke_jad_price_string != "0":
+            sekke_jad_price = float(sekke_jad_price_string.replace(',', ''))
+            extracted_prices["sekke_jadid_toman"] = sekke_jad_price
+            print(f"DEBUG: Successfully found Sekke Jadid 'v' key with value: {sekke_jad_price_string}")
+        else:
+            print("WARNING: Could not find Sekke Jadid price or it was zero.")
+
+        # --- Extract Sekke Nim (Half Coin) Price ---
+        sekke_nim_price_string = data.get('sekke', {}).get('sekke-nim', {}).get('v')
+        if sekke_nim_price_string and sekke_nim_price_string != "0":
+            sekke_nim_price = float(sekke_nim_price_string.replace(',', ''))
+            extracted_prices["sekke_nim_toman"] = sekke_nim_price
+            print(f"DEBUG: Successfully found Sekke Nim 'v' key with value: {sekke_nim_price_string}")
+        else:
+            print("WARNING: Could not find Sekke Nim price or it was zero.")
+
+        # --- Extract Sekke Rob (Quarter Coin) Price ---
+        sekke_rob_price_string = data.get('sekke', {}).get('sekke-rob', {}).get('v')
+        if sekke_rob_price_string and sekke_rob_price_string != "0":
+            sekke_rob_price = float(sekke_rob_price_string.replace(',', ''))
+            extracted_prices["sekke_rob_toman"] = sekke_rob_price
+            print(f"DEBUG: Successfully found Sekke Rob 'v' key with value: {sekke_rob_price_string}")
+        else:
+            print("WARNING: Could not find Sekke Rob price or it was zero.")
+
+        # --- Extract Gold Mesghal (Mesghal Gold) Price ---
+        gold_mesghal_price_string = data.get('gold', {}).get('gold_mesghal_usd', {}).get('v')
+        if gold_mesghal_price_string and gold_mesghal_price_string != "0":
+            gold_mesghal_price = float(gold_mesghal_price_string.replace(',', ''))
+            extracted_prices["gold_mesghal_toman"] = gold_mesghal_price
+            print(f"DEBUG: Successfully found Gold Mesghal 'v' key with value: {gold_mesghal_price_string}")
+        else:
+            print("WARNING: Could not find Gold Mesghal price or it was zero.")
+            # print(f"Full 'gold_mesghal_usd' section: {json.dumps(data.get('gold', {}).get('gold_mesghal_usd'), indent=2)}") # Uncomment for deep debug
+
+
+        # Check if any prices were extracted
+        if extracted_prices:
+            # Add timestamp to the collected prices
+            extracted_prices["timestamp"] = datetime.now().isoformat()
             
-            price_data = {
-                "gold_18k_toman": gold_18k_price,
-                "timestamp": datetime.now().isoformat()
-            }
-            
+            # Define the path for the JSON file
             output_dir = "data"
             output_path = os.path.join(output_dir, "gold-price.json")
             
@@ -58,22 +96,20 @@ def fetch_gold_price():
             print(f"Directory '{output_dir}' ensured.")
             
             with open(output_path, 'w', encoding='utf-8') as f:
-                json.dump(price_data, f, ensure_ascii=False, indent=4)
-            print(f"Gold price fetched and saved to {os.path.abspath(output_path)}")
+                json.dump(extracted_prices, f, ensure_ascii=False, indent=4)
+            print(f"All prices fetched and saved to {os.path.abspath(output_path)}")
         else:
-            # This block will now only be reached if gold_18k_price_string is actually None
-            print("Could not find 18k gold price in the response. Check debug messages above for details.")
-            # Full JSON data is printed above if 'gold' key is missing.
-            # If 'gold' is present but 'gold_18k' or 'v' are missing, the specific debug message will tell us.
+            print("No prices were extracted from the response. Skipping file save.")
+            print(f"Full JSON data received: {json.dumps(data, indent=2)}") # Print full JSON if nothing was extracted
             
     except requests.exceptions.Timeout:
         print("Error: Request timed out.")
     except requests.exceptions.RequestException as e:
-        print(f"Error fetching gold price (network/HTTP issue): {e}")
+        print(f"Error fetching data (network/HTTP issue): {e}")
     except json.JSONDecodeError as e:
         print(f"Error decoding JSON response: {e}. Raw response (first 500 chars): {response.text[:500]}...")
     except Exception as e:
-        print(f"An unexpected error occurred during price processing: {e}")
+        print(f"An unexpected error occurred: {e}")
 
 if __name__ == "__main__":
     fetch_gold_price()
