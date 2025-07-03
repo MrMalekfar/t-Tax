@@ -85,7 +85,7 @@ def fetch_gold_price():
         gold_ounce_price_string = data.get('gold', {}).get('gold_ounce', {}).get('v')
         if gold_ounce_price_string and gold_ounce_price_string != "0":
             gold_ounce_price = float(gold_ounce_price_string.replace(',', ''))
-            extracted_prices["gold_ounce_toman"] = gold_ounce_price
+            extracted_prices["gold_ounce_Dollar"] = gold_ounce_price
             print(f"DEBUG: Successfully found Gold Ounce 'v' key with value: {gold_ounce_price_string}")
         else:
             print("WARNING: Could not find Gold Ounce price or it was zero.")
