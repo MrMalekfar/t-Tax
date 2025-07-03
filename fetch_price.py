@@ -13,7 +13,7 @@ def fetch_gold_price():
         response.raise_for_status()  # Raise an exception for HTTP errors
         data = response.json()
 
-        gold_18k_price_string = data.get('gold', {}).get('gold_18k', {}).get('v')
+        gold_18k_price_string = data.get('gold_18k', {}).get('v')
         
         if gold_18k_price_string:
             gold_18k_price = float(gold_18k_price_string.replace(',', ''))
