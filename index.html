@@ -538,18 +538,70 @@ async function fetchGoldPrice() {
         if (displayOuncePrice && data.gold_ounce_Dollar !== undefined) {
             displayOuncePrice.textContent = formatNumber(data.gold_ounce_Dollar);
         }
-                // --- NEW: Display last updated time ---
+ 
+                // --- Display last updated time in Persian calendar and explicitly adjusted for Tehran time ---
         const displayLastUpdated = document.getElementById('display-last-updated');
-        if (displayLastUpdated && data.last_updated !== undefined) {
-            // Assuming last_updated is in a format like "YYYY-MM-DD HH:MM:SS"
-            const dateOptions = { year: 'numeric', month: 'long', day: 'numeric' };
-            const timeOptions = { hour: '2-digit', minute: '2-digit' };
-            const updatedDate = new Date(data.last_updated);
-            const formattedDate = updatedDate.toLocaleDateString('fa-IR', dateOptions);
-            const formattedTime = updatedDate.toLocaleTimeString('fa-IR', timeOptions);
-            displayLastUpdated.textContent = `${formattedDate} - ${formattedTime}`;
-        }
+        if (displayLastUpdated && data.timestamp !== undefined) {
+            // Create a Date object from the ISO string.
+            // If the timestamp from the server is always UTC, use new Date(data.timestamp + 'Z') for explicit UTC.
+            // If it's already in a specific local time, new Date(data.timestamp) is fine.
+            // Assuming your `timestamp` is a UTC time from the server:
+            const serverDate = new Date(data.timestamp + 'Z'); // Treat the timestamp as UTC
 
+            // Tehran time offset is UTC+3:30 (standard time).
+            // During daylight saving, it's UTC+4:30.
+            // To be precise, we should check if DST is active for that specific date in Tehran.
+            // However, a simpler, consistent approach if the server provides UTC is:
+            // Calculate the difference in minutes between UTC and Tehran time.
+            // Tehran is generally +210 minutes (3.5 hours) from UTC in standard time.
+            // Or +270 minutes (4.5 hours) during DST.
+            // The `Intl.DateTimeFormat` with `timeZone` option is actually the correct way to handle DST.
+            // Let's ensure the Date object is correctly formed and then try `timeZone` again.
+
+            // The best way to get a Date object representing a specific timezone from an ISO string
+            // is to use `toLocaleString` with the desired timezone and then parse that string,
+            // or simply trust `Intl.DateTimeFormat` with a correct Date object.
+            // Let's re-verify the `Intl.DateTimeFormat` approach as it's the standard for this.
+
+            // If the `timestamp` is already representing Tehran local time, then just parse it:
+            // const updatedDate = new Date(data.timestamp);
+
+            // If the `timestamp` is UTC (which `YYYY-MM-DDTHH:MM:SS` often implies if no Z or offset is present),
+            // then `new Date(data.timestamp)` parses it as local time, which is incorrect.
+            // `new Date(data.timestamp + 'Z')` explicitly makes it UTC.
+            const updatedDateInUTC = new Date(data.timestamp); // Parses the string. If no timezone info, it's parsed as local.
+                                                              // Adding 'Z' at the end of the string, if your source is UTC,
+                                                              // would make it `new Date(data.timestamp + 'Z')`.
+
+            // Let's ensure we are always working with the correct UTC time,
+            // then let the `timeZone` option do its job.
+            // If the timestamp e.g., "2025-07-08T07:58:31.698179" means "07:58 AM UTC",
+            // then `new Date("2025-07-08T07:58:31.698179Z")` should be used.
+            // If it means "07:58 AM in the server's local time (and the server is Tehran time)",
+            // then `new Date("2025-07-08T07:58:31.698179")` is correct.
+
+            // For robustness, let's assume the timestamp from your JSON is a **UTC** timestamp.
+            // This is standard for API timestamps without explicit offsets.
+            const dateFromUTC = new Date(data.timestamp + 'Z');
+
+            const persianDateTimeOptions = {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false, // 24-hour format
+                timeZone: 'Asia/Tehran', // Specify Tehran timezone
+                calendar: 'persian', // Request Persian calendar
+                numberingSystem: 'arab' // Ensures Persian numerals (۰۱۲۳۴۵۶۷۸۹)
+            };
+
+            // Use the Date object that is explicitly treated as UTC.
+            const formatter = new Intl.DateTimeFormat('fa-IR', persianDateTimeOptions);
+            const formattedDateTime = formatter.format(dateFromUTC);
+
+            displayLastUpdated.textContent = formattedDateTime;
+        }
         // Recalculate based on the new price (still uses price_gram fields)
         const activeTab = document.querySelector('.tab-content.active');
         if (activeTab) {
