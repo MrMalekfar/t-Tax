@@ -250,6 +250,7 @@
         <span>سکه: <strong id="display-sekke-jadid-price">--</strong> تومان</span>
         <span>نیم سکه: <strong id="display-sekke-nim-price">--</strong> تومان</span>
         <span>ربع سکه: <strong id="display-sekke-rob-price">--</strong> تومان</span>
+        <span class="w-full text-center mt-2 md:mt-0">بروزرسانی: <strong id="display-last-updated">--</strong></span>
     </div>
 
     <div class="main-app-container flex flex-col md:flex-row md:justify-center gap-4 md:gap-10 max-w-7xl mx-auto w-full p-4 md:p-8 rounded-3xl shadow-[0_15px_60px_rgba(0,0,0,0.1)] bg-card-light-bg border border-gold-dark/20 transition-all duration-500">
@@ -507,7 +508,7 @@ async function fetchGoldPrice() {
             document.getElementById('price_gram3').value = formatNumber(goldPriceToman);
         }
 
-        // --- NEW: Display other prices in the fixed navbar ---
+        // - Display other prices in the fixed navbar ---
         const displayDollarPrice = document.getElementById('display-dollar-price');
         if (displayDollarPrice && data.dollar_toman !== undefined) {
             displayDollarPrice.textContent = formatNumber(data.dollar_toman);
@@ -536,7 +537,18 @@ async function fetchGoldPrice() {
         const displayOuncePrice = document.getElementById('display-ounce-price');
         if (displayOuncePrice && data.gold_ounce_Dollar !== undefined) {
             displayOuncePrice.textContent = formatNumber(data.gold_ounce_Dollar);
-        }        
+        }
+                // --- NEW: Display last updated time ---
+        const displayLastUpdated = document.getElementById('display-last-updated');
+        if (displayLastUpdated && data.last_updated !== undefined) {
+            // Assuming last_updated is in a format like "YYYY-MM-DD HH:MM:SS"
+            const dateOptions = { year: 'numeric', month: 'long', day: 'numeric' };
+            const timeOptions = { hour: '2-digit', minute: '2-digit' };
+            const updatedDate = new Date(data.last_updated);
+            const formattedDate = updatedDate.toLocaleDateString('fa-IR', dateOptions);
+            const formattedTime = updatedDate.toLocaleTimeString('fa-IR', timeOptions);
+            displayLastUpdated.textContent = `${formattedDate} - ${formattedTime}`;
+        }
 
         // Recalculate based on the new price (still uses price_gram fields)
         const activeTab = document.querySelector('.tab-content.active');
