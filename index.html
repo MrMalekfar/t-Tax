@@ -433,324 +433,305 @@
     </div>
 
     <script>
-        // Function to format a number with comma separators for thousands
-        function formatNumber(number) {
-            return new Intl.NumberFormat('en-US').format(number);
-        }
+    // Function to format a number with comma separators for thousands
+    function formatNumber(number) {
+        return new Intl.NumberFormat('en-US').format(number);
+    }
 
-        // Function to unformat a number string by removing commas
-        function unformatNumber(string) {
-            return parseFloat(string.replace(/,/g, ''));
-        }
+    // Function to unformat a number string by removing commas
+    function unformatNumber(string) {
+        return parseFloat(string.replace(/,/g, ''));
+    }
 
-        // Function to format input value as the user types
-        function formatNumberInput(input) {
-            let value = input.value.replace(/,/g, ''); // Remove existing commas
-            if (!isNaN(value) && value.trim() !== '') {
-                input.value = formatNumber(value);
+    // Function to format input value as the user types
+    function formatNumberInput(input) {
+        let value = input.value.replace(/,/g, ''); // Remove existing commas
+        if (!isNaN(value) && value.trim() !== '') {
+            input.value = formatNumber(value);
+        }
+    }
+
+    // Function to get a number value from an input field, defaulting if not found or invalid
+    function getInputValue(id, defaultValue) {
+        const element = document.getElementById(id);
+        // Use the unformatNumber function for inputs that are formatted
+        const value = element.type === 'text' ? unformatNumber(element.value) : parseFloat(element.value);
+
+        if (isNaN(value) || element.value.trim() === '') {
+            return defaultValue;
+        }
+        return value;
+    }
+
+    // Function to set a number value to an input field and localStorage
+    function setInputValueAndLocalStorage(id, value) {
+        const element = document.getElementById(id);
+        // Format the value before setting it to the input field if it's a text type
+        if (element.type === 'text') {
+            element.value = formatNumber(value);
+        } else {
+            element.value = value;
+        }
+        localStorage.setItem(id, value);
+    }
+
+    /**
+     * Fetches the current gold and currency prices from your GitHub-hosted JSON file
+     * and GoldAPI.io, then updates the input fields and display.
+     */
+    async function fetchGoldPrice() {
+        // --- Fetch from GitHub for local prices (Mesghal, Sekke, Dollar, etc.) ---
+        try {
+            const repoOwner = 'MrMalekfar'; // Your GitHub username
+            const repoName = 't-Tax'; // Your repository name
+            const branch = 'main'; // The branch where the data/gold-price.json file will be
+            const githubJsonUrl = `https://raw.githubusercontent.com/${repoOwner}/${repoName}/${branch}/data/gold-price.json?${new Date().getTime()}`; // Added cache-buster
+
+            console.log(`Fetching local prices from: ${githubJsonUrl}`);
+
+            const response = await fetch(githubJsonUrl);
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status} from GitHub`);
             }
-        }
+            const data = await response.json();
 
-        // Function to get a number value from an input field, defaulting if not found or invalid
-        function getInputValue(id, defaultValue) {
-            const element = document.getElementById(id);
-            // Use the unformatNumber function for inputs that are formatted
-            const value = element.type === 'text' ? unformatNumber(element.value) : parseFloat(element.value);
+            console.log("Successfully fetched and parsed local prices from GitHub:", data);
 
-            if (isNaN(value) || element.value.trim() === '') {
-                return defaultValue;
+            // Update 18k Gold Price (existing logic)
+            const goldPriceToman = data.gold_18k_toman;
+            if (goldPriceToman !== undefined && document.activeElement.id !== 'price_gram1') {
+                document.getElementById('price_gram1').value = formatNumber(goldPriceToman);
             }
-            return value;
-        }
-
-        // Function to set a number value to an input field and localStorage
-        function setInputValueAndLocalStorage(id, value) {
-            const element = document.getElementById(id);
-            // Format the value before setting it to the input field if it's a text type
-            if (element.type === 'text') {
-                element.value = formatNumber(value);
-            } else {
-                element.value = value;
+            if (goldPriceToman !== undefined && document.activeElement.id !== 'price_gram2') {
+                document.getElementById('price_gram2').value = formatNumber(goldPriceToman);
             }
-            localStorage.setItem(id, value);
-        }
-        
-/**
- * Fetches the current gold and currency prices from your GitHub-hosted JSON file and updates the input fields.
- */
-async function fetchGoldPrice() {
-    try {
-        const repoOwner = 'MrMalekfar'; // Your GitHub username
-        const repoName = 't-Tax'; // Your repository name
-        const branch = 'main'; // The branch where the data/gold-price.json file will be
-        const jsonUrl = `https://raw.githubusercontent.com/${repoOwner}/${repoName}/${branch}/data/gold-price.json?${new Date().getTime()}`; // Added cache-buster
+            if (goldPriceToman !== undefined && document.activeElement.id !== 'price_gram3') {
+                document.getElementById('price_gram3').value = formatNumber(goldPriceToman);
+            }
 
-        console.log(`Fetching prices from: ${jsonUrl}`); // Debugging URL
+            // Display other prices in the fixed navbar
+            const displayDollarPrice = document.getElementById('display-dollar-price');
+            if (displayDollarPrice && data.dollar_toman !== undefined) {
+                displayDollarPrice.textContent = formatNumber(data.dollar_toman);
+            }
 
-        const response = await fetch(jsonUrl);
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        
-        console.log("Successfully fetched and parsed prices from GitHub:", data); // Debugging fetched data
+            const displaySekkeJadidPrice = document.getElementById('display-sekke-jadid-price');
+            if (displaySekkeJadidPrice && data.sekke_jadid_toman !== undefined) {
+                displaySekkeJadidPrice.textContent = formatNumber(data.sekke_jadid_toman);
+            }
 
-        // Update 18k Gold Price (existing logic)
-        const goldPriceToman = data.gold_18k_toman;
-        if (goldPriceToman !== undefined && document.activeElement.id !== 'price_gram1') {
-            document.getElementById('price_gram1').value = formatNumber(goldPriceToman);
-        }
-        if (goldPriceToman !== undefined && document.activeElement.id !== 'price_gram2') {
-            document.getElementById('price_gram2').value = formatNumber(goldPriceToman);
-        }
-        if (goldPriceToman !== undefined && document.activeElement.id !== 'price_gram3') {
-            document.getElementById('price_gram3').value = formatNumber(goldPriceToman);
-        }
+            const displaySekkeNimPrice = document.getElementById('display-sekke-nim-price');
+            if (displaySekkeNimPrice && data.sekke_nim_toman !== undefined) {
+                displaySekkeNimPrice.textContent = formatNumber(data.sekke_nim_toman);
+            }
 
-        // - Display other prices in the fixed navbar ---
-        const displayDollarPrice = document.getElementById('display-dollar-price');
-        if (displayDollarPrice && data.dollar_toman !== undefined) {
-            displayDollarPrice.textContent = formatNumber(data.dollar_toman);
-        }
+            const displaySekkeRobPrice = document.getElementById('display-sekke-rob-price');
+            if (displaySekkeRobPrice && data.sekke_rob_toman !== undefined) {
+                displaySekkeRobPrice.textContent = formatNumber(data.sekke_rob_toman);
+            }
 
-        const displaySekkeJadidPrice = document.getElementById('display-sekke-jadid-price');
-        if (displaySekkeJadidPrice && data.sekke_jadid_toman !== undefined) {
-            displaySekkeJadidPrice.textContent = formatNumber(data.sekke_jadid_toman);
-        }
+            const displayMesghalPrice = document.getElementById('display-mesghal-price');
+            if (displayMesghalPrice && data.gold_mesghal_toman !== undefined) {
+                displayMesghalPrice.textContent = formatNumber(data.gold_mesghal_toman);
+            }
 
-        const displaySekkeNimPrice = document.getElementById('display-sekke-nim-price');
-        if (displaySekkeNimPrice && data.sekke_nim_toman !== undefined) {
-            displaySekkeNimPrice.textContent = formatNumber(data.sekke_nim_toman);
-        }
+            // Display last updated time in Persian calendar and explicitly adjusted for Tehran time
+            const displayLastUpdated = document.getElementById('display-last-updated');
+            if (displayLastUpdated && data.timestamp !== undefined) {
+                const dateFromUTC = new Date(data.timestamp + 'Z');
 
-        const displaySekkeRobPrice = document.getElementById('display-sekke-rob-price');
-        if (displaySekkeRobPrice && data.sekke_rob_toman !== undefined) {
-            displaySekkeRobPrice.textContent = formatNumber(data.sekke_rob_toman);
-        }
+                const persianDateTimeOptions = {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false, // 24-hour format
+                    timeZone: 'Asia/Tehran', // Specify Tehran timezone
+                    calendar: 'persian', // Request Persian calendar
+                    numberingSystem: 'arab' // Ensures Persian numerals (۰۱۲۳۴۵۶۷۸۹)
+                };
 
-        const displayMesghalPrice = document.getElementById('display-mesghal-price');
-        if (displayMesghalPrice && data.gold_mesghal_toman !== undefined) {
-            displayMesghalPrice.textContent = formatNumber(data.gold_mesghal_toman);
+                const formatter = new Intl.DateTimeFormat('fa-IR', persianDateTimeOptions);
+                const formattedDateTime = formatter.format(dateFromUTC);
+
+                displayLastUpdated.textContent = formattedDateTime;
+            }
+
+        } catch (error) {
+            console.error("Error fetching local prices from GitHub:", error);
+            // alert("امکان دریافت قیمت لحظه‌ای طلا و ارز وجود ندارد. لطفا صفحه را مجددا بارگذاری کنید یا قیمت‌ها را به صورت دستی وارد نمایید.");
         }
 
-        const displayOuncePrice = document.getElementById('display-ounce-price');
-        if (displayOuncePrice && data.gold_ounce_Dollar !== undefined) {
-            displayOuncePrice.textContent = formatNumber(data.gold_ounce_Dollar);
-        }
- 
-                // --- Display last updated time in Persian calendar and explicitly adjusted for Tehran time ---
-        const displayLastUpdated = document.getElementById('display-last-updated');
-        if (displayLastUpdated && data.timestamp !== undefined) {
-            // Create a Date object from the ISO string.
-            // If the timestamp from the server is always UTC, use new Date(data.timestamp + 'Z') for explicit UTC.
-            // If it's already in a specific local time, new Date(data.timestamp) is fine.
-            // Assuming your `timestamp` is a UTC time from the server:
-            const serverDate = new Date(data.timestamp + 'Z'); // Treat the timestamp as UTC
+        // --- Fetch from GoldAPI.io for Ounce Price ---
+        try {
+            const goldApiUrl = "https://www.goldapi.io/api/XAU/USD";
+            const headers = new Headers();
+            headers.append("x-access-token", "goldapi-1bvs0smcunuk2a-io"); // Your GoldAPI.io key
+            headers.append("Content-Type", "application/json");
 
-            // Tehran time offset is UTC+3:30 (standard time).
-            // During daylight saving, it's UTC+4:30.
-            // To be precise, we should check if DST is active for that specific date in Tehran.
-            // However, a simpler, consistent approach if the server provides UTC is:
-            // Calculate the difference in minutes between UTC and Tehran time.
-            // Tehran is generally +210 minutes (3.5 hours) from UTC in standard time.
-            // Or +270 minutes (4.5 hours) during DST.
-            // The `Intl.DateTimeFormat` with `timeZone` option is actually the correct way to handle DST.
-            // Let's ensure the Date object is correctly formed and then try `timeZone` again.
-
-            // The best way to get a Date object representing a specific timezone from an ISO string
-            // is to use `toLocaleString` with the desired timezone and then parse that string,
-            // or simply trust `Intl.DateTimeFormat` with a correct Date object.
-            // Let's re-verify the `Intl.DateTimeFormat` approach as it's the standard for this.
-
-            // If the `timestamp` is already representing Tehran local time, then just parse it:
-            // const updatedDate = new Date(data.timestamp);
-
-            // If the `timestamp` is UTC (which `YYYY-MM-DDTHH:MM:SS` often implies if no Z or offset is present),
-            // then `new Date(data.timestamp)` parses it as local time, which is incorrect.
-            // `new Date(data.timestamp + 'Z')` explicitly makes it UTC.
-            const updatedDateInUTC = new Date(data.timestamp); // Parses the string. If no timezone info, it's parsed as local.
-                                                              // Adding 'Z' at the end of the string, if your source is UTC,
-                                                              // would make it `new Date(data.timestamp + 'Z')`.
-
-            // Let's ensure we are always working with the correct UTC time,
-            // then let the `timeZone` option do its job.
-            // If the timestamp e.g., "2025-07-08T07:58:31.698179" means "07:58 AM UTC",
-            // then `new Date("2025-07-08T07:58:31.698179Z")` should be used.
-            // If it means "07:58 AM in the server's local time (and the server is Tehran time)",
-            // then `new Date("2025-07-08T07:58:31.698179")` is correct.
-
-            // For robustness, let's assume the timestamp from your JSON is a **UTC** timestamp.
-            // This is standard for API timestamps without explicit offsets.
-            const dateFromUTC = new Date(data.timestamp + 'Z');
-
-            const persianDateTimeOptions = {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: false, // 24-hour format
-                timeZone: 'Asia/Tehran', // Specify Tehran timezone
-                calendar: 'persian', // Request Persian calendar
-                numberingSystem: 'arab' // Ensures Persian numerals (۰۱۲۳۴۵۶۷۸۹)
+            const requestOptions = {
+                method: 'GET',
+                headers: headers,
+                redirect: 'follow'
             };
 
-            // Use the Date object that is explicitly treated as UTC.
-            const formatter = new Intl.DateTimeFormat('fa-IR', persianDateTimeOptions);
-            const formattedDateTime = formatter.format(dateFromUTC);
+            console.log(`Fetching global ounce price from: ${goldApiUrl}`);
+            const goldApiResponse = await fetch(goldApiUrl, requestOptions);
 
-            displayLastUpdated.textContent = formattedDateTime;
+            if (!goldApiResponse.ok) {
+                throw new Error(`HTTP error! status: ${goldApiResponse.status} from GoldAPI.io`);
+            }
+            const goldApiData = await goldApiResponse.json();
+            console.log("Successfully fetched ounce price from GoldAPI.io:", goldApiData);
+
+            const displayOuncePrice = document.getElementById('display-ounce-price');
+            if (displayOuncePrice && goldApiData.price !== undefined) {
+                displayOuncePrice.textContent = formatNumber(goldApiData.price);
+            }
+
+        } catch (error) {
+            console.error("Error fetching ounce price from GoldAPI.io:", error);
+            // Consider a separate alert or message for GoldAPI.io failure if desired
         }
-        // Recalculate based on the new price (still uses price_gram fields)
+
+        // Recalculate based on the new prices (still uses price_gram fields)
         const activeTab = document.querySelector('.tab-content.active');
         if (activeTab) {
             const columnId = activeTab.id.replace('tab-', 'column');
             calculateAndSave(columnId);
         }
-
-    } catch (error) {
-        console.error("Error fetching gold/currency prices from GitHub:", error);
-        //alert("امکان دریافت قیمت لحظه‌ای طلا و ارز وجود ندارد. لطفا صفحه را مجددا بارگذاری کنید یا قیمت‌ها را به صورت دستی وارد نمایید.");
     }
-}
 
-// Ensure the fetchGoldPrice function is called on load and at intervals
-document.addEventListener('DOMContentLoaded', () => {
-    loadValuesFromLocalStorage();
-    fetchGoldPrice(); // Initial fetch
-    setInterval(fetchGoldPrice, 60000); // Fetch every 60 seconds (adjust as needed)
-    showTab('tab-column1');
-});
- 
-        // Function to show the selected tab and hide others
-        function showTab(tabId) {
-            // Hide all tab contents
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.add('hidden');
-                content.classList.remove('active');
-            });
+    // Function to show the selected tab and hide others
+    function showTab(tabId) {
+        // Hide all tab contents
+        document.querySelectorAll('.tab-content').forEach(content => {
+            content.classList.add('hidden');
+            content.classList.remove('active');
+        });
 
-            // Deactivate all tab buttons
-            document.querySelectorAll('.tab-button').forEach(button => {
-                button.classList.remove('active');
-            });
+        // Deactivate all tab buttons
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.classList.remove('active');
+        });
 
-            // Show the selected tab content and activate its button
-            document.getElementById(tabId).classList.remove('hidden');
-            document.getElementById(tabId).classList.add('active');
-            // FIX: Correctly get the ID of the button based on the tabId
-            document.getElementById(tabId.replace('tab-column', 'btn-tab')).classList.add('active'); 
-        }
+        // Show the selected tab content and activate its button
+        document.getElementById(tabId).classList.remove('hidden');
+        document.getElementById(tabId).classList.add('active');
+        // FIX: Correctly get the ID of the button based on the tabId
+        document.getElementById(tabId.replace('tab-column', 'btn-tab')).classList.add('active');
+    }
 
-        // Function to perform the calculation and update the display for a specific column
-        function calculateAndSave(columnId) {
-            if (columnId === 'column1') {
-                // --- Column 1 Calculation: Weight vs Price, Profit, Wage (VAT) ---
-                let profit = getInputValue('profit1', 5);
-                let wage = getInputValue('wage1', 5);
-                let VAT_rate = getInputValue('VAT1', 10);
-                let price_gram = getInputValue('price_gram1', 6800000);
-                let price_whole = getInputValue('price_whole1', 68000000); // Corrected default value to be consistent with placeholder
+    // Function to perform the calculation and update the display for a specific column
+    function calculateAndSave(columnId) {
+        if (columnId === 'column1') {
+            // --- Column 1 Calculation: Weight vs Price, Profit, Wage (VAT) ---
+            let profit = getInputValue('profit1', 5);
+            let wage = getInputValue('wage1', 5);
+            let VAT_rate = getInputValue('VAT1', 10);
+            let price_gram = getInputValue('price_gram1', 6800000);
+            let price_whole = getInputValue('price_whole1', 68000000); // Corrected default value to be consistent with placeholder
 
-                setInputValueAndLocalStorage('profit1', profit);
-                setInputValueAndLocalStorage('wage1', wage);
-                setInputValueAndLocalStorage('VAT1', VAT_rate);
-                setInputValueAndLocalStorage('price_gram1', price_gram); // Now saving to local storage
-                setInputValueAndLocalStorage('price_whole1', price_whole);
+            setInputValueAndLocalStorage('profit1', profit);
+            setInputValueAndLocalStorage('wage1', wage);
+            setInputValueAndLocalStorage('VAT1', VAT_rate);
+            setInputValueAndLocalStorage('price_gram1', price_gram); // Now saving to local storage
+            setInputValueAndLocalStorage('price_whole1', price_whole);
 
-                let labor_cost_per_gram = 0.01 * wage * price_gram;
-                let profit_markup_per_gram = (price_gram + labor_cost_per_gram) * profit / 100;
-                let tax_price_per_gram = (labor_cost_per_gram + profit_markup_per_gram) * VAT_rate / 100 ;
-                let total_cost_per_gram_vat = price_gram + labor_cost_per_gram + profit_markup_per_gram + tax_price_per_gram;
+            let labor_cost_per_gram = 0.01 * wage * price_gram;
+            let profit_markup_per_gram = (price_gram + labor_cost_per_gram) * profit / 100;
+            let tax_price_per_gram = (labor_cost_per_gram + profit_markup_per_gram) * VAT_rate / 100;
+            let total_cost_per_gram_vat = price_gram + labor_cost_per_gram + profit_markup_per_gram + tax_price_per_gram;
 
-                let calculated_weight = 0;
-                if (total_cost_per_gram_vat !== 0) {
-                    calculated_weight = price_whole / total_cost_per_gram_vat;
-                } else {
-                    console.warn("total_cost_per_gram_vat is zero, cannot calculate weight for column 1.");
-                }
-
-                let calculated_tax_amount = tax_price_per_gram * calculated_weight;
-                let price_before_calculated_tax = total_cost_per_gram_vat * calculated_weight - calculated_tax_amount;
-
-                document.getElementById('display-weight1').textContent = calculated_weight.toLocaleString('fa-IR', { minimumFractionDigits: 2, maximumFractionDigits: 3 });
-                document.getElementById('display-tax1').textContent = calculated_tax_amount.toLocaleString('fa-IR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-                document.getElementById('display-price-before-tax1').textContent = price_before_calculated_tax.toLocaleString('fa-IR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-
-            } else if (columnId === 'column2') {
-                // --- Column 2 Calculation: Price vs Weight, Profit, Wage, VAT (Original logic) ---
-                let profit = getInputValue('profit2', 7);
-                let wage = getInputValue('wage2', 20);
-                let VAT_rate = getInputValue('VAT2', 10);
-                let price_gram = getInputValue('price_gram2', 6800000); // Corrected default value
-                let weight2 = getInputValue('weight2', 0);
-
-                setInputValueAndLocalStorage('profit2', profit);
-                setInputValueAndLocalStorage('wage2', wage);
-                setInputValueAndLocalStorage('VAT2', VAT_rate);
-                setInputValueAndLocalStorage('price_gram2', price_gram); // Now saving to local storage
-                setInputValueAndLocalStorage('weight2', weight2);
-
-                let labor_cost_per_gram = 0.01 * wage * price_gram;
-                let profit_markup_per_gram = (price_gram + labor_cost_per_gram) * profit / 100;
-                let base_price_per_gram_before_vat = price_gram + labor_cost_per_gram + profit_markup_per_gram;
-                let tax_price_per_gram = (labor_cost_per_gram + profit_markup_per_gram) * VAT_rate / 100;
-                let total_price_per_gram_with_vat = base_price_per_gram_before_vat + tax_price_per_gram;
-                
-                let calculated_tax_amount = tax_price_per_gram * weight2;
-                let price_after_calculated_tax = total_price_per_gram_with_vat * weight2;
-                let price_before_calculated_tax = base_price_per_gram_before_vat * weight2;
-
-                document.getElementById('display-weight2').textContent = price_before_calculated_tax.toLocaleString('fa-IR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-                document.getElementById('display-tax2').textContent = calculated_tax_amount.toLocaleString('fa-IR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-                document.getElementById('display-price-after-tax2').textContent = price_after_calculated_tax.toLocaleString('fa-IR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-                document.getElementById('display-gram-price-after-tax2').textContent = total_price_per_gram_with_vat.toLocaleString('fa-IR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-
-            } else if (columnId === 'column3') {
-                // --- Column 3 Calculation: Price only vs Weight ---
-                let price_gram = getInputValue('price_gram3', 6800000); // Corrected default value
-                let weight = getInputValue('weight_input3', 1);
-
-                setInputValueAndLocalStorage('price_gram3', price_gram); // Now saving to local storage
-                setInputValueAndLocalStorage('weight_input3', weight);
-
-                // Calculation for used gold (old gold)
-                // Assuming a purity ratio for old gold (e.g., 735/750 or 0.98)
-                let total_price = price_gram * weight * 735 / 750;
-
-                document.getElementById('display-total-price3').textContent = total_price.toLocaleString('fa-IR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+            let calculated_weight = 0;
+            if (total_cost_per_gram_vat !== 0) {
+                calculated_weight = price_whole / total_cost_per_gram_vat;
+            } else {
+                console.warn("total_cost_per_gram_vat is zero, cannot calculate weight for column 1.");
             }
-        }
 
-        // Function to load values from localStorage on page load
-        function loadValuesFromLocalStorage() {
-            // Include price_gram fields in the list of inputs to load from localStorage
-            const inputs = ['price_whole1', 'wage1', 'profit1', 'VAT1', 'price_gram1', 'weight2', 'wage2', 'profit2', 'VAT2', 'price_gram2', 'weight_input3', 'price_gram3'];
-            inputs.forEach(id => {
-                const savedValue = localStorage.getItem(id);
-                if (savedValue !== null) {
-                    const element = document.getElementById(id);
-                    if (element) {
-                        if (element.type === 'text') {
-                            element.value = formatNumber(parseFloat(savedValue));
-                        } else {
-                            element.value = savedValue;
-                        }
+            let calculated_tax_amount = tax_price_per_gram * calculated_weight;
+            let price_before_calculated_tax = total_cost_per_gram_vat * calculated_weight - calculated_tax_amount;
+
+            document.getElementById('display-weight1').textContent = calculated_weight.toLocaleString('fa-IR', { minimumFractionDigits: 2, maximumFractionDigits: 3 });
+            document.getElementById('display-tax1').textContent = calculated_tax_amount.toLocaleString('fa-IR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+            document.getElementById('display-price-before-tax1').textContent = price_before_calculated_tax.toLocaleString('fa-IR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+
+        } else if (columnId === 'column2') {
+            // --- Column 2 Calculation: Price vs Weight, Profit, Wage, VAT (Original logic) ---
+            let profit = getInputValue('profit2', 7);
+            let wage = getInputValue('wage2', 20);
+            let VAT_rate = getInputValue('VAT2', 10);
+            let price_gram = getInputValue('price_gram2', 6800000); // Corrected default value
+            let weight2 = getInputValue('weight2', 0);
+
+            setInputValueAndLocalStorage('profit2', profit);
+            setInputValueAndLocalStorage('wage2', wage);
+            setInputValueAndLocalStorage('VAT2', VAT_rate);
+            setInputValueAndLocalStorage('price_gram2', price_gram); // Now saving to local storage
+            setInputValueAndLocalStorage('weight2', weight2);
+
+            let labor_cost_per_gram = 0.01 * wage * price_gram;
+            let profit_markup_per_gram = (price_gram + labor_cost_per_gram) * profit / 100;
+            let base_price_per_gram_before_vat = price_gram + labor_cost_per_gram + profit_markup_per_gram;
+            let tax_price_per_gram = (labor_cost_per_gram + profit_markup_per_gram) * VAT_rate / 100;
+            let total_price_per_gram_with_vat = base_price_per_gram_before_vat + tax_price_per_gram;
+
+            let calculated_tax_amount = tax_price_per_gram * weight2;
+            let price_after_calculated_tax = total_price_per_gram_with_vat * weight2;
+            let price_before_calculated_tax = base_price_per_gram_before_vat * weight2;
+
+            document.getElementById('display-weight2').textContent = price_before_calculated_tax.toLocaleString('fa-IR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+            document.getElementById('display-tax2').textContent = calculated_tax_amount.toLocaleString('fa-IR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+            document.getElementById('display-price-after-tax2').textContent = price_after_calculated_tax.toLocaleString('fa-IR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+            document.getElementById('display-gram-price-after-tax2').textContent = total_price_per_gram_with_vat.toLocaleString('fa-IR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+
+        } else if (columnId === 'column3') {
+            // --- Column 3 Calculation: Price only vs Weight ---
+            let price_gram = getInputValue('price_gram3', 6800000); // Corrected default value
+            let weight = getInputValue('weight_input3', 1);
+
+            setInputValueAndLocalStorage('price_gram3', price_gram); // Now saving to local storage
+            setInputValueAndLocalStorage('weight_input3', weight);
+
+            // Calculation for used gold (old gold)
+            // Assuming a purity ratio for old gold (e.g., 735/750 or 0.98)
+            let total_price = price_gram * weight * 735 / 750;
+
+            document.getElementById('display-total-price3').textContent = total_price.toLocaleString('fa-IR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+        }
+    }
+
+    // Function to load values from localStorage on page load
+    function loadValuesFromLocalStorage() {
+        // Include price_gram fields in the list of inputs to load from localStorage
+        const inputs = ['price_whole1', 'wage1', 'profit1', 'VAT1', 'price_gram1', 'weight2', 'wage2', 'profit2', 'VAT2', 'price_gram2', 'weight_input3', 'price_gram3'];
+        inputs.forEach(id => {
+            const savedValue = localStorage.getItem(id);
+            if (savedValue !== null) {
+                const element = document.getElementById(id);
+                if (element) {
+                    if (element.type === 'text') {
+                        element.value = formatNumber(parseFloat(savedValue));
+                    } else {
+                        element.value = savedValue;
                     }
                 }
-            });
-        }
-
-        // Load values and perform initial calculations for the active tab when the script loads
-        document.addEventListener('DOMContentLoaded', () => {
-            loadValuesFromLocalStorage();
-            // Fetch gold price on load and then every 60 seconds
-            fetchGoldPrice();
-            setInterval(fetchGoldPrice, 60000); // Update every 60 seconds
-            // Show the first tab by default
-            showTab('tab-column1');
+            }
         });
-    </script>
+    }
+
+    // Load values and perform initial calculations for the active tab when the script loads
+    document.addEventListener('DOMContentLoaded', () => {
+        loadValuesFromLocalStorage();
+        // Fetch gold price on load and then every 60 seconds
+        fetchGoldPrice();
+        setInterval(fetchGoldPrice, 10000); // Update every 60 seconds
+        // Show the first tab by default
+        showTab('tab-column1');
+    });
+</script>
 </body>
 </html>
