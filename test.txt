@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ماشین حساب قیمت طلا و فاکتور</title>
+    <title>Simin.Gold</title>
+    <link rel="icon" type="image/png" href="logo.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
@@ -450,6 +451,7 @@
 
     <div class="navbar-top">
         <span>دلار: <strong id="display-dollar-price">--</strong> تومان</span>
+        <span>گرم: <strong id="display-gold18k-price">--</strong> تومان</span>
         <span>اونس: <strong id="display-ounce-price">--</strong> دلار</span>
         <span>مثقال: <strong id="display-mesghal-price">--</strong> تومان</span>
         <span>سکه: <strong id="display-sekke-jadid-price">--</strong> تومان</span>
@@ -1186,6 +1188,7 @@
                     };
 
                     updateNavbarDisplay('display-dollar-price', data.dollar_toman);
+                    updateNavbarDisplay('display-gold18k-price', data.gold_18k_toman);
                     updateNavbarDisplay('display-sekke-jadid-price', data.sekke_jadid_toman);
                     updateNavbarDisplay('display-sekke-nim-price', data.sekke_nim_toman);
                     updateNavbarDisplay('display-sekke-rob-price', data.sekke_rob_toman);
@@ -1203,7 +1206,7 @@
                             timeZone: 'Asia/Tehran', calendar: 'persian', numberingSystem: 'arab'
                         };
                         const formattedDateTime = new Intl.DateTimeFormat('fa-IR', persianDateTimeOptions).format(dateToDisplay);
-                        displayLastUpdated.textContent = `${formattedDateTime} (${fetchedFrom})`;
+                        displayLastUpdated.textContent = `${formattedDateTime} ${fetchedFrom}`;
                     }
 
                     // Recalculate the active tab's values after fetching new prices
