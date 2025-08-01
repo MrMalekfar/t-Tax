@@ -799,1143 +799,921 @@
         <button onclick="document.getElementById('messageBox').classList.add('hidden')">بستن</button>
     </div>
 
-    <script>
-        // Global App Object for Modularity
-        const App = {
-            // This will store the raw 18k gold price fetched from the API
-            liveGoldPrice18k: 0, 
+<script>
+    // Global App Object for Modularity
+    const App = {
+        // This will store the raw 18k gold price fetched from the API
+        liveGoldPrice18k: 0,
+        // NEW: Object to track which price inputs have been manually modified by the user
+        userModifiedPrices: {},
 
-            // Utility Functions Module
-            Utils: {
-                /**
-                 * Formats a number with comma separators.
-                 * @param {number} number - The number to format.
-                 * @returns {string} The formatted number string.
-                 */
-                formatNumber: function(number) {
-                    return new Intl.NumberFormat('en-US').format(number);
-                },
+        // Utility Functions Module
+        Utils: {
+            /**
+             * Formats a number with comma separators.
+             * @param {number} number - The number to format.
+             * @returns {string} The formatted number string.
+             */
+            formatNumber: function(number) {
+                return new Intl.NumberFormat('en-US').format(number);
+            },
 
-                /**
-                 * Unformats a number string by removing commas.
-                 * @param {string} string - The string to unformat.
-                 * @returns {number} The unformatted number.
-                 */
-                unformatNumber: function(string) {
-                    if (typeof string !== 'string') {
-                        return parseFloat(string) || 0; // Handle non-string inputs gracefully
-                    }
-                    return parseFloat(string.replace(/,/g, ''));
-                },
+            /**
+             * Unformats a number string by removing commas.
+             * @param {string} string - The string to unformat.
+             * @returns {number} The unformatted number.
+             */
+            unformatNumber: function(string) {
+                if (typeof string !== 'string') {
+                    return parseFloat(string) || 0; // Handle non-string inputs gracefully
+                }
+                return parseFloat(string.replace(/,/g, ''));
+            },
 
-                /**
-                 * Formats an input field's value with commas as the user types.
-                 * @param {HTMLInputElement} input - The input element.
-                 */
-                formatNumberInput: function(input) {
-                    let value = input.value.replace(/,/g, '');
-                    if (!isNaN(value) && value.trim() !== '') {
-                        input.value = this.formatNumber(value);
-                    }
-                },
+            /**
+             * Formats an input field's value with commas as the user types.
+             * @param {HTMLInputElement} input - The input element.
+             */
+            formatNumberInput: function(input) {
+                let value = input.value.replace(/,/g, '');
+                if (!isNaN(value) && value.trim() !== '') {
+                    input.value = this.formatNumber(value);
+                }
+            },
 
-                /**
-                 * Gets a number value from an input field, handling formatted text inputs.
-                 * For select elements, it returns the numeric value of the selected option.
-                 * @param {string} id - The ID of the input/select element.
-                 * @param {number} defaultValue - The default value if input is invalid.
-                 * @returns {number} The parsed number value.
-                 */
-                getInputValue: function(id, defaultValue) {
-                    const element = document.getElementById(id);
-                    if (!element) {
-                        console.warn(`Element with ID '${id}' not found.`);
-                        return defaultValue;
-                    }
+            /**
+             * Gets a number value from an input field, handling formatted text inputs.
+             * For select elements, it returns the numeric value of the selected option.
+             * @param {string} id - The ID of the input/select element.
+             * @param {number} defaultValue - The default value if input is invalid.
+             * @returns {number} The parsed number value.
+             */
+            getInputValue: function(id, defaultValue) {
+                const element = document.getElementById(id);
+                if (!element) {
+                    console.warn(`Element with ID '${id}' not found.`);
+                    return defaultValue;
+                }
+                if (element.tagName === 'SELECT') {
+                    return parseFloat(element.value) || defaultValue;
+                }
+                const value = element.type === 'text' ? this.unformatNumber(element.value) : parseFloat(element.value);
+                return (isNaN(value) || element.value.trim() === '') ? defaultValue : value;
+            },
+
+            /**
+             * Sets a number value to an input/select field and saves it to localStorage.
+             * Formats text inputs.
+             * @param {string} id - The ID of the input/select element.
+             * @param {number|string} value - The value to set.
+             */
+            setInputValueAndLocalStorage: function(id, value) {
+                const element = document.getElementById(id);
+                if (element) {
                     if (element.tagName === 'SELECT') {
-                        return parseFloat(element.value) || defaultValue;
+                        element.value = value;
+                    } else if (element.type === 'text' && (id.includes('price_gram') || id === 'price_whole1' || id.startsWith('itemGramPrice_'))) {
+                        element.value = this.formatNumber(value);
+                    } else {
+                        element.value = value;
                     }
-                    const value = element.type === 'text' ? this.unformatNumber(element.value) : parseFloat(element.value);
-                    return (isNaN(value) || element.value.trim() === '') ? defaultValue : value;
-                },
+                    localStorage.setItem(id, value);
+                }
+            },
 
-                /**
-                 * Sets a number value to an input/select field and saves it to localStorage.
-                 * Formats text inputs.
-                 * @param {string} id - The ID of the input/select element.
-                 * @param {number|string} value - The value to set.
-                 */
-                setInputValueAndLocalStorage: function(id, value) {
-                    const element = document.getElementById(id);
-                    if (element) {
-                        if (element.tagName === 'SELECT') {
-                            element.value = value;
-                        } else if (element.type === 'text' && (id.includes('price_gram') || id === 'price_whole1' || id.startsWith('itemGramPrice_'))) {
-                            element.value = this.formatNumber(value);
-                        } else {
-                            element.value = value;
-                        }
-                        localStorage.setItem(id, value);
-                    }
-                },
-
-                /**
-                 * Loads values from localStorage into input/select fields.
-                 */
-                loadValuesFromLocalStorage: function() {
-                    const inputs = [
-                        'price_whole1', 'wage1', 'profit1', 'VAT1', 'price_gram1', 'goldPurity1',
-                        'weight2', 'wage2', 'profit2', 'VAT2', 'price_gram2', 'goldPurity2',
-                        'weight_input3', 'price_gram3', 'goldPurity3',
-                        'customerName', 'customerPhone'
-                    ];
-                    inputs.forEach(id => {
-                        const savedValue = localStorage.getItem(id);
-                        if (savedValue !== null) {
-                            const element = document.getElementById(id);
-                            if (element) {
-                                if (element.tagName === 'SELECT') {
-                                    element.value = savedValue;
-                                } else if (element.type === 'text' && (id.includes('price_gram') || id === 'price_whole1' || id.startsWith('itemGramPrice_'))) {
-                                    element.value = this.formatNumber(parseFloat(savedValue));
-                                } else {
-                                    element.value = savedValue;
-                                }
+            /**
+             * Loads values from localStorage into input/select fields.
+             */
+            loadValuesFromLocalStorage: function() {
+                const inputs = [
+                    'price_whole1', 'wage1', 'profit1', 'VAT1', 'price_gram1', 'goldPurity1',
+                    'weight2', 'wage2', 'profit2', 'VAT2', 'price_gram2', 'goldPurity2',
+                    'weight_input3', 'price_gram3', 'goldPurity3',
+                    'customerName', 'customerPhone'
+                ];
+                inputs.forEach(id => {
+                    const savedValue = localStorage.getItem(id);
+                    if (savedValue !== null) {
+                        const element = document.getElementById(id);
+                        if (element) {
+                            if (element.tagName === 'SELECT') {
+                                element.value = savedValue;
+                            } else if (element.type === 'text' && (id.includes('price_gram') || id === 'price_whole1' || id.startsWith('itemGramPrice_'))) {
+                                element.value = this.formatNumber(parseFloat(savedValue));
+                            } else {
+                                element.value = savedValue;
                             }
                         }
-                    });
-                    // Load saved values for dynamically added invoice items
-                    const savedItems = JSON.parse(localStorage.getItem('goldInvoiceItems') || '[]');
-                    const container = document.getElementById('goldItemsContainer');
-                    if (container && savedItems.length > 0) {
-                        // Clear initial item if saved items exist to prevent duplication
-                        if (container.querySelector('.gold-item-row[data-item-id="0"]')) {
-                            container.querySelector('.gold-item-row[data-item-id="0"]').remove();
-                        }
+                    }
+                });
+                // Load saved values for dynamically added invoice items
+                const savedItems = JSON.parse(localStorage.getItem('goldInvoiceItems') || '[]');
+                const container = document.getElementById('goldItemsContainer');
+                if (container && savedItems.length > 0) {
+                    // Clear initial item if saved items exist to prevent duplication
+                    if (container.querySelector('.gold-item-row[data-item-id="0"]')) {
+                        container.querySelector('.gold-item-row[data-item-id="0"]').remove();
+                    }
 
-                        savedItems.forEach(itemData => {
-                            const newId = this.generateUniqueId(); // Generate new ID for loaded items
-                            const itemHtml = `
-                                <div class="gold-item-row border-b pb-4 mb-4 pt-4" data-item-id="${newId}">
-                                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                                        <div class="responsive-input-group">
-                                            <label for="itemWeight_${newId}">وزن (گرم):</label>
-                                            <div class="input-wrapper">
-                                                <input type="number" id="itemWeight_${newId}" class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-left" value="${itemData.weight}" min="0" step="0.01">
-                                            </div>
-                                        </div>
-                                        <div class="responsive-input-group">
-                                            <label for="itemGramPrice_${newId}">قیمت هر گرم (تومان):</label>
-                                            <div class="input-wrapper">
-                                                <input type="text" id="itemGramPrice_${newId}" class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-left" oninput="App.Utils.formatNumberInput(this)" value="${this.formatNumber(itemData.gramPrice)}">
-                                            </div>
-                                        </div>
-                                        <div class="responsive-input-group">
-                                            <label for="itemPurity_${newId}">عیار طلا:</label>
-                                            <div class="input-wrapper">
-                                                <select id="itemPurity_${newId}"
-                                                    class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-left">
-                                                    <option value="750">18 عیار (750)</option>
-                                                    <option value="583.3">14 عیار (583.3)</option>
-                                                    <option value="708.3">17 عیار (708.3)</option>
-                                                    <option value="791.6">19 عیار (791.6)</option>
-                                                    <option value="875">21 عیار (875)</option>
-                                                    <option value="916">22 عیار (916)</option>
-                                                    <option value="999.9">24 عیار (999)</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="responsive-input-group">
-                                            <label for="itemWage_${newId}">اجرت (%):</label>
-                                            <div class="input-wrapper">
-                                                <input type="number" id="itemWage_${newId}" class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-left" value="20" min="0" step="1">
-                                            </div>
-                                        </div>
-                                        <div class="responsive-input-group">
-                                            <label for="itemProfit_${newId}">سود (%):</label>
-                                            <div class="input-wrapper">
-                                                <input type="number" id="itemProfit_${newId}" class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-left" value="7" min="0" step="1">
-                                            </div>
-                                        </div>
-                                        <div class="responsive-input-group">
-                                            <label for="itemVAT_${newId}">مالیات بر ارزش افزوده (%):</label>
-                                            <div class="input-wrapper">
-                                                <input type="number" id="itemVAT_${newId}" class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-left" value="10" min="0" step="1">
-                                            </div>
-                                        </div>
-                                        <div class="responsive-input-group">
-                                            <label for="itemDescription_${newId}">توضیحات (اختیاری):</label>
-                                            <div class="input-wrapper">
-                                                <input type="text" id="itemDescription_${newId}" class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-right">
-                                            </div>
+                    savedItems.forEach(itemData => {
+                        const newId = this.generateUniqueId(); // Generate new ID for loaded items
+                        const itemHtml = `
+                            <div class="gold-item-row border-b pb-4 mb-4 pt-4" data-item-id="${newId}">
+                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                    <div class="responsive-input-group">
+                                        <label for="itemWeight_${newId}">وزن (گرم):</label>
+                                        <div class="input-wrapper">
+                                            <input type="number" id="itemWeight_${newId}" class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-left" value="${itemData.weight}" min="0" step="0.01">
                                         </div>
                                     </div>
-                                    <button class="remove-item-btn mt-2 px-3 py-1 bg-red-500 text-white rounded-md text-sm hover:bg-red-600 transition-colors" data-item-id="${newId}">
-                                        <i class="fas fa-trash-alt ml-1"></i>حذف آیتم
-                                    </button>
+                                    <div class="responsive-input-group">
+                                        <label for="itemGramPrice_${newId}">قیمت هر گرم (تومان):</label>
+                                        <div class="input-wrapper">
+                                            <input type="text" id="itemGramPrice_${newId}" class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-left" oninput="App.Utils.formatNumberInput(this)" value="${this.formatNumber(itemData.gramPrice)}">
+                                        </div>
+                                    </div>
+                                    <div class="responsive-input-group">
+                                        <label for="itemPurity_${newId}">عیار طلا:</label>
+                                        <div class="input-wrapper">
+                                            <select id="itemPurity_${newId}"
+                                                class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-left">
+                                                <option value="750">18 عیار (750)</option>
+                                                <option value="583.3">14 عیار (583.3)</option>
+                                                <option value="708.3">17 عیار (708.3)</option>
+                                                <option value="791.6">19 عیار (791.6)</option>
+                                                <option value="875">21 عیار (875)</option>
+                                                <option value="916">22 عیار (916)</option>
+                                                <option value="999.9">24 عیار (999)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="responsive-input-group">
+                                        <label for="itemWage_${newId}">اجرت (%):</label>
+                                        <div class="input-wrapper">
+                                            <input type="number" id="itemWage_${newId}" class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-left" value="20" min="0" step="1">
+                                        </div>
+                                    </div>
+                                    <div class="responsive-input-group">
+                                        <label for="itemProfit_${newId}">سود (%):</label>
+                                        <div class="input-wrapper">
+                                            <input type="number" id="itemProfit_${newId}" class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-left" value="7" min="0" step="1">
+                                        </div>
+                                    </div>
+                                    <div class="responsive-input-group">
+                                        <label for="itemVAT_${newId}">مالیات بر ارزش افزوده (%):</label>
+                                        <div class="input-wrapper">
+                                            <input type="number" id="itemVAT_${newId}" class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-left" value="10" min="0" step="1">
+                                        </div>
+                                    </div>
+                                    <div class="responsive-input-group">
+                                        <label for="itemDescription_${newId}">توضیحات (اختیاری):</label>
+                                        <div class="input-wrapper">
+                                            <input type="text" id="itemDescription_${newId}" class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-right">
+                                        </div>
+                                    </div>
                                 </div>
-                            `;
-                            container.insertAdjacentHTML('beforeend', itemHtml);
-                        });
-                    }
-                },
-
-                /**
-                 * Generates a unique ID for dynamic elements.
-                 * @returns {string} A unique ID string.
-                 */
-                generateUniqueId: function() {
-                    return 'item_' + Date.now() + Math.floor(Math.random() * 1000);
+                                <button class="remove-item-btn mt-2 px-3 py-1 bg-red-500 text-white rounded-md text-sm hover:bg-red-600 transition-colors" data-item-id="${newId}">
+                                    <i class="fas fa-trash-alt ml-1"></i>حذف آیتم
+                                </button>
+                            </div>
+                        `;
+                        container.insertAdjacentHTML('beforeend', itemHtml);
+                    });
                 }
             },
 
-            // UI Manipulation Module
-            UI: {
-                /**
-                 * Shows a custom message box.
-                 * @param {string} message - The message to display.
-                 */
-                showMessage: function(message) {
-                    const msgBox = document.getElementById('messageBox');
-                    const msgText = document.getElementById('messageBoxText');
-                    if (msgBox && msgText) {
-                        msgText.textContent = message;
-                        msgBox.classList.remove('hidden');
-                    } else {
-                        console.warn('Message box elements not found, falling back to alert.');
-                        alert(message); // Fallback to alert if message box not found
-                    }
-                },
+            /**
+             * Generates a unique ID for dynamic elements.
+             * @returns {string} A unique ID string.
+             */
+            generateUniqueId: function() {
+                return 'item_' + Date.now() + Math.floor(Math.random() * 1000);
+            }
+        },
 
-                /**
-                 * Shows the selected tab content and activates its corresponding button.
-                 * @param {string} tabId - The ID of the tab content to show (e.g., 'tab-column1').
-                 */
-                showTab: function(tabId) {
-                    document.querySelectorAll('.tab-content').forEach(content => {
-                        content.classList.add('hidden');
-                        content.classList.remove('active');
+        // UI Manipulation Module
+        UI: {
+            /**
+             * Shows a custom message box.
+             * @param {string} message - The message to display.
+             */
+            showMessage: function(message) {
+                const msgBox = document.getElementById('messageBox');
+                const msgText = document.getElementById('messageBoxText');
+                if (msgBox && msgText) {
+                    msgText.textContent = message;
+                    msgBox.classList.remove('hidden');
+                } else {
+                    console.warn('Message box elements not found, falling back to alert.');
+                    alert(message); // Fallback to alert if message box not found
+                }
+            },
+
+            /**
+             * Shows the selected tab content and activates its corresponding button.
+             * @param {string} tabId - The ID of the tab content to show (e.g., 'tab-column1').
+             */
+            showTab: function(tabId) {
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.add('hidden');
+                    content.classList.remove('active');
+                });
+
+                document.querySelectorAll('.tab-button').forEach(button => {
+                    button.classList.remove('active');
+                });
+
+                document.getElementById(tabId).classList.remove('hidden');
+                document.getElementById(tabId).classList.add('active');
+                document.getElementById(tabId.replace('tab-column', 'btn-tab')).classList.add('active');
+
+                // If switching to invoice tab, set current date and update initial item price
+                if (tabId === 'tab-column4') {
+                    App.Invoice.setCurrentInvoiceDate();
+                    App.Invoice.updateInitialItemGramPrice();
+                    App.Invoice.updateTotal(); // Ensure totals are calculated on tab switch
+                    // Ensure all existing gold item rows are visible when switching to invoice tab
+                    document.querySelectorAll('#goldItemsContainer .gold-item-row').forEach(row => {
+                        row.style.display = 'block';
                     });
+                }
+            },
 
-                    document.querySelectorAll('.tab-button').forEach(button => {
-                        button.classList.remove('active');
-                    });
+            /**
+             * Fetches and displays live gold and currency prices,
+             * prioritizing Cloudflare Worker KV and falling back to GitHub.
+             */
+            fetchLivePrices: async function() {
+                const CF_WORKER_URL = 'https://gold.sprome.workers.dev/latest';
+                const GITHUB_JSON_URL = `https://raw.githubusercontent.com/MrMalekfar/t-Tax/main/data/gold-price.json?${new Date().getTime()}`;
+                const FRESHNESS_THRESHOLD_MINUTES = 5;
 
-                    document.getElementById(tabId).classList.remove('hidden');
-                    document.getElementById(tabId).classList.add('active');
-                    document.getElementById(tabId.replace('tab-column', 'btn-tab')).classList.add('active');
+                let data = null;
+                let fetchedFrom = "Unknown";
 
-                    // If switching to invoice tab, set current date and update initial item price
-                    if (tabId === 'tab-column4') {
-                        App.Invoice.setCurrentInvoiceDate();
-                        App.Invoice.updateInitialItemGramPrice();
-                        App.Invoice.updateTotal(); // Ensure totals are calculated on tab switch
-                        // Ensure all existing gold item rows are visible when switching to invoice tab
-                        document.querySelectorAll('#goldItemsContainer .gold-item-row').forEach(row => {
-                            row.style.display = 'block'; 
-                        });
-                    }
-                },
+                try {
+                    console.log("Attempting to fetch prices from Cloudflare Worker...");
+                    const cfResponse = await fetch(CF_WORKER_URL, { signal: AbortSignal.timeout(15000) });
+                    if (cfResponse.ok) {
+                        const cfData = await cfResponse.json();
+                        if (cfData && cfData.timestamp) {
+                            let dataTimestamp = new Date(cfData.timestamp);
+                            if (isNaN(dataTimestamp.getTime())) {
+                                dataTimestamp = new Date(cfData.timestamp + 'Z');
+                            }
+                            const now = new Date();
+                            const diffMinutes = (now.getTime() - dataTimestamp.getTime()) / (1000 * 60);
 
-                /**
-                 * Fetches and displays live gold and currency prices,
-                 * prioritizing Cloudflare Worker KV and falling back to GitHub.
-                 */
-                fetchLivePrices: async function() {
-                    // !!! IMPORTANT: Replace 'gold.sprome.workers.dev' with your actual Cloudflare Worker subdomain !!!
-                    // This URL should point to your deployed Cloudflare Worker that fetches data from tala.ir and stores it in KV.
-                    const CF_WORKER_URL = 'https://gold.sprome.workers.dev/latest'; 
-                    
-                    // This URL points to your GitHub repository's data file, which should be updated by your Python script (or worker).
-                    const GITHUB_JSON_URL = `https://raw.githubusercontent.com/MrMalekfar/t-Tax/main/data/gold-price.json?${new Date().getTime()}`;
-                    
-                    // Set a threshold for "freshness" in minutes (e.g., 5 minutes)
-                    const FRESHNESS_THRESHOLD_MINUTES = 5; 
-
-                    let data = null;
-                    let fetchedFrom = "Unknown";
-
-                    // Try fetching from Cloudflare Worker first
-                    try {
-                        console.log("Attempting to fetch prices from Cloudflare Worker...");
-                        // Increased timeout for Worker to 15 seconds to give it more time
-                        const cfResponse = await fetch(CF_WORKER_URL, { signal: AbortSignal.timeout(15000) }); 
-                        
-                        if (cfResponse.ok) {
-                            const cfData = await cfResponse.json();
-                            
-                            // Check if data is fresh enough (within FRESHNESS_THRESHOLD_MINUTES)
-                            if (cfData && cfData.timestamp) {
-                                // Try parsing without adding 'Z' first
-                                let dataTimestamp = new Date(cfData.timestamp);
-                                if (isNaN(dataTimestamp.getTime())) { // If parsing failed, try with 'Z'
-                                    dataTimestamp = new Date(cfData.timestamp + 'Z');
-                                    if (isNaN(dataTimestamp.getTime())) { // If still invalid, log and fallback
-                                        console.warn("Cloudflare Worker timestamp is invalid even after trying with 'Z'.");
-                                        // No need to set data.timestamp here, it'll be handled by the next check if !data
-                                    }
-                                }
-
-                                const now = new Date();
-                                const diffMinutes = (now.getTime() - dataTimestamp.getTime()) / (1000 * 60);
-
-                                if (diffMinutes <= FRESHNESS_THRESHOLD_MINUTES && !isNaN(dataTimestamp.getTime())) {
-                                    data = cfData;
-                                    fetchedFrom = "CF";
-                                    console.log("Successfully fetched fresh data from Cloudflare Worker.");
-                                } else {
-                                    console.warn(`Cloudflare Worker data is stale (${diffMinutes.toFixed(1)} min old) or has invalid timestamp. Falling back to GitHub.`);
-                                }
+                            if (diffMinutes <= FRESHNESS_THRESHOLD_MINUTES && !isNaN(dataTimestamp.getTime())) {
+                                data = cfData;
+                                fetchedFrom = "CF";
+                                console.log("Successfully fetched fresh data from Cloudflare Worker.");
                             } else {
-                                console.warn("Cloudflare Worker data missing timestamp or invalid. Falling back to GitHub.");
+                                console.warn(`Cloudflare Worker data is stale (${diffMinutes.toFixed(1)} min old) or has invalid timestamp. Falling back to GitHub.`);
                             }
                         } else {
-                            console.warn(`Cloudflare Worker responded with status: ${cfResponse.status}. Falling back to GitHub.`);
+                             console.warn("Cloudflare Worker data missing timestamp or invalid. Falling back to GitHub.");
                         }
-                    } catch (cfError) {
-                        // This catch block handles network errors or timeouts from the Worker fetch
-                        console.error("Error fetching from Cloudflare Worker:", cfError.message);
-                        console.log("Falling back to GitHub due to Worker error.");
+                    } else {
+                        console.warn(`Cloudflare Worker responded with status: ${cfResponse.status}. Falling back to GitHub.`);
                     }
+                } catch (cfError) {
+                    console.error("Error fetching from Cloudflare Worker:", cfError.message);
+                    console.log("Falling back to GitHub due to Worker error.");
+                }
 
-                    // If Worker failed or data was stale, try GitHub
-                    if (!data) {
-                        try {
-                            console.log("Attempting to fetch prices from GitHub...");
-                            // GitHub URL is for a static JSON file, which should not have CORS issues.
-                            const githubResponse = await fetch(GITHUB_JSON_URL, { signal: AbortSignal.timeout(15000) }); // Increased timeout for GitHub as well
-                            if (!githubResponse.ok) {
-                                throw new Error(`HTTP error from GitHub! status: ${githubResponse.status}`);
-                            }
-                            data = await githubResponse.json();
-                            fetchedFrom = "GT";
-                            console.log("Successfully fetched data from GitHub.");
+                if (!data) {
+                    try {
+                        console.log("Attempting to fetch prices from GitHub...");
+                        const githubResponse = await fetch(GITHUB_JSON_URL, { signal: AbortSignal.timeout(15000) });
+                        if (!githubResponse.ok) {
+                            throw new Error(`HTTP error from GitHub! status: ${githubResponse.status}`);
+                        }
+                        data = await githubResponse.json();
+                        fetchedFrom = "GT";
+                        console.log("Successfully fetched data from GitHub.");
 
-                            // Validate GitHub timestamp as well
-                            if (data && data.timestamp) {
-                                let githubTimestamp = new Date(data.timestamp);
-                                if (isNaN(githubTimestamp.getTime())) { // If parsing failed, try with 'Z'
-                                    githubTimestamp = new Date(data.timestamp + 'Z'); 
-                                    if (isNaN(githubTimestamp.getTime())) { // If still invalid, default to current time
-                                        console.warn("GitHub timestamp invalid even after trying with 'Z'. Defaulting to current time.");
-                                        data.timestamp = new Date().toISOString(); 
-                                        fetchedFrom += " (Timestamp adjusted)";
-                                    } else {
-                                        data.timestamp = githubTimestamp.toISOString(); // Use valid ISO string
-                                    }
+                        if (data && data.timestamp) {
+                            let githubTimestamp = new Date(data.timestamp);
+                            if (isNaN(githubTimestamp.getTime())) {
+                                githubTimestamp = new Date(data.timestamp + 'Z');
+                                if (isNaN(githubTimestamp.getTime())) {
+                                    console.warn("GitHub timestamp invalid even after trying with 'Z'. Defaulting to current time.");
+                                    data.timestamp = new Date().toISOString();
+                                    fetchedFrom += " (Timestamp adjusted)";
                                 } else {
-                                    data.timestamp = githubTimestamp.toISOString(); // Ensure it's in a consistent ISO format
+                                    data.timestamp = githubTimestamp.toISOString();
                                 }
                             } else {
-                                data.timestamp = new Date().toISOString(); // Default to current time if no timestamp
-                                fetchedFrom += " (Timestamp added)";
+                                data.timestamp = githubTimestamp.toISOString();
                             }
-
-                        } catch (githubError) {
-                            console.error("Error fetching from GitHub:", githubError);
-                            App.UI.showMessage("خطا در دریافت قیمت‌های لحظه‌ای طلا و ارز از هر دو منبع. لطفاً اتصال اینترنت خود را بررسی کنید.");
-                            return; // Exit if both failed
+                        } else {
+                            data.timestamp = new Date().toISOString();
+                            fetchedFrom += " (Timestamp added)";
                         }
-                    }
-
-                    // If data is still null after both attempts, something went wrong.
-                    if (!data) {
-                        App.UI.showMessage("خطا: قادر به دریافت قیمت طلا و ارز از هیچ منبعی نیستیم.");
+                    } catch (githubError) {
+                        console.error("Error fetching from GitHub:", githubError);
+                        App.UI.showMessage("خطا در دریافت قیمت‌های لحظه‌ای طلا و ارز از هر دو منبع. لطفاً اتصال اینترنت خود را بررسی کنید.");
                         return;
                     }
+                }
 
-                    // Store the raw 18k gold price globally
-                    // Only update App.liveGoldPrice18k if it's currently zero or undefined,
-                    // or if the fetched data is newer/more reliable.
-                    if (data.gold_18k_toman > 0) { // Ensure fetched price is valid
-                        if (App.liveGoldPrice18k === 0 || App.liveGoldPrice18k === undefined) {
-                            App.liveGoldPrice18k = data.gold_18k_toman;
-                        }
+                if (!data) {
+                    App.UI.showMessage("خطا: قادر به دریافت قیمت طلا و ارز از هیچ منبعی نیستیم.");
+                    return;
+                }
+
+                // Store the raw 18k gold price globally
+                if (data.gold_18k_toman > 0) {
+                    App.liveGoldPrice18k = data.gold_18k_toman;
+                }
+
+                // === LOGIC MODIFIED HERE ===
+                // Update price_gram for all calculator tabs, ONLY IF NOT MANUALLY MODIFIED by user.
+                ['price_gram1', 'price_gram2', 'price_gram3'].forEach(id => {
+                    const element = document.getElementById(id);
+                    // Only update if the user has NOT manually modified this input
+                    if (element && App.liveGoldPrice18k > 0 && !App.userModifiedPrices[id]) {
+                        const selectedPurity = App.Utils.getInputValue(id.replace('price_gram', 'goldPurity'), 750);
+                        const adjustedPrice = (App.liveGoldPrice18k * selectedPurity) / 750;
+                        element.value = App.Utils.formatNumber(adjustedPrice);
                     }
+                });
 
-
-                    // Update price_gram for all calculator tabs directly with 18k price, only if not manually changed by user
-                    ['price_gram1', 'price_gram2', 'price_gram3'].forEach(id => {
-                        const element = document.getElementById(id);
-                        // Only update if the input is empty or has the default value (0 after unformatting) AND it's not currently focused by the user
-                        if (element && App.liveGoldPrice18k > 0 && (App.Utils.unformatNumber(element.value) === 0 || element.value === '') && document.activeElement.id !== id) {
-                            // Adjust based on current purity of that specific calculator tab
-                            const selectedPurity = App.Utils.getInputValue(id.replace('price_gram', 'goldPurity'), 750);
-                            const adjustedPrice = (App.liveGoldPrice18k * selectedPurity) / 750;
-                            element.value = App.Utils.formatNumber(adjustedPrice);
-                        }
-                    });
-                    
-                    // Also update the initial item in the invoice tab if it's the active tab
-                    const initialItemGramPriceInput = document.getElementById('itemGramPrice_0');
-                    const initialItemPuritySelect = document.getElementById('itemPurity_0');
-                    if (initialItemGramPriceInput && initialItemPuritySelect && App.liveGoldPrice18k !== undefined && App.liveGoldPrice18k > 0) {
-                        // Only update if the input is empty or has the default value set by the system
-                        if (initialItemGramPriceInput.value === '' || App.Utils.unformatNumber(initialItemGramPriceInput.value) === 0) {
-                            const selectedPurity = App.Utils.getInputValue('itemPurity_0', 750);
-                            const adjustedPrice = (App.liveGoldPrice18k * selectedPurity) / 750;
-                            initialItemGramPriceInput.value = App.Utils.formatNumber(adjustedPrice);
-                        }
+                // Also update all invoice items that haven't been manually modified.
+                document.querySelectorAll('.gold-item-row').forEach(row => {
+                    const itemId = row.dataset.itemId;
+                    const gramPriceInput = document.getElementById(`itemGramPrice_${itemId}`);
+                    // Only update if the user has NOT manually modified this input
+                    if (gramPriceInput && App.liveGoldPrice18k > 0 && !App.userModifiedPrices[gramPriceInput.id]) {
+                        const selectedPurity = App.Utils.getInputValue(`itemPurity_${itemId}`, 750);
+                        const adjustedPrice = (App.liveGoldPrice18k * selectedPurity) / 750;
+                        gramPriceInput.value = App.Utils.formatNumber(adjustedPrice);
                     }
+                });
 
 
-                    // Update navbar display prices
-                    const updateNavbarDisplay = (id, value) => {
-                        const element = document.getElementById(id);
-                        if (element && value !== undefined) {
-                            element.textContent = App.Utils.formatNumber(value);
-                        }
+                // Update navbar display prices (this part is always updated)
+                const updateNavbarDisplay = (id, value) => {
+                    const element = document.getElementById(id);
+                    if (element && value !== undefined) {
+                        element.textContent = App.Utils.formatNumber(value);
+                    }
+                };
+
+                updateNavbarDisplay('display-dollar-price', data.dollar_toman);
+                updateNavbarDisplay('display-gold18k-price', data.gold_18k_toman);
+                updateNavbarDisplay('display-sekke-jadid-price', data.sekke_jadid_toman);
+                updateNavbarDisplay('display-sekke-nim-price', data.sekke_nim_toman);
+                updateNavbarDisplay('display-sekke-rob-price', data.sekke_rob_toman);
+                updateNavbarDisplay('display-mesghal-price', data.gold_mesghal_toman);
+                updateNavbarDisplay('display-ounce-price', data.gold_ounce_Dollar);
+
+                const displayLastUpdated = document.getElementById('display-last-updated');
+                if (displayLastUpdated && data.timestamp !== undefined) {
+                    let dateToDisplay = new Date(data.timestamp);
+                    const persianDateTimeOptions = {
+                        year: 'numeric', month: 'long', day: 'numeric',
+                        hour: '2-digit', minute: '2-digit', hour12: false,
+                        timeZone: 'Asia/Tehran', calendar: 'persian', numberingSystem: 'arab'
                     };
+                    const formattedDateTime = new Intl.DateTimeFormat('fa-IR', persianDateTimeOptions).format(dateToDisplay);
+                    displayLastUpdated.textContent = `${formattedDateTime} ${fetchedFrom}`;
+                }
 
-                    updateNavbarDisplay('display-dollar-price', data.dollar_toman);
-                    updateNavbarDisplay('display-gold18k-price', data.gold_18k_toman);
-                    updateNavbarDisplay('display-sekke-jadid-price', data.sekke_jadid_toman);
-                    updateNavbarDisplay('display-sekke-nim-price', data.sekke_nim_toman);
-                    updateNavbarDisplay('display-sekke-rob-price', data.sekke_rob_toman);
-                    updateNavbarDisplay('display-mesghal-price', data.gold_mesghal_toman);
-                    updateNavbarDisplay('display-ounce-price', data.gold_ounce_Dollar);
-                    
-                    const displayLastUpdated = document.getElementById('display-last-updated');
-                    if (displayLastUpdated && data.timestamp !== undefined) {
-                        // This logic is moved into the main fetch block to handle parsing
-                        let dateToDisplay = new Date(data.timestamp); // Use the potentially adjusted timestamp
+                // Recalculate the active tab's values after fetching new prices
+                const activeTab = document.querySelector('.tab-content.active');
+                if (activeTab) {
+                    const tabNumber = activeTab.id.replace('tab-column', '');
+                    if (tabNumber >= 1 && tabNumber <= 3) {
+                         // Only recalculate if the price input was not manually set
+                        if (!App.userModifiedPrices[`price_gram${tabNumber}`]) {
+                           App.Calculators.calculateAndSave(`column${tabNumber}`);
+                        }
+                    } else if (tabNumber === '4') {
+                        App.Invoice.updateTotal(); // Update invoice totals if it's the active tab
+                    }
+                }
+            }
+        },
 
-                        const persianDateTimeOptions = {
-                            year: 'numeric', month: 'long', day: 'numeric',
-                            hour: '2-digit', minute: '2-digit', hour12: false,
-                            timeZone: 'Asia/Tehran', calendar: 'persian', numberingSystem: 'arab'
-                        };
-                        const formattedDateTime = new Intl.DateTimeFormat('fa-IR', persianDateTimeOptions).format(dateToDisplay);
-                        displayLastUpdated.textContent = `${formattedDateTime} ${fetchedFrom}`;
+        // Calculation Logic Module
+        Calculators: {
+            calculateAndSave: function(columnId) {
+                const U = App.Utils; // Shorthand for Utils
+
+                if (columnId === 'column1') {
+                    // Calculate Gold Weight (based on target price)
+                    let profit = U.getInputValue('profit1', 5);
+                    let wage = U.getInputValue('wage1', 5);
+                    let VAT_rate = U.getInputValue('VAT1', 10);
+                    let price_gram_18k_input = U.getInputValue('price_gram1', 0);
+                    let goldPurity = U.getInputValue('goldPurity1', 750);
+                    let price_whole = U.getInputValue('price_whole1', 68000000);
+
+                    let initial_base_price_gram = price_gram_18k_input;
+                    if (initial_base_price_gram === 0 && App.liveGoldPrice18k > 0) {
+                        initial_base_price_gram = App.liveGoldPrice18k;
+                    } else if (initial_base_price_gram === 0) {
+                        initial_base_price_gram = 6800000;
                     }
 
-                    // Recalculate the active tab's values after fetching new prices
-                    const activeTab = document.querySelector('.tab-content.active');
-                    if (activeTab) {
-                        const columnId = activeTab.id.replace('tab-', 'column');
-                        if (columnId !== 'column4') { // Don't auto-calculate invoice tab on price fetch
-                            App.Calculators.calculateAndSave(columnId);
-                        } else {
-                            App.Invoice.updateTotal(); // Update invoice totals if it's the active tab
-                        }
+                    const initial_adjusted_price_gram = (initial_base_price_gram * goldPurity) / 750;
+                    const labor_cost_per_gram_factor = (wage / 100);
+                    const profit_markup_per_gram_factor = (profit / 100);
+                    const tax_price_per_gram_factor = (VAT_rate / 100);
+
+                    const factor = (
+                        1 +
+                        labor_cost_per_gram_factor +
+                        (1 + labor_cost_per_gram_factor) * profit_markup_per_gram_factor +
+                        (labor_cost_per_gram_factor + (1 + labor_cost_per_gram_factor) * profit_markup_per_gram_factor) * tax_price_per_gram_factor
+                    );
+
+                    const ideal_calculated_weight = (price_whole / (initial_adjusted_price_gram * factor));
+                    const rounded_calculated_weight = parseFloat(ideal_calculated_weight.toFixed(2));
+
+                    let recalculated_total_cost_per_gram_vat = 0;
+                    if (rounded_calculated_weight !== 0) {
+                        recalculated_total_cost_per_gram_vat = price_whole / rounded_calculated_weight;
+                    }
+
+                    let final_adjusted_price_gram = 0;
+                    if (factor !== 0) {
+                        final_adjusted_price_gram = recalculated_total_cost_per_gram_vat / factor;
+                    }
+
+                    let final_price_gram_18k = 0;
+                    if (goldPurity !== 0) {
+                        final_price_gram_18k = (final_adjusted_price_gram * 750) / goldPurity;
+                    }
+
+                    U.setInputValueAndLocalStorage('price_gram1', final_price_gram_18k.toFixed(0));
+
+                    const final_labor_cost_per_gram = (wage / 100) * final_adjusted_price_gram;
+                    const final_profit_markup_per_gram = (final_adjusted_price_gram + final_labor_cost_per_gram) * (profit / 100);
+                    const final_tax_price_per_gram = (final_labor_cost_per_gram + final_profit_markup_per_gram) * (VAT_rate / 100);
+
+                    const final_calculated_tax_amount = final_tax_price_per_gram * rounded_calculated_weight;
+                    const final_price_before_calculated_tax = (final_adjusted_price_gram + final_labor_cost_per_gram + final_profit_markup_per_gram) * rounded_calculated_weight;
+
+
+                    // Update display with rounded weight and other recalculated values
+                    document.getElementById('display-weight1').textContent = rounded_calculated_weight.toLocaleString('fa-IR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    document.getElementById('display-tax1').textContent = Math.round(final_calculated_tax_amount).toLocaleString('fa-IR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+                    document.getElementById('display-price-before-tax1').textContent = Math.round(final_price_before_calculated_tax).toLocaleString('fa-IR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+
+                    // Save other input values
+                    U.setInputValueAndLocalStorage('profit1', profit);
+                    U.setInputValueAndLocalStorage('wage1', wage);
+                    U.setInputValueAndLocalStorage('VAT1', VAT_rate);
+                    U.setInputValueAndLocalStorage('goldPurity1', goldPurity);
+                    U.setInputValueAndLocalStorage('price_whole1', price_whole);
+
+                } else if (columnId === 'column2') {
+                    // Comprehensive Calculator
+                    let profit = U.getInputValue('profit2', 7);
+                    let wage = U.getInputValue('wage2', 20);
+                    let VAT_rate = U.getInputValue('VAT2', 10);
+                    let price_gram_18k_input = U.getInputValue('price_gram2', 0);
+                    let goldPurity = U.getInputValue('goldPurity2', 750);
+                    let weight2 = U.getInputValue('weight2', 0);
+
+                    let base_price_gram = price_gram_18k_input;
+                    if (base_price_gram === 0 && App.liveGoldPrice18k > 0) {
+                        base_price_gram = App.liveGoldPrice18k;
+                    } else if (base_price_gram === 0) {
+                        base_price_gram = 6800000;
+                    }
+
+                    const adjusted_price_gram = (base_price_gram * goldPurity) / 750;
+
+                    U.setInputValueAndLocalStorage('profit2', profit);
+                    U.setInputValueAndLocalStorage('wage2', wage);
+                    U.setInputValueAndLocalStorage('VAT2', VAT_rate);
+                    U.setInputValueAndLocalStorage('price_gram2', price_gram_18k_input);
+                    U.setInputValueAndLocalStorage('goldPurity2', goldPurity);
+                    U.setInputValueAndLocalStorage('weight2', weight2);
+
+                    const labor_cost_per_gram = (wage / 100) * adjusted_price_gram;
+                    const profit_markup_per_gram = (adjusted_price_gram + labor_cost_per_gram) * (profit / 100);
+                    const base_price_per_gram_before_vat = adjusted_price_gram + labor_cost_per_gram + profit_markup_per_gram;
+                    const tax_price_per_gram = (labor_cost_per_gram + profit_markup_per_gram) * (VAT_rate / 100);
+                    const total_price_per_gram_with_vat = base_price_per_gram_before_vat + tax_price_per_gram;
+
+                    const calculated_tax_amount = tax_price_per_gram * weight2;
+                    const price_after_calculated_tax = total_price_per_gram_with_vat * weight2;
+                    const price_before_calculated_tax = base_price_per_gram_before_vat * weight2;
+
+                    document.getElementById('display-weight2').textContent = Math.round(price_before_calculated_tax).toLocaleString('fa-IR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+                    document.getElementById('display-tax2').textContent = Math.round(calculated_tax_amount).toLocaleString('fa-IR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+                    document.getElementById('display-price-after-tax2').textContent = Math.round(price_after_calculated_tax).toLocaleString('fa-IR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+                    document.getElementById('display-gram-price-after-tax2').textContent = Math.round(total_price_per_gram_with_vat).toLocaleString('fa-IR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+
+                } else if (columnId === 'column3') {
+                    // Old Gold Calculator
+                    let price_gram_18k_input = U.getInputValue('price_gram3', 0);
+                    let goldPurity = U.getInputValue('goldPurity3', 750);
+                    let weight = U.getInputValue('weight_input3', 1);
+
+                    let base_price_gram = price_gram_18k_input;
+                    if (base_price_gram === 0 && App.liveGoldPrice18k > 0) {
+                        base_price_gram = App.liveGoldPrice18k;
+                    } else if (base_price_gram === 0) {
+                        base_price_gram = 6800000;
+                    }
+                    
+                    const adjusted_price_gram = (base_price_gram * goldPurity) / 750 * 735 / 750;
+
+                    U.setInputValueAndLocalStorage('price_gram3', price_gram_18k_input);
+                    U.setInputValueAndLocalStorage('goldPurity3', goldPurity);
+                    U.setInputValueAndLocalStorage('weight_input3', weight);
+
+                    const total_price = adjusted_price_gram * weight;
+
+                    document.getElementById('display-total-price3').textContent = Math.round(total_price).toLocaleString('fa-IR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+                }
+            }
+        },
+
+
+        // Invoice Module
+        Invoice: {
+            setCurrentInvoiceDate: function() {
+                const invoiceDateElement = document.getElementById('invoiceDate');
+                if (invoiceDateElement) {
+                    const now = new Date();
+                    const persianDateOptions = { year: 'numeric', month: 'long', day: 'numeric', calendar: 'persian' };
+                    const persianDate = new Intl.DateTimeFormat('fa-IR', persianDateOptions).format(now);
+                    invoiceDateElement.value = persianDate;
+                }
+            },
+
+            updateInitialItemGramPrice: function() {
+                const initialGramPriceInput = document.getElementById('itemGramPrice_0');
+                const initialPuritySelect = document.getElementById('itemPurity_0');
+
+                if (initialGramPriceInput && initialPuritySelect && App.liveGoldPrice18k > 0) {
+                     // Only update if not manually modified
+                    if (!App.userModifiedPrices[initialGramPriceInput.id]) {
+                        const selectedPurity = App.Utils.getInputValue('itemPurity_0', 750);
+                        const adjustedPrice = (App.liveGoldPrice18k * selectedPurity) / 750;
+                        initialGramPriceInput.value = App.Utils.formatNumber(adjustedPrice);
                     }
                 }
             },
 
-            // Calculation Logic Module
-            Calculators: {
-                /**
-                 * Performs calculations and updates the display for the specified column.
-                 * @param {string} columnId - The ID of the column (e.g., 'column1', 'column2', 'column3').
-                 */
-                calculateAndSave: function(columnId) {
-                    const U = App.Utils; // Shorthand for Utils
+            addGoldItemRow: function() {
+                console.log('addGoldItemRow function called.');
+                const container = document.getElementById('goldItemsContainer');
+                const newId = App.Utils.generateUniqueId();
 
-                    if (columnId === 'column1') {
-                        // Calculate Gold Weight (based on target price)
-                        let profit = U.getInputValue('profit1', 5);
-                        let wage = U.getInputValue('wage1', 5);
-                        let VAT_rate = U.getInputValue('VAT1', 10);
-                        // Get price_gram1, but we'll recalculate and set it later
-                        let price_gram_18k_input = U.getInputValue('price_gram1', 0); 
-                        let goldPurity = U.getInputValue('goldPurity1', 750);
-                        let price_whole = U.getInputValue('price_whole1', 68000000);
+                const itemHtml = `
+                    <div class="gold-item-row border-b pb-4 mb-4 pt-4" data-item-id="${newId}">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <div class="responsive-input-group">
+                                <label for="itemWeight_${newId}">وزن (گرم):</label>
+                                <div class="input-wrapper">
+                                    <input type="number" id="itemWeight_${newId}" class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-left" value="1" min="0" step="0.01">
+                                </div>
+                            </div>
+                            <div class="responsive-input-group">
+                                <label for="itemGramPrice_${newId}">قیمت هر گرم:</label>
+                                <div class="input-wrapper">
+                                    <input type="text" id="itemGramPrice_${newId}" class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-left" oninput="App.Utils.formatNumberInput(this)">
+                                </div>
+                            </div>
+                            <div class="responsive-input-group">
+                                <label for="itemPurity_${newId}">عیار طلا:</label>
+                                <div class="input-wrapper">
+                                    <select id="itemPurity_${newId}"
+                                        class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-left">
+                                        <option value="750">18 عیار (750)</option>
+                                        <option value="583.3">14 عیار (583.3)</option>
+                                        <option value="708.3">17 عیار (708.3)</option>
+                                        <option value="791.6">19 عیار (791.6)</option>
+                                        <option value="875">21 عیار (875)</option>
+                                        <option value="916">22 عیار (916)</option>
+                                        <option value="999.9">24 عیار (999)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="responsive-input-group">
+                                <label for="itemWage_${newId}">اجرت (%):</label>
+                                <div class="input-wrapper">
+                                    <input type="number" id="itemWage_${newId}" class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-left" value="20" min="0" step="1">
+                                </div>
+                            </div>
+                            <div class="responsive-input-group">
+                                <label for="itemProfit_${newId}">سود (%):</label>
+                                <div class="input-wrapper">
+                                    <input type="number" id="itemProfit_${newId}" class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-left" value="7" min="0" step="1">
+                                </div>
+                            </div>
+                            <div class="responsive-input-group">
+                                <label for="itemVAT_${newId}">مالیات بر ارزش افزوده (%):</label>
+                                <div class="input-wrapper">
+                                    <input type="number" id="itemVAT_${newId}" class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-left" value="10" min="0" step="1">
+                                </div>
+                            </div>
+                            <div class="responsive-input-group">
+                                <label for="itemDescription_${newId}">توضیحات (اختیاری):</label>
+                                <div class="input-wrapper">
+                                    <input type="text" id="itemDescription_${newId}" class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-right">
+                                </div>
+                            </div>
+                        </div>
+                        <button class="remove-item-btn mt-2 px-3 py-1 bg-red-500 text-white rounded-md text-sm hover:bg-red-600 transition-colors" data-item-id="${newId}">
+                            <i class="fas fa-trash-alt ml-1"></i>حذف آیتم
+                        </button>
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', itemHtml);
 
-                        // Determine the base 18k price to start with for initial calculations
-                        let initial_base_price_gram = price_gram_18k_input;
-                        // Use App.liveGoldPrice18k if available and input is zero
-                        if (initial_base_price_gram === 0 && App.liveGoldPrice18k > 0) {
-                            initial_base_price_gram = App.liveGoldPrice18k;
-                        } else if (initial_base_price_gram === 0) {
-                            // Fallback to a reasonable default if no live price and input is zero
-                            initial_base_price_gram = 6800000; 
-                        }
+                // Load live price into new input field if available
+                const newItemGramPriceInput = document.getElementById(`itemGramPrice_${newId}`);
+                if (newItemGramPriceInput && App.liveGoldPrice18k > 0) {
+                    const selectedPurity = App.Utils.getInputValue(`itemPurity_${newId}`, 750);
+                    const adjustedPriceForNewItem = (App.liveGoldPrice18k * selectedPurity) / 750;
+                    newItemGramPriceInput.value = App.Utils.formatNumber(adjustedPriceForNewItem);
+                }
+                App.Invoice.updateTotal();
+            },
 
-                        // Calculate the adjusted price per gram based on selected purity (for the initially derived value)
-                        const initial_adjusted_price_gram = (initial_base_price_gram * goldPurity) / 750;
+            removeGoldItemRow: function(button) {
+                const itemRow = button.closest('.gold-item-row');
+                if (itemRow && document.querySelectorAll('.gold-item-row').length > 1) {
+                    const itemId = itemRow.dataset.itemId;
+                    delete App.userModifiedPrices[`itemGramPrice_${itemId}`]; // Clean up the flag
+                    itemRow.remove();
+                    App.Invoice.updateTotal();
+                } else {
+                    App.UI.showMessage('حداقل یک آیتم طلا باید در فاکتور وجود داشته باشد.');
+                }
+            },
 
-                        // Calculate costs based on current inputs to find the 'total_cost_per_gram_vat' factor
-                        const labor_cost_per_gram_factor = (wage / 100);
-                        const profit_markup_per_gram_factor = (profit / 100);
-                        const tax_price_per_gram_factor = (VAT_rate / 100);
+            updateTotal: function() {
+                let totalFinalPrice = 0;
+                let totalVAT = 0;
+                let totalPreTaxPrice = 0;
+                const goldItems = [];
 
-                        // This is the full factor for how much a gram of gold (at its purity)
-                        // contributes to the final price after all markups and VAT on wage/profit
-                        // Formula: FinalPricePerGram = PurityAdjPrice + (PurityAdjPrice * Wage%) + ((PurityAdjPrice + PurityAdjPrice * Wage%) * Profit%) + ((PurityAdjPrice * Wage% + (PurityAdjPrice + PurityAdjPrice * Wage%) * Profit%) * VAT%)
-                        // Let P = PurityAdjPrice
-                        // WageAmount = P * Wage%
-                        // ProfitBase = P + WageAmount = P * (1 + Wage%)
-                        // ProfitAmount = ProfitBase * Profit% = P * (1 + Wage%) * Profit%
-                        // TaxBase = WageAmount + ProfitAmount = P * Wage% + P * (1 + Wage%) * Profit% = P * (Wage% + (1+Wage%)*Profit%)
-                        // TaxAmount = TaxBase * VAT% = P * (Wage% + (1+Wage%)*Profit%) * VAT%
-                        // FinalPricePerGram = P + WageAmount + ProfitAmount + TaxAmount
-                        //                   = P + P*Wage% + P*(1+Wage%)*Profit% + P*(Wage% + (1+Wage%)*Profit%)*VAT%
-                        //                   = P * (1 + Wage% + (1+Wage%)*Profit% + (Wage% + (1+Wage%)*Profit%)*VAT%)
-                        // Let Factor = (1 + Wage% + (1+Wage%)*Profit% + (Wage% + (1+Wage%)*Profit%)*VAT%)
-                        // FinalPricePerGram = P * Factor
+                document.querySelectorAll('.gold-item-row').forEach((row) => {
+                    const itemId = row.dataset.itemId || '0';
 
-                        // Calculate the Factor first:
-                        const factor = (
-                            1 + 
-                            labor_cost_per_gram_factor + 
-                            (1 + labor_cost_per_gram_factor) * profit_markup_per_gram_factor + 
-                            (labor_cost_per_gram_factor + (1 + labor_cost_per_gram_factor) * profit_markup_per_gram_factor) * tax_price_per_gram_factor
-                        );
+                    const weight = App.Utils.getInputValue(`itemWeight_${itemId}`, 0);
+                    const price_gram_at_purity = App.Utils.getInputValue(`itemGramPrice_${itemId}`, 0);
+                    const purity = App.Utils.getInputValue(`itemPurity_${itemId}`, 750);
+                    const wage = App.Utils.getInputValue(`itemWage_${itemId}`, 0);
+                    const VAT_rate = App.Utils.getInputValue(`itemVAT_${itemId}`, 0);
+                    const profit = App.Utils.getInputValue(`itemProfit_${itemId}`, 0);
+                    const description = document.getElementById(`itemDescription_${itemId}`).value || '';
 
-                        // Calculate the initially desired weight
-                        const ideal_calculated_weight = (price_whole / (initial_adjusted_price_gram * factor));
-                        
-                        // Round the weight to exactly two decimal places
-                        const rounded_calculated_weight = parseFloat(ideal_calculated_weight.toFixed(2));
-                        
-                        // Now, reverse-calculate the new 'total_cost_per_gram_vat' needed to achieve this rounded weight
-                        let recalculated_total_cost_per_gram_vat = 0;
-                        if (rounded_calculated_weight !== 0) {
-                            recalculated_total_cost_per_gram_vat = price_whole / rounded_calculated_weight;
-                        }
-
-                        // Reverse-calculate the adjusted_price_gram from the recalculated_total_cost_per_gram_vat
-                        let final_adjusted_price_gram = 0;
-                        if (factor !== 0) {
-                            final_adjusted_price_gram = recalculated_total_cost_per_gram_vat / factor;
-                        }
-
-                        // Reverse-calculate the 18k base price that would lead to this final_adjusted_price_gram
-                        // final_adjusted_price_gram = (base_price_gram * goldPurity) / 750;
-                        // base_price_gram = (final_adjusted_price_gram * 750) / goldPurity;
-                        let final_price_gram_18k = 0;
-                        if (goldPurity !== 0) {
-                            final_price_gram_18k = (final_adjusted_price_gram * 750) / goldPurity;
-                        }
-                        
-                        // Update the input field for price_gram1 with the newly calculated 18k price
-                        U.setInputValueAndLocalStorage('price_gram1', final_price_gram_18k.toFixed(0));
-
-                        // Recalculate tax and price before tax using the newly determined prices
-                        const final_labor_cost_per_gram = (wage / 100) * final_adjusted_price_gram;
-                        const final_profit_markup_per_gram = (final_adjusted_price_gram + final_labor_cost_per_gram) * (profit / 100);
-                        const final_tax_price_per_gram = (final_labor_cost_per_gram + final_profit_markup_per_gram) * (VAT_rate / 100);
-
-                        const final_calculated_tax_amount = final_tax_price_per_gram * rounded_calculated_weight;
-                        const final_price_before_calculated_tax = (final_adjusted_price_gram + final_labor_cost_per_gram + final_profit_markup_per_gram) * rounded_calculated_weight;
-
-
-                        // Update display with rounded weight and other recalculated values
-                        document.getElementById('display-weight1').textContent = rounded_calculated_weight.toLocaleString('fa-IR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                        document.getElementById('display-tax1').textContent = Math.round(final_calculated_tax_amount).toLocaleString('fa-IR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-                        document.getElementById('display-price-before-tax1').textContent = Math.round(final_price_before_calculated_tax).toLocaleString('fa-IR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-                        
-                        // Save other input values
-                        U.setInputValueAndLocalStorage('profit1', profit);
-                        U.setInputValueAndLocalStorage('wage1', wage);
-                        U.setInputValueAndLocalStorage('VAT1', VAT_rate);
-                        U.setInputValueAndLocalStorage('goldPurity1', goldPurity);
-                        U.setInputValueAndLocalStorage('price_whole1', price_whole);
-
-                    } else if (columnId === 'column2') {
-                        // Comprehensive Calculator
-                        let profit = U.getInputValue('profit2', 7);
-                        let wage = U.getInputValue('wage2', 20);
-                        let VAT_rate = U.getInputValue('VAT2', 10);
-                        let price_gram_18k_input = U.getInputValue('price_gram2', 0);
-                        let goldPurity = U.getInputValue('goldPurity2', 750);
-                        let weight2 = U.getInputValue('weight2', 0);
-
-                        let base_price_gram = price_gram_18k_input;
-                        // Use App.liveGoldPrice18k if available and input is zero
-                        if (base_price_gram === 0 && App.liveGoldPrice18k > 0) {
-                            base_price_gram = App.liveGoldPrice18k;
-                        } else if (base_price_gram === 0) {
-                            // Fallback to a reasonable default if no live price and input is zero
-                            base_price_gram = 6800000;
-                        }
-
-                        // Adjust price_gram based on selected purity
-                        const adjusted_price_gram = (base_price_gram * goldPurity) / 750;
-
-                        U.setInputValueAndLocalStorage('profit2', profit);
-                        U.setInputValueAndLocalStorage('wage2', wage);
-                        U.setInputValueAndLocalStorage('VAT2', VAT_rate);
-                        U.setInputValueAndLocalStorage('price_gram2', price_gram_18k_input);
-                        U.setInputValueAndLocalStorage('goldPurity2', goldPurity);
-                        U.setInputValueAndLocalStorage('weight2', weight2);
-
-                        const labor_cost_per_gram = (wage / 100) * adjusted_price_gram;
-                        const profit_markup_per_gram = (adjusted_price_gram + labor_cost_per_gram) * (profit / 100);
-                        const base_price_per_gram_before_vat = adjusted_price_gram + labor_cost_per_gram + profit_markup_per_gram;
+                    if (weight > 0 && price_gram_at_purity > 0) {
+                        const labor_cost_per_gram = (wage / 100) * price_gram_at_purity;
+                        const profit_markup_per_gram = (price_gram_at_purity + labor_cost_per_gram) * (profit / 100);
+                        const base_price_per_gram_before_vat = price_gram_at_purity + labor_cost_per_gram + profit_markup_per_gram;
                         const tax_price_per_gram = (labor_cost_per_gram + profit_markup_per_gram) * (VAT_rate / 100);
                         const total_price_per_gram_with_vat = base_price_per_gram_before_vat + tax_price_per_gram;
-                        
-                        const calculated_tax_amount = tax_price_per_gram * weight2;
-                        const price_after_calculated_tax = total_price_per_gram_with_vat * weight2;
-                        const price_before_calculated_tax = base_price_per_gram_before_vat * weight2;
 
-                        document.getElementById('display-weight2').textContent = Math.round(price_before_calculated_tax).toLocaleString('fa-IR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-                        document.getElementById('display-tax2').textContent = Math.round(calculated_tax_amount).toLocaleString('fa-IR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-                        document.getElementById('display-price-after-tax2').textContent = Math.round(price_after_calculated_tax).toLocaleString('fa-IR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-                        document.getElementById('display-gram-price-after-tax2').textContent = Math.round(total_price_per_gram_with_vat).toLocaleString('fa-IR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+                        const itemFinalPrice = total_price_per_gram_with_vat * weight;
+                        const itemVATAmount = tax_price_per_gram * weight;
+                        const itemPreTaxPrice = base_price_per_gram_before_vat * weight;
 
-                    } else if (columnId === 'column3') {
-                        // Old Gold Calculator
-                        let price_gram_18k_input = U.getInputValue('price_gram3', 0);
-                        let goldPurity = U.getInputValue('goldPurity3', 750);
-                        let weight = U.getInputValue('weight_input3', 1);
+                        goldItems.push({
+                            weight: weight,
+                            gramPrice: price_gram_at_purity,
+                            purity: purity,
+                            wage: wage,
+                            profit: profit,
+                            vat: VAT_rate,
+                            description: description,
+                            finalPrice: itemFinalPrice,
+                            itemVATAmount: itemVATAmount,
+                            itemPreTaxPrice: itemPreTaxPrice,
+                            gramPriceWithProfitWage: base_price_per_gram_before_vat
+                        });
 
-                        let base_price_gram = price_gram_18k_input;
-                        // Use App.liveGoldPrice18k if available and input is zero
-                        if (base_price_gram === 0 && App.liveGoldPrice18k > 0) {
-                            base_price_gram = App.liveGoldPrice18k;
-                        } else if (base_price_gram === 0) {
-                            // Fallback to a reasonable default if no live price and input is zero
-                            base_price_gram = 6800000;
-                        }
-
-                        // Adjust price_gram based on selected purity for old gold calculation
-                        // The factor 735/750 is applied here for old gold, which effectively reduces the purity to 17.64k for calculation
-                        const adjusted_price_gram = (base_price_gram * goldPurity) / 750 * 735 / 750;
-
-                        U.setInputValueAndLocalStorage('price_gram3', price_gram_18k_input);
-                        U.setInputValueAndLocalStorage('goldPurity3', goldPurity);
-                        U.setInputValueAndLocalStorage('weight_input3', weight);
-
-                        const total_price = adjusted_price_gram * weight;
-
-                        document.getElementById('display-total-price3').textContent = Math.round(total_price).toLocaleString('fa-IR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+                        totalFinalPrice += itemFinalPrice;
+                        totalVAT += itemVATAmount;
+                        totalPreTaxPrice += itemPreTaxPrice;
                     }
-                }
+                });
+
+                this.calculatedGoldItems = goldItems;
+                localStorage.setItem('goldInvoiceItems', JSON.stringify(goldItems));
+
+                this.calculatedTotals = {
+                    totalFinalPrice: totalFinalPrice,
+                    totalVAT: totalVAT,
+                    totalPreTaxPrice: totalPreTaxPrice
+                };
+
+                return this.calculatedTotals;
             },
 
+            generateInvoice: function() {
+                const U = App.Utils;
 
-            // Invoice Module
-            Invoice: {
-                /**
-                 * Sets the current Persian date in the invoiceDate input field.
-                 */
-                setCurrentInvoiceDate: function() {
-                    const invoiceDateElement = document.getElementById('invoiceDate');
-                    if (invoiceDateElement) {
-                        const now = new Date();
-                        const persianDateOptions = { year: 'numeric', month: 'long', day: 'numeric', calendar: 'persian' };
-                        const persianDate = new Intl.DateTimeFormat('fa-IR', persianDateOptions).format(now);
-                        invoiceDateElement.value = persianDate;
-                    }
-                },
+                const customerName = document.getElementById('customerName').value;
+                const customerPhone = document.getElementById('customerPhone').value;
+                const invoiceDate = document.getElementById('invoiceDate').value;
 
-                /**
-                 * Updates the gram price of the initial invoice item with the live price.
-                 */
-                updateInitialItemGramPrice: function() {
-                    const initialGramPriceInput = document.getElementById('itemGramPrice_0');
-                    const initialPuritySelect = document.getElementById('itemPurity_0');
+                U.setInputValueAndLocalStorage('customerName', customerName);
+                U.setInputValueAndLocalStorage('customerPhone', customerPhone);
 
-                    // Use App.liveGoldPrice18k as the base, not from any specific input field
-                    if (initialGramPriceInput && initialPuritySelect && App.liveGoldPrice18k > 0) {
-                        // Only update if the input is empty or has the default value set by the system
-                        if (initialGramPriceInput.value === '' || App.Utils.unformatNumber(initialGramPriceInput.value) === 0) {
-                            const selectedPurity = App.Utils.getInputValue('itemPurity_0', 750);
-                            const adjustedPrice = (App.liveGoldPrice18k * selectedPurity) / 750;
-                            initialGramPriceInput.value = App.Utils.formatNumber(adjustedPrice);
-                        }
-                    }
-                },
+                this.updateTotal();
+                const goldItems = this.calculatedGoldItems;
+                const totals = this.calculatedTotals;
 
-                /**
-                 * Adds a new row for gold item details in the invoice form.
-                 */
-                addGoldItemRow: function() {
-                    console.log('addGoldItemRow function called.');
-                    const container = document.getElementById('goldItemsContainer');
-                    const newId = App.Utils.generateUniqueId(); // Generate a truly unique ID
+                if (goldItems.length === 0 || totals.totalFinalPrice <= 0) {
+                    App.UI.showMessage('لطفا حداقل یک آیتم طلا با وزن و قیمت معتبر وارد کنید تا فاکتور صادر شود.');
+                    return;
+                }
 
-                    const itemHtml = `
-                        <div class="gold-item-row border-b pb-4 mb-4 pt-4" data-item-id="${newId}">
-                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                                <div class="responsive-input-group">
-                                    <label for="itemWeight_${newId}">وزن (گرم):</label>
-                                    <div class="input-wrapper">
-                                        <input type="number" id="itemWeight_${newId}" class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-left" value="1" min="0" step="0.01">
-                                    </div>
+                let itemsHtml = goldItems.map((item, i) => `
+                    <tr class="border-b border-gray-300 last:border-b-0">
+                        <td class="py-2 px-1 text-center">${i + 1}</td>
+                        <td class="py-2 px-1 text-right">${item.description || 'طلای جدید'}</td>
+                        <td class="py-2 px-1 text-center">${U.formatNumber(item.weight)}</td>
+                        <td class="py-2 px-1 text-center">${U.formatNumber(item.gramPrice)}</td>
+                        <td class="py-2 px-1 text-center">${U.formatNumber(item.purity)}</td>
+                        <td class="py-2 px-1 text-center">${U.formatNumber(item.wage)}%</td>
+                        <td class="py-2 px-1 text-center">${U.formatNumber(Math.floor(item.finalPrice))}</td>
+                    </tr>
+                `).join('');
+
+                const invoiceContent = `
+                    <!DOCTYPE html>
+                    <html lang="fa">
+                    <head>
+                        <meta charset="UTF-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        <title>جواهری فانی</title>
+                        <style>
+                            /* Embed all necessary CSS for the invoice print */
+                            body { font-family: "Inter", sans-serif; direction: rtl; text-align: right; margin: 0; padding: 0; box-sizing: border-box; font-size: 10pt; color: #333333; }
+                            @page { size: A5 landscape; margin: 5mm; }
+                            .invoice-container { width: 100%; height: 100%; padding: 5mm; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between; }
+                            table { width: 100%; border-collapse: collapse; margin-bottom: 0.2rem; }
+                            th, td { border: 1px solid #ccc; padding: 3px 5px; text-align: right; font-size: 8pt; }
+                            th { background-color: #f0f0f0; font-weight: bold; }
+                            .text-center { text-align: center; } .text-right { text-align: right; } .font-bold { font-weight: bold; } .text-gold-dark { color: #DAA520; }
+                            .mb-2 { margin-bottom: 0.1rem; } .mt-4 { margin-top: 0.2rem; } .flex { display: flex; } .justify-between { justify-content: space-between; }
+                            .text-3xl { font-size: 1.6rem; } .text-sm { font-size: 0.8rem; } .pr-4 { padding-right: 0.5rem; }
+                            .invoice-header-print { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; margin-bottom: 8px; padding-top: 1mm; }
+                            .invoice-header-print img { margin-bottom: 3px; height: 3rem; width: auto; object-fit: contain; }
+                            .invoice-header-print h1 { margin-top: 0; margin-bottom: 0; font-size: 1.3rem; }
+                            .company-info-print { margin-bottom: 5px; }
+                            .customer-info-print { margin-bottom: 5px; padding-top: 2px; display: flex; justify-content: space-between; flex-wrap: wrap; border-top-width: 1px; border-color: #e2e8f0; }
+                            .customer-info-print p { margin-bottom: 1px; } .customer-info-print .customer-name-field { width: 60%; } .customer-info-print .customer-phone-field { width: 38%; }
+                            .totals-section-print { margin-top: auto; font-size: 9.5pt; }
+                            .signature-section-print { display: flex; justify-content: space-around; margin-top: 8px; font-size: 9.5pt; }
+                            .signature-line-print { height: 0.5px; background-color: #333; width: 70%; margin-top: 15px; }
+                            .w-1\/2 { width: 50%; }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="invoice-container">
+                            <div class="invoice-header-print">
+                                <img src="https://placehold.co/100x40/DAA520/FFFFFF?text=YOUR+LOGO" alt="لوگوی فروشگاه">
+                                <h1 class="font-bold text-gold-dark">فاکتور فروش طلا</h1>
+                            </div>
+                            <div class="flex justify-between mb-2 text-sm company-info-print">
+                                <div><p><strong>آدرس:</strong> خوی مجتمع تجاری اداری آنا آتا</p><p><strong>تلفن:</strong> 09141610649</p></div>
+                                <div class="text-left"><p><strong>شماره فاکتور:</strong> ${Date.now().toString().slice(-6)}</p><p><strong>تاریخ:</strong> ${invoiceDate}</p></div>
+                            </div>
+                            <div class="mb-2 text-sm customer-info-print">
+                                <p class="customer-name-field"><strong>نام مشتری:</strong> ${customerName || 'نامشخص'}</p>
+                                <p class="customer-phone-field"><strong>شماره تماس:</strong> ${customerPhone || 'نامشخص'}</p>
+                            </div>
+                            <table class="w-full border-collapse mb-2 text-xs sm:text-sm">
+                                <thead>
+                                    <tr class="bg-gray-100 border-b border-gray-400">
+                                        <th class="py-2 px-1 text-center">ردیف</th><th class="py-2 px-1 text-right">شرح کالا</th><th class="py-2 px-1 text-center">وزن (گرم)</th>
+                                        <th class="py-2 px-1 text-center">فی هر گرم</th><th class="py-2 px-1 text-center">عیار</th><th class="py-2 px-1 text-center">اجرت (%)</th>
+                                        <th class="py-2 px-1 text-center">مبلغ نهایی</th>
+                                    </tr>
+                                </thead>
+                                <tbody>${itemsHtml}</tbody>
+                            </table>
+                            <div class="flex justify-between items-start text-sm mt-auto totals-section-print">
+                                <div class="w-1/2">
+                                    <p class="mb-1"><strong>جمع مالیات بر ارزش افزوده:</strong> <span class="font-bold">${U.formatNumber(totals.totalVAT)}</span> تومان</p>
+                                    <p class="text-lg font-bold text-gold-dark">مبلغ قابل پرداخت: <span class="text-3xl">${U.formatNumber(Math.floor(totals.totalFinalPrice))}</span> تومان</p>
                                 </div>
-                                <div class="responsive-input-group">
-                                    <label for="itemGramPrice_${newId}">قیمت هر گرم:</label>
-                                    <div class="input-wrapper">
-                                        <input type="text" id="itemGramPrice_${newId}" class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-left" oninput="App.Utils.formatNumberInput(this)">
-                                    </div>
-                                </div>
-                                <div class="responsive-input-group">
-                                    <label for="itemPurity_${newId}">عیار طلا:</label>
-                                    <div class="input-wrapper">
-                                        <select id="itemPurity_${newId}"
-                                            class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-left">
-                                            <option value="750">18 عیار (750)</option>
-                                            <option value="583.3">14 عیار (583.3)</option>
-                                            <option value="708.3">17 عیار (708.3)</option>
-                                            <option value="791.6">19 عیار (791.6)</option>
-                                            <option value="875">21 عیار (875)</option>
-                                            <option value="916">22 عیار (916)</option>
-                                            <option value="999.9">24 عیار (999)</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="responsive-input-group">
-                                    <label for="itemWage_${newId}">اجرت (%):</label>
-                                    <div class="input-wrapper">
-                                        <input type="number" id="itemWage_${newId}" class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-left" value="20" min="0" step="1">
-                                    </div>
-                                </div>
-                                <div class="responsive-input-group">
-                                    <label for="itemProfit_${newId}">سود (%):</label>
-                                    <div class="input-wrapper">
-                                        <input type="number" id="itemProfit_${newId}" class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-left" value="7" min="0" step="1">
-                                    </div>
-                                </div>
-                                <div class="responsive-input-group">
-                                    <label for="itemVAT_${newId}">مالیات بر ارزش افزوده (%):</label>
-                                    <div class="input-wrapper">
-                                        <input type="number" id="itemVAT_${newId}" class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-left" value="10" min="0" step="1">
-                                    </div>
-                                </div>
-                                <div class="responsive-input-group">
-                                    <label for="itemDescription_${newId}">توضیحات (اختیاری):</label>
-                                    <div class="input-wrapper">
-                                        <input type="text" id="itemDescription_${newId}" class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-right">
-                                    </div>
+                                <div class="w-1/2 text-left pr-4">
+                                    <p class="font-semibold">امضای فروشنده:</p>
+                                    <div class="signature-line-print"></div>
                                 </div>
                             </div>
-                            <button class="remove-item-btn mt-2 px-3 py-1 bg-red-500 text-white rounded-md text-sm hover:bg-red-600 transition-colors" data-item-id="${newId}">
-                                <i class="fas fa-trash-alt ml-1"></i>حذف آیتم
-                            </button>
                         </div>
-                    `;
-                    container.insertAdjacentHTML('beforeend', itemHtml);
-                    
-                    // Load live price into new input field if available
-                    const newItemGramPriceInput = document.getElementById(`itemGramPrice_${newId}`);
-                    const newItemPuritySelect = document.getElementById(`itemPurity_${newId}`);
-                    if (newItemGramPriceInput && newItemPuritySelect && App.liveGoldPrice18k > 0) {
-                        const selectedPurity = App.Utils.getInputValue(`itemPurity_${newId}`, 750); // Default to 750 (18k)
-                        const adjustedPriceForNewItem = (App.liveGoldPrice18k * selectedPurity) / 750;
-                        newItemGramPriceInput.value = App.Utils.formatNumber(adjustedPriceForNewItem);
-                    }
-                    App.Invoice.updateTotal(); // Update totals after adding a new row
-                },
+                    </body>
+                    </html>
+                `;
 
-                /**
-                 * Removes a gold item row from the invoice form.
-                 * @param {HTMLElement} button - The delete button clicked.
-                 * @returns {void}
-                 */
-                removeGoldItemRow: function(button) {
-                    const itemRow = button.closest('.gold-item-row');
-                    if (itemRow && document.querySelectorAll('.gold-item-row').length > 1) {
-                        itemRow.remove();
-                        App.Invoice.updateTotal(); // Update total after removing row
-                    } else {
-                        console.warn('Cannot remove the last gold item row. At least one item is required.');
-                        App.UI.showMessage('حداقل یک آیتم طلا باید در فاکتور وجود داشته باشد.');
-                    }
-                },
+                const previewContainer = document.getElementById('invoicePreviewContainer');
+                previewContainer.innerHTML = invoiceContent;
+                previewContainer.classList.remove('hidden');
+                previewContainer.style.width = '210mm';
+                previewContainer.style.minHeight = '148mm';
 
-                /**
-                 * Calculates the total price for all gold items and updates the preview.
-                 * This function also gathers data for the invoice generation.
-                 * @returns {object} An object containing total price, total tax, and total price before tax.
-                 */
-                updateTotal: function() {
-                    let totalFinalPrice = 0;
-                    let totalVAT = 0;
-                    let totalPreTaxPrice = 0;
-                    const goldItems = []; // Initialize goldItems array here
-
-                    document.querySelectorAll('.gold-item-row').forEach((row) => {
-                        const itemId = row.dataset.itemId || '0'; // Use data-item-id or fallback to '0' for the initial item
-                        
-                        const weight = App.Utils.getInputValue(`itemWeight_${itemId}`, 0);
-                        // For invoice items, the 'itemGramPrice' is what the user has entered/sees for the selected purity
-                        const price_gram_at_purity = App.Utils.getInputValue(`itemGramPrice_${itemId}`, 0); 
-                        const purity = App.Utils.getInputValue(`itemPurity_${itemId}`, 750); // Get purity for this specific item
-                        const wage = App.Utils.getInputValue(`itemWage_${itemId}`, 0);
-                        const VAT_rate = App.Utils.getInputValue(`itemVAT_${itemId}`, 0);
-                        const profit = App.Utils.getInputValue(`itemProfit_${itemId}`, 0);
-                        const description = document.getElementById(`itemDescription_${itemId}`).value || '';
-
-                        if (weight > 0 && price_gram_at_purity > 0) {
-                            const labor_cost_per_gram = (wage / 100) * price_gram_at_purity;
-                            const profit_markup_per_gram = (price_gram_at_purity + labor_cost_per_gram) * (profit / 100);
-                            const base_price_per_gram_before_vat = price_gram_at_purity + labor_cost_per_gram + profit_markup_per_gram;
-                            const tax_price_per_gram = (labor_cost_per_gram + profit_markup_per_gram) * (VAT_rate / 100);
-                            const total_price_per_gram_with_vat = base_price_per_gram_before_vat + tax_price_per_gram;
-                            
-                            const itemFinalPrice = total_price_per_gram_with_vat * weight;
-                            const itemVATAmount = tax_price_per_gram * weight;
-                            const itemPreTaxPrice = base_price_per_gram_before_vat * weight;
-
-                            goldItems.push({
-                                weight: weight,
-                                gramPrice: price_gram_at_purity,
-                                purity: purity, // Store purity for invoice display
-                                wage: wage,
-                                profit: profit,
-                                vat: VAT_rate,
-                                description: description,
-                                finalPrice: itemFinalPrice,
-                                itemVATAmount: itemVATAmount,
-                                itemPreTaxPrice: itemPreTaxPrice,
-                                gramPriceWithProfitWage: base_price_per_gram_before_vat
-                            });
-
-                            totalFinalPrice += itemFinalPrice;
-                            totalVAT += itemVATAmount;
-                            totalPreTaxPrice += itemPreTaxPrice;
-                        }
-                    });
-
-                    // Store calculated items for invoice generation
-                    this.calculatedGoldItems = goldItems;
-                    // Also save to localStorage so items persist on reload
-                    localStorage.setItem('goldInvoiceItems', JSON.stringify(goldItems));
-
-
-                    this.calculatedTotals = {
-                        totalFinalPrice: totalFinalPrice,
-                        totalVAT: totalVAT,
-                        totalPreTaxPrice: totalPreTaxPrice
+                const printWindow = window.open('', '_blank', 'width=900,height=600');
+                if (printWindow) {
+                    printWindow.document.write(invoiceContent);
+                    printWindow.document.close();
+                    printWindow.focus();
+                    printWindow.onload = function() {
+                        printWindow.print();
                     };
-
-                    return this.calculatedTotals; // Return for immediate use if needed
-                },
-
-                /**
-                 * Generates and prints the invoice.
-                 * @returns {void}
-                 */
-                generateInvoice: function() {
-                    const U = App.Utils; // Shorthand for Utils
-
-                    const customerName = document.getElementById('customerName').value;
-                    const customerPhone = document.getElementById('customerPhone').value;
-                    const invoiceDate = document.getElementById('invoiceDate').value;
-
-                    // Save customer info to localStorage
-                    U.setInputValueAndLocalStorage('customerName', customerName);
-                    U.setInputValueAndLocalStorage('customerPhone', customerPhone);
-
-
-                    // Ensure totals are updated before generating invoice
-                    this.updateTotal(); 
-                    const goldItems = this.calculatedGoldItems;
-                    const totals = this.calculatedTotals;
-
-                    if (goldItems.length === 0 || totals.totalFinalPrice <= 0) {
-                        App.UI.showMessage('لطفا حداقل یک آیتم طلا با وزن و قیمت معتبر وارد کنید تا فاکتور صادر شود.');
-                        return;
-                    }
-
-                    let itemsHtml = goldItems.map((item, i) => `
-                        <tr class="border-b border-gray-300 last:border-b-0">
-                            <td class="py-2 px-1 text-center">${i + 1}</td>
-                            <td class="py-2 px-1 text-right">${item.description || 'طلای جدید'}</td>
-                            <td class="py-2 px-1 text-center">${U.formatNumber(item.weight)}</td>
-                            <td class="py-2 px-1 text-center">${U.formatNumber(item.gramPrice)}</td>
-                            <td class="py-2 px-1 text-center">${U.formatNumber(item.purity)}</td> <td class="py-2 px-1 text-center">${U.formatNumber(item.wage)}%</td>
-                            <td class="py-2 px-1 text-center">${U.formatNumber(Math.floor(item.finalPrice))}</td>
-                        </tr>
-                    `).join('');
-
-                    const invoiceContent = `
-                        <!DOCTYPE html>
-                        <html lang="fa">
-                        <head>
-                            <meta charset="UTF-8">
-                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                            <title>جواهری فانی</title>
-                            <style>
-                                /* Embed all necessary CSS for the invoice print */
-                                body {
-                                    font-family: "Inter", sans-serif;
-                                    direction: rtl;
-                                    text-align: right;
-                                    margin: 0;
-                                    padding: 0;
-                                    box-sizing: border-box;
-                                    font-size: 10pt; /* Adjusted font size for better fit in landscape */
-                                    color: #333333;
-                                }
-                                @page {
-                                    size: A5 landscape; /* A5 size in landscape mode */
-                                    margin: 5mm; /* Reduced margins for more content */
-                                }
-                                .invoice-container {
-                                    width: 100%; /* Fill the page width */
-                                    height: 100%; /* Fill the page height */
-                                    padding: 5mm; /* Inner padding */
-                                    box-sizing: border-box;
-                                    display: flex;
-                                    flex-direction: column;
-                                    justify-content: space-between;
-                                }
-                                table {
-                                    width: 100%;
-                                    border-collapse: collapse;
-                                    margin-bottom: 0.2rem; /* Further reduced margin */
-                                }
-                                th, td {
-                                    border: 1px solid #ccc;
-                                    padding: 3px 5px; /* Further reduced padding for more content */
-                                    text-align: right;
-                                    font-size: 8pt; /* Further adjust font size for table content */
-                                }
-                                th {
-                                    background-color: #f0f0f0;
-                                    font-weight: bold;
-                                }
-                                .text-center { text-align: center; }
-                                .text-right { text-align: right; }
-                                .font-bold { font-weight: bold; }
-                                .text-gold-dark { color: #DAA520; }
-                                .mb-6 { margin-bottom: 0.2rem; } /* Further reduced margin */
-                                .mb-2 { margin-bottom: 0.1rem; } /* Further reduced margin */
-                                .mt-4 { margin-top: 0.2rem; } /* Further reduced margin */
-                                .pb-4 { padding-bottom: 0.2rem; } /* Further reduced padding */
-                                .pt-4 { padding-top: 0.2rem; } /* Further reduced padding */
-                                .border-b { border-bottom-width: 1px; border-color: #e2e8f0; }
-                                .border-t { border-top-width: 1px; border-color: #e2e8f0; }
-                                .flex { display: flex; }
-                                .justify-between { justify-content: space-between; }
-                                .items-center { align-items: center; }
-                                .items-start { align-items: flex-start; }
-                                .w-1\/2 { width: 50%; }
-                                .h-12 { height: 3rem; }
-                                .w-auto { width: auto; }
-                                .object-contain { object-fit: contain; }
-                                .text-2xl { font-size: 1.3rem; } /* Slightly larger for title */
-                                .text-3xl { font-size: 1.6rem; } /* Slightly larger for final price */
-                                .text-sm { font-size: 0.8rem; } /* Adjusted font size */
-                                .text-xs { font-size: 0.7rem; } /* Adjusted font size */
-                                .pr-4 { padding-right: 0.5rem; }
-                                
-                                /* Specific print adjustments for logo and title */
-                                .invoice-header-print {
-                                    display: flex;
-                                    flex-direction: column;
-                                    align-items: center;
-                                    justify-content: center;
-                                    text-align: center;
-                                    margin-bottom: 8px; /* Reduced margin */
-                                    padding-top: 1mm; /* Push down to fill space */
-                                }
-                                .invoice-header-print img {
-                                    margin-bottom: 3px; /* Reduced margin */
-                                }
-                                .invoice-header-print h1 {
-                                    margin-top: 0;
-                                    margin-bottom: 0;
-                                }
-                                .company-info-print {
-                                    margin-bottom: 5px; /* Reduced margin */
-                                }
-                                .customer-info-print {
-                                    margin-bottom: 5px; /* Reduced margin for print */
-                                    padding-top: 2px; /* Reduced padding */
-                                    display: flex; /* Make it flex to put customer info on one row */
-                                    justify-content: space-between;
-                                    flex-wrap: wrap; /* Allow wrapping on very small widths, though not expected for A5 */
-                                }
-                                .customer-info-print p {
-                                    margin-bottom: 1px; /* Reduce space between paragraphs */
-                                }
-                                .customer-info-print .customer-name-field {
-                                    width: 60%; /* Allocate width for name */
-                                }
-                                .customer-info-print .customer-phone-field {
-                                    width: 38%; /* Allocate width for phone */
-                                }
-
-                                .totals-section-print {
-                                    margin-top: 5px; /* Reduced margin for print */
-                                    font-size: 9.5pt; /* Slightly larger font for totals */
-                                }
-                                .notes-print {
-                                    display: none; /* Removed for maximum compactness */
-                                }
-                                .signature-section-print {
-                                    display: flex;
-                                    justify-content: space-around;
-                                    margin-top: 8px; /* Reduced margin */
-                                    font-size: 9.5pt; /* Adjust signature font size */
-                                }
-                                .signature-line-print {
-                                    height: 0.5px; /* Thinner line */
-                                    background-color: #333;
-                                    width: 70%; /* Adjust width for signature line */
-                                    margin-top: 15px; /* Reduced margin */
-                                }
-                            </style>
-                        </head>
-                        <body>
-                            <div class="invoice-container">
-                                <div class="invoice-header-print">
-                                    <img src="https://placehold.co/100x40/DAA520/FFFFFF?text=YOUR+LOGO" alt="لوگوی فروشگاه" class="h-12 w-auto object-contain">
-                                    <h1 class="text-3xl font-bold text-gold-dark">فاکتور فروش طلا</h1>
-                                </div>
-
-                                <div class="flex justify-between mb-2 text-sm company-info-print">
-                                    <div>
-                                        <p><strong>آدرس:</strong> خوی مجتمع تجاری اداری آنا آتا</p>
-                                        <p><strong>تلفن:</strong> 09141610649</p>
-                                    </div>
-                                    <div class="text-left">
-                                        <p><strong>شماره فاکتور:</strong> ${Date.now().toString().slice(-6)}</p>
-                                        <p><strong>تاریخ:</strong> ${invoiceDate}</p>
-                                    </div>
-                                </div>
-
-                                <div class="mb-2 border-t pt-2 text-sm customer-info-print">
-                                    <p class="customer-name-field"><strong>نام مشتری:</strong> ${customerName || 'نامشخص'}</p>
-                                    <p class="customer-phone-field"><strong>شماره تماس:</strong> ${customerPhone || 'نامشخص'}</p>
-                                </div>
-
-                                <table class="w-full border-collapse mb-2 text-xs sm:text-sm">
-                                    <thead>
-                                        <tr class="bg-gray-100 border-b border-gray-400">
-                                            <th class="py-2 px-1 text-center">ردیف</th>
-                                            <th class="py-2 px-1 text-right">شرح کالا</th>
-                                            <th class="py-2 px-1 text-center">وزن (گرم)</th>
-                                            <th class="py-2 px-1 text-center">فی هر گرم</th>
-                                            <th class="py-2 px-1 text-center">عیار</th> <th class="py-2 px-1 text-center">اجرت (%)</th>
-                                            <th class="py-2 px-1 text-center">مبلغ نهایی</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        ${itemsHtml}
-                                    </tbody>
-                                </table>
-
-                                <div class="flex justify-between items-start text-sm mt-auto totals-section-print">
-                                    <div class="w-1/2">
-                                        <p class="mb-1"><strong>جمع مالیات بر ارزش افزوده:</strong> <span class="font-bold">${U.formatNumber(totals.totalVAT)}</span> تومان</p>
-                                        <p class="text-lg font-bold text-gold-dark">مبلغ قابل پرداخت: <span class="text-3xl">${U.formatNumber(Math.floor(totals.totalFinalPrice))}</span> تومان</p>
-                                    </div>
-                                    <div class="w-1/2 text-left pr-4">
-                                        <p class="font-semibold">امضای فروشنده:</p>
-                                        <div class="signature-line-print"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </body>
-                        </html>
-                    `;
-
-                    // For on-page preview (optional, can be removed if only print is desired)
-                    const previewContainer = document.getElementById('invoicePreviewContainer');
-                    previewContainer.innerHTML = invoiceContent;
-                    previewContainer.classList.remove('hidden');
-                    // Adjust preview container size for landscape view
-                    previewContainer.style.width = '210mm';
-                    previewContainer.style.minHeight = '148mm';
-
-
-                    // Create a new window for printing
-                    const printWindow = window.open('', '_blank', 'width=900,height=600'); // Increased width for landscape
-                    if (printWindow) {
-                        printWindow.document.write(invoiceContent);
-                        printWindow.document.close(); // Close the document to ensure content is loaded
-                        printWindow.focus(); // Focus the new window
-                        printWindow.onload = function() {
-                            printWindow.print();
-                            // Optional: Close the window after printing or a short delay
-                            // printWindow.onafterprint = function() {
-                            //     printWindow.close();
-                            // };
-                        };
-                    } else {
-                        console.error("Could not open print window. Pop-ups might be blocked.");
-                        App.UI.showMessage("مرورگر شما پنجره‌های بازشو را مسدود کرده است. لطفاً برای چاپ فاکتور، اجازه دهید پنجره‌های بازشو نمایش داده شوند.");
-                    }
+                } else {
+                    App.UI.showMessage("مرورگر شما پنجره‌های بازشو را مسدود کرده است. لطفاً برای چاپ فاکتور، اجازه دهید پنجره‌های بازشو نمایش داده شوند.");
                 }
-            },
-
-            // Initialization Module
-            init: function() {
-                this.Utils.loadValuesFromLocalStorage(); // Load saved values
-                this.UI.fetchLivePrices(); // Fetch prices on load
-                setInterval(this.UI.fetchLivePrices.bind(this.UI), 60000); // Fetch prices every 60 seconds
-                this.UI.showTab('tab-column1'); // Show the first tab by default
-
-                // Attach event listeners for tab buttons
-                document.getElementById('btn-tab1').addEventListener('click', () => this.UI.showTab('tab-column1'));
-                document.getElementById('btn-tab2').addEventListener('click', () => this.UI.showTab('tab-column2'));
-                document.getElementById('btn-tab3').addEventListener('click', () => this.UI.showTab('tab-column3'));
-                document.getElementById('btn-tab4').addEventListener('click', () => this.UI.showTab('tab-column4'));
-
-                // Attach event listeners for calculate buttons
-                document.getElementById('calculateBtn1').addEventListener('click', () => this.Calculators.calculateAndSave('column1'));
-                document.getElementById('calculateBtn2').addEventListener('click', () => this.Calculators.calculateAndSave('column2'));
-                document.getElementById('calculateBtn3').addEventListener('click', () => this.Calculators.calculateAndSave('column3'));
-                document.getElementById('generateInvoiceBtn').addEventListener('click', () => this.Invoice.generateInvoice());
-                
-                document.getElementById('addGoldItemBtn').addEventListener('click', () => this.Invoice.addGoldItemRow());
-
-                // Event delegation for dynamically added remove item buttons
-                document.getElementById('goldItemsContainer').addEventListener('click', (event) => {
-                    const button = event.target.closest('.remove-item-btn');
-                    if (button) {
-                        App.Invoice.removeGoldItemRow(button);
-                    }
-                });
-
-                // Add event listeners for input fields in the invoice section to trigger total update
-                document.getElementById('goldItemsContainer').addEventListener('input', (event) => {
-                    const targetId = event.target.id;
-                    // Check if the input is one of the item-related fields
-                    if (targetId.startsWith('itemWeight_') ||
-                        targetId.startsWith('itemGramPrice_') ||
-                        targetId.startsWith('itemPurity_') || // New: Listen for purity changes
-                        targetId.startsWith('itemWage_') ||
-                        targetId.startsWith('itemProfit_') ||
-                        targetId.startsWith('itemVAT_')) {
-                        App.Invoice.updateTotal();
-                    }
-                });
-
-                // Add event listeners for purity dropdowns in calculator tabs
-                ['goldPurity1', 'goldPurity2', 'goldPurity3'].forEach(id => {
-                    const puritySelect = document.getElementById(id);
-                    if (puritySelect) {
-                        puritySelect.addEventListener('change', (event) => {
-                            const basePriceGramInputId = id.replace('goldPurity', 'price_gram');
-                            const basePriceGramInput = document.getElementById(basePriceGramInputId);
-                            
-                            // Always use App.liveGoldPrice18k as the base for adjusting the price_gram input
-                            const selectedPurity = parseFloat(event.target.value);
-                            if (!isNaN(App.liveGoldPrice18k) && App.liveGoldPrice18k > 0) {
-                                const adjustedPrice = (App.liveGoldPrice18k * selectedPurity) / 750;
-                                basePriceGramInput.value = App.Utils.formatNumber(adjustedPrice);
-                            }
-                            // Then trigger the calculation for the respective tab
-                            App.Calculators.calculateAndSave(id.replace('goldPurity', 'column'));
-                        });
-                    }
-                });
-
-                // Add input event listeners to price_gram inputs to also trigger calculation on change
-                ['price_gram1', 'price_gram2', 'price_gram3'].forEach(id => {
-                    const priceGramInput = document.getElementById(id);
-                    if (priceGramInput) {
-                        priceGramInput.addEventListener('input', (event) => {
-                            App.Utils.formatNumberInput(event.target); // Reformat as they type
-                            // Then trigger the calculation for the respective tab
-                            App.Calculators.calculateAndSave(id.replace('price_gram', 'column'));
-                        });
-                    }
-                });
             }
-        };
+        },
 
-        // initialize the application when the DOM is fully loaded
-        document.addEventListener('DOMContentLoaded', () => {
-            App.init();
-        });
-    </script>
+        // Initialization Module
+        init: function() {
+            this.Utils.loadValuesFromLocalStorage();
+            this.UI.fetchLivePrices();
+            setInterval(this.UI.fetchLivePrices.bind(this.UI), 60000);
+            this.UI.showTab('tab-column1');
+
+            document.getElementById('btn-tab1').addEventListener('click', () => this.UI.showTab('tab-column1'));
+            document.getElementById('btn-tab2').addEventListener('click', () => this.UI.showTab('tab-column2'));
+            document.getElementById('btn-tab3').addEventListener('click', () => this.UI.showTab('tab-column3'));
+            document.getElementById('btn-tab4').addEventListener('click', () => this.UI.showTab('tab-column4'));
+
+            document.getElementById('calculateBtn1').addEventListener('click', () => this.Calculators.calculateAndSave('column1'));
+            document.getElementById('calculateBtn2').addEventListener('click', () => this.Calculators.calculateAndSave('column2'));
+            document.getElementById('calculateBtn3').addEventListener('click', () => this.Calculators.calculateAndSave('column3'));
+            document.getElementById('generateInvoiceBtn').addEventListener('click', () => this.Invoice.generateInvoice());
+            document.getElementById('addGoldItemBtn').addEventListener('click', () => this.Invoice.addGoldItemRow());
+
+            document.getElementById('goldItemsContainer').addEventListener('click', (event) => {
+                const button = event.target.closest('.remove-item-btn');
+                if (button) {
+                    App.Invoice.removeGoldItemRow(button);
+                }
+            });
+
+            // Event delegation for invoice item inputs
+            document.getElementById('goldItemsContainer').addEventListener('input', (event) => {
+                const target = event.target;
+                const targetId = target.id;
+                // If a gram price input is manually changed, set its flag
+                if (targetId.startsWith('itemGramPrice_')) {
+                    App.userModifiedPrices[targetId] = true;
+                }
+                // Update totals on any relevant input change
+                if (targetId.startsWith('itemWeight_') || targetId.startsWith('itemGramPrice_') ||
+                    targetId.startsWith('itemPurity_') || targetId.startsWith('itemWage_') ||
+                    targetId.startsWith('itemProfit_') || targetId.startsWith('itemVAT_')) {
+                    App.Invoice.updateTotal();
+                }
+            });
+
+            // Event listeners for purity dropdowns in calculator tabs
+            ['goldPurity1', 'goldPurity2', 'goldPurity3'].forEach(id => {
+                const puritySelect = document.getElementById(id);
+                if (puritySelect) {
+                    puritySelect.addEventListener('change', (event) => {
+                        const basePriceGramInputId = id.replace('goldPurity', 'price_gram');
+                        const basePriceGramInput = document.getElementById(basePriceGramInputId);
+                        
+                        // NEW: Reset the manual modification flag for this input.
+                        // This allows the price to be auto-updated based on the new purity.
+                        App.userModifiedPrices[basePriceGramInputId] = false;
+
+                        const selectedPurity = parseFloat(event.target.value);
+                        if (!isNaN(App.liveGoldPrice18k) && App.liveGoldPrice18k > 0) {
+                            const adjustedPrice = (App.liveGoldPrice18k * selectedPurity) / 750;
+                            basePriceGramInput.value = App.Utils.formatNumber(adjustedPrice);
+                        }
+                        App.Calculators.calculateAndSave(id.replace('goldPurity', 'column'));
+                    });
+                }
+            });
+
+            // Add input event listeners to price_gram inputs to flag them as manually modified
+            ['price_gram1', 'price_gram2', 'price_gram3'].forEach(id => {
+                const priceGramInput = document.getElementById(id);
+                if (priceGramInput) {
+                    priceGramInput.addEventListener('input', (event) => {
+                        App.Utils.formatNumberInput(event.target);
+                        // NEW: Set the manual modification flag to true.
+                        App.userModifiedPrices[id] = true;
+                        App.Calculators.calculateAndSave(id.replace('price_gram', 'column'));
+                    });
+                }
+            });
+        }
+    };
+
+    // initialize the application when the DOM is fully loaded
+    document.addEventListener('DOMContentLoaded', () => {
+        App.init();
+    });
+</script>
 </body>
 </html>
