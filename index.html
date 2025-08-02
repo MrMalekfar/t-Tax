@@ -1161,7 +1161,7 @@
                     }
                 };
 
-                updateNavbarDisplay('display-dollar-price', data.dollar_toman);
+                updateNavbarDisplay('display-dollar-price', (data.gold_18k_toman/(data.gold_ounce_Dollar/31.1034768*750/1000)).toFixed(0));
                 updateNavbarDisplay('display-gold18k-price', data.gold_18k_toman);
                 updateNavbarDisplay('display-sekke-jadid-price', data.sekke_jadid_toman);
                 updateNavbarDisplay('display-sekke-nim-price', data.sekke_nim_toman);
