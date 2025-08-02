@@ -1066,7 +1066,7 @@
 
                             if (diffMinutes <= FRESHNESS_THRESHOLD_MINUTES && !isNaN(dataTimestamp.getTime())) {
                                 data = cfData;
-                                fetchedFrom = "CF";
+                                fetchedFrom = "";
                                 console.log("Successfully fetched fresh data from Cloudflare Worker.");
                             } else {
                                 console.warn(`Cloudflare Worker data is stale (${diffMinutes.toFixed(1)} min old) or has invalid timestamp. Falling back to GitHub.`);
