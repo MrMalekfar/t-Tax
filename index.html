@@ -43,7 +43,7 @@
 
         /* Highlighted Result Text Styles */
         .highlighted-result {
-            font-size: 1.25rem; /* Mobile first font size */
+            font-size: 1.125rem; /* Mobile first font size */
             color: var(--color-gold-dark);
             font-weight: bold;
             margin-bottom: 1rem;
@@ -52,7 +52,7 @@
         }
         @media (min-width: 768px) {
              .highlighted-result {
-                font-size: 1.5rem; /* Desktop font size */
+                font-size: 1.25rem; /* Desktop font size */
             }
         }
 
@@ -291,24 +291,24 @@
             <h2 class="text-xl md:text-2xl font-bold mb-4 md:mb-8 text-gold-dark border-b-2 border-gold-dark pb-2 md:pb-3 text-center">
                 ابزارها
             </h2>
-            <div class="flex flex-row justify-center md:flex-col">
-                <button id="btn-tab1" class="tab-button group flex-1 md:flex-none flex items-center justify-center p-2.5 my-1 rounded-xl border-t-4 border-r-0 border-transparent md:flex-row md:justify-start md:p-4 md:my-2 md:rounded-l-xl md:rounded-r-none md:border-r-4 md:border-t-0 flex-row-reverse md:flex-row transition-all duration-300 transform">
+            <div class="flex flex-row flex-wrap justify-center md:flex-col">
+                <button id="btn-tab1" class="tab-button group md:flex-none flex items-center justify-center p-2.5 my-1 rounded-xl border-t-4 border-r-0 border-transparent md:flex-row md:justify-start md:p-4 md:my-2 md:rounded-l-xl md:rounded-r-none md:border-r-4 md:border-t-0 flex-row-reverse md:flex-row transition-all duration-300 transform">
                     <div class="tab-button-content">محاسبه وزن طلا</div>
                     <span class="icon-placeholder"><i class="fas fa-balance-scale-left text-xl md:text-2xl"></i></span>
                 </button>
-                <button id="btn-tab2" class="tab-button group flex-1 md:flex-none flex items-center justify-center p-2.5 my-1 rounded-xl border-t-4 border-r-0 border-transparent md:flex-row md:justify-start md:p-4 md:my-2 md:rounded-l-xl md:rounded-r-none md:border-r-4 md:border-t-0 flex-row-reverse md:flex-row transition-all duration-300 transform">
+                <button id="btn-tab2" class="tab-button group md:flex-none flex items-center justify-center p-2.5 my-1 rounded-xl border-t-4 border-r-0 border-transparent md:flex-row md:justify-start md:p-4 md:my-2 md:rounded-l-xl md:rounded-r-none md:border-r-4 md:border-t-0 flex-row-reverse md:flex-row transition-all duration-300 transform">
                     <div class="tab-button-content">محاسبه‌گر جامع</div>
                     <span class="icon-placeholder"><i class="fas fa-calculator text-xl md:text-2xl"></i></span>
                 </button>
-                <button id="btn-tab3" class="tab-button group flex-1 md:flex-none flex items-center justify-center p-2.5 my-1 rounded-xl border-t-4 border-r-0 border-transparent md:flex-row md:justify-start md:p-4 md:my-2 md:rounded-l-xl md:rounded-r-none md:border-r-4 md:border-t-0 flex-row-reverse md:flex-row transition-all duration-300 transform">
+                <button id="btn-tab3" class="tab-button group md:flex-none flex items-center justify-center p-2.5 my-1 rounded-xl border-t-4 border-r-0 border-transparent md:flex-row md:justify-start md:p-4 md:my-2 md:rounded-l-xl md:rounded-r-none md:border-r-4 md:border-t-0 flex-row-reverse md:flex-row transition-all duration-300 transform">
                     <div class="tab-button-content">محاسبه طلای کهنه</div>
                     <span class="icon-placeholder"><i class="fas fa-ring text-xl md:text-2xl"></i></span>
                 </button>
-                <button id="btn-tab4" class="tab-button group flex-1 md:flex-none flex items-center justify-center p-2.5 my-1 rounded-xl border-t-4 border-r-0 border-transparent md:flex-row md:justify-start md:p-4 md:my-2 md:rounded-l-xl md:rounded-r-none md:border-r-4 md:border-t-0 flex-row-reverse md:flex-row transition-all duration-300 transform">
+                <button id="btn-tab4" class="tab-button group md:flex-none flex items-center justify-center p-2.5 my-1 rounded-xl border-t-4 border-r-0 border-transparent md:flex-row md:justify-start md:p-4 md:my-2 md:rounded-l-xl md:rounded-r-none md:border-r-4 md:border-t-0 flex-row-reverse md:flex-row transition-all duration-300 transform">
                     <div class="tab-button-content">صدور فاکتور</div>
                     <span class="icon-placeholder"><i class="fas fa-file-invoice-dollar text-xl md:text-2xl"></i></span>
                 </button>
-                <button id="btn-tab5" class="tab-button group flex-1 md:flex-none flex items-center justify-center p-2.5 my-1 rounded-xl border-t-4 border-r-0 border-transparent md:flex-row md:justify-start md:p-4 md:my-2 md:rounded-l-xl md:rounded-r-none md:border-r-4 md:border-t-0 flex-row-reverse md:flex-row transition-all duration-300 transform">
+                <button id="btn-tab5" class="tab-button group md:flex-none flex items-center justify-center p-2.5 my-1 rounded-xl border-t-4 border-r-0 border-transparent md:flex-row md:justify-start md:p-4 md:my-2 md:rounded-l-xl md:rounded-r-none md:border-r-4 md:border-t-0 flex-row-reverse md:flex-row transition-all duration-300 transform">
                     <div class="tab-button-content">مدیریت اجناس</div>
                     <span class="icon-placeholder"><i class="fas fa-gem text-xl md:text-2xl"></i></span>
                 </button>
@@ -317,178 +317,154 @@
 
         <div class="w-full md:w-4/5 relative mt-4 md:mt-0"> 
             <div id="tab-column1" class="tab-content p-2 sm:p-4">
-                <h2 class="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-gold-dark border-b border-gold-dark pb-2 sm:pb-3">
+                <h2 class="text-lg sm:text-xl font-bold mb-4 sm:mb-6 text-gold-dark border-b border-gold-dark pb-2 sm:pb-3">
                     محاسبه وزن طلا (بر اساس قیمت هدف)
                 </h2>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div class="responsive-input-group flex flex-col sm:flex-row items-stretch sm:items-center justify-between mb-4 sm:mb-5">
-                        <label for="price_gram1" class="text-base sm:text-lg font-semibold text-dark-text mb-2 sm:mb-0">نرخ گرم (18):</label>
+                    <div class="responsive-input-group flex flex-col mb-4">
+                        <label for="price_gram1" class="text-sm sm:text-base font-semibold text-dark-text mb-2">نرخ گرم (18):</label>
                         <div class="input-wrapper flex-1 flex items-center w-full">
-                            <input type="text" id="price_gram1" value="" oninput="App.Utils.formatNumberInput(this)" class="w-full p-2 sm:p-3 rounded-md border text-left text-base bg-input-bg-light text-dark-text border-input-border-light">
+                            <input type="text" id="price_gram1" value="" oninput="App.Utils.formatNumberInput(this)" class="w-full p-2 sm:p-3 rounded-md border text-left text-sm bg-input-bg-light text-dark-text border-input-border-light">
                         </div>
                     </div>
 
-                    <div class="responsive-input-group flex flex-col sm:flex-row items-stretch sm:items-center justify-between mb-4 sm:mb-5">
-                        <label for="goldPurity1" class="text-base sm:text-lg font-semibold text-dark-text mb-2 sm:mb-0">عیار:</label>
+                    <div class="responsive-input-group flex flex-col mb-4">
+                        <label for="goldPurity1" class="text-sm sm:text-base font-semibold text-dark-text mb-2">عیار:</label>
                         <div class="input-wrapper flex-1 flex items-center w-full">
-                            <select id="goldPurity1" class="w-full p-2 sm:p-3 rounded-md border text-left text-base bg-input-bg-light text-dark-text border-input-border-light">
-                                <option value="750">18 عیار (750)</option>
-                                <option value="583.3">14 عیار (583.3)</option>
-                                <option value="708.3">17 عیار (708.3)</option>
-                                <option value="791.6">19 عیار (791.6)</option>
-                                <option value="875">21 عیار (875)</option>
-                                <option value="916">22 عیار (916)</option>
-                                <option value="999.9">24 عیار (999)</option>
-                            </select>
+                            <input type="number" id="goldPurity1" list="purity-list" value="750" step="any" class="w-full p-2 sm:p-3 rounded-md border text-left text-sm bg-input-bg-light text-dark-text border-input-border-light">
                         </div>
                     </div>
 
-                    <div class="responsive-input-group flex flex-col sm:flex-row items-stretch sm:items-center justify-between mb-4 sm:mb-5">
-                        <label for="wage1" class="text-base sm:text-lg font-semibold text-dark-text mb-2 sm:mb-0">اجرت (%):</label>
+                    <div class="responsive-input-group flex flex-col mb-4">
+                        <label for="wage1" class="text-sm sm:text-base font-semibold text-dark-text mb-2">اجرت (%):</label>
                         <div class="input-wrapper flex-1 flex items-center w-full">
-                            <input type="number" id="wage1" value="5" class="w-full p-2 sm:p-3 rounded-md border text-left text-base bg-input-bg-light text-dark-text border-input-border-light">
+                            <input type="number" id="wage1" value="5" class="w-full p-2 sm:p-3 rounded-md border text-left text-sm bg-input-bg-light text-dark-text border-input-border-light">
                         </div>
                     </div>
 
-                    <div class="responsive-input-group flex flex-col sm:flex-row items-stretch sm:items-center justify-between mb-4 sm:mb-5">
-                        <label for="profit1" class="text-base sm:text-lg font-semibold text-dark-text mb-2 sm:mb-0">سود (%):</label>
+                    <div class="responsive-input-group flex flex-col mb-4">
+                        <label for="profit1" class="text-sm sm:text-base font-semibold text-dark-text mb-2">سود (%):</label>
                         <div class="input-wrapper flex-1 flex items-center w-full">
-                            <input type="number" id="profit1" value="5" class="w-full p-2 sm:p-3 rounded-md border text-left text-base bg-input-bg-light text-dark-text border-input-border-light">
+                            <input type="number" id="profit1" value="5" class="w-full p-2 sm:p-3 rounded-md border text-left text-sm bg-input-bg-light text-dark-text border-input-border-light">
                         </div>
                     </div>
 
-                    <div class="responsive-input-group flex flex-col sm:flex-row items-stretch sm:items-center justify-between mb-4 sm:mb-5">
-                        <label for="VAT1" class="text-base sm:text-lg font-semibold text-dark-text mb-2 sm:mb-0">مالیات (%):</label>
+                    <div class="responsive-input-group flex flex-col mb-4">
+                        <label for="VAT1" class="text-sm sm:text-base font-semibold text-dark-text mb-2">مالیات (%):</label>
                         <div class="input-wrapper flex-1 flex items-center w-full">
-                            <input type="number" id="VAT1" value="10" class="w-full p-2 sm:p-3 rounded-md border text-left text-base bg-input-bg-light text-dark-text border-input-border-light">
+                            <input type="number" id="VAT1" value="10" class="w-full p-2 sm:p-3 rounded-md border text-left text-sm bg-input-bg-light text-dark-text border-input-border-light">
                         </div>
                     </div>
 
-                    <div class="responsive-input-group flex flex-col sm:flex-row items-stretch sm:items-center justify-between mb-4 sm:mb-5">
-                        <label for="price_whole1" class="text-base sm:text-lg font-semibold text-dark-text mb-2 sm:mb-0">قیمت هدف :</label>
+                    <div class="responsive-input-group flex flex-col mb-4">
+                        <label for="price_whole1" class="text-sm sm:text-base font-semibold text-dark-text mb-2">قیمت هدف :</label>
                         <div class="input-wrapper flex-1 flex items-center w-full">
-                            <input type="text" id="price_whole1" value="68,000,000" oninput="App.Utils.formatNumberInput(this)" class="w-full p-2 sm:p-3 rounded-md border text-left text-base bg-input-bg-light text-dark-text border-input-border-light">
+                            <input type="text" id="price_whole1" value="68,000,000" oninput="App.Utils.formatNumberInput(this)" class="w-full p-2 sm:p-3 rounded-md border text-left text-sm bg-input-bg-light text-dark-text border-input-border-light">
                         </div>
                     </div>
                 </div>
-                <button id="calculateBtn1" class="btn-gold-gradient w-full py-2 sm:py-3 rounded-lg text-base sm:text-lg font-bold mt-4 sm:mt-6">
+                <button id="calculateBtn1" class="btn-gold-gradient w-full py-2 sm:py-3 rounded-lg text-sm sm:text-base font-bold mt-4 sm:mt-6">
                     محاسبه و ذخیره
                 </button>
 
                 <div class="results mt-4 sm:mt-6 p-3 sm:p-5 bg-results-bg rounded-lg border border-results-border">
                     <p class="highlighted-result">وزن محاسبه شده: <span id="display-weight1" class="font-bold text-gold-dark">0</span> گرم</p>
-                    <p class="text-base sm:text-lg mb-1 sm:mb-2 text-dark-text">مالیات بر ارزش افزوده : <span id="display-tax1" class="font-extrabold text-gold-dark">0</span> تومان</p>
-                    <p class="text-base sm:text-lg mb-1 sm:mb-2 text-dark-text">قیمت قبل از محاسبه مالیات : <span id="display-price-before-tax1" class="font-extrabold text-gold-dark">0</span> تومان</p>
+                    <p class="text-sm sm:text-base mb-1 sm:mb-2 text-dark-text">مالیات بر ارزش افزوده : <span id="display-tax1" class="font-extrabold text-gold-dark">0</span> تومان</p>
+                    <p class="text-sm sm:text-base mb-1 sm:mb-2 text-dark-text">قیمت قبل از محاسبه مالیات : <span id="display-price-before-tax1" class="font-extrabold text-gold-dark">0</span> تومان</p>
                 </div>
             </div>
 
             <div id="tab-column2" class="tab-content p-2 sm:p-4">
-                <h2 class="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-gold-dark border-b border-gold-dark pb-2 sm:pb-3">
+                <h2 class="text-lg sm:text-xl font-bold mb-4 sm:mb-6 text-gold-dark border-b border-gold-dark pb-2 sm:pb-3">
                     محاسبه‌گر جامع
                 </h2>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div class="responsive-input-group flex flex-col sm:flex-row items-stretch sm:items-center justify-between mb-4 sm:mb-5">
-                        <label for="price_gram2" class="text-base sm:text-lg font-semibold text-dark-text mb-2 sm:mb-0">نرخ گرم (18):</label>
+                    <div class="responsive-input-group flex flex-col mb-4">
+                        <label for="price_gram2" class="text-sm sm:text-base font-semibold text-dark-text mb-2">نرخ گرم (18):</label>
                         <div class="input-wrapper flex-1 flex items-center w-full">
-                            <input type="text" id="price_gram2" value="" oninput="App.Utils.formatNumberInput(this)" class="w-full p-2 sm:p-3 rounded-md border text-left text-base bg-input-bg-light text-dark-text border-input-border-light">
+                            <input type="text" id="price_gram2" value="" oninput="App.Utils.formatNumberInput(this)" class="w-full p-2 sm:p-3 rounded-md border text-left text-sm bg-input-bg-light text-dark-text border-input-border-light">
                         </div>
                     </div>
 
-                    <div class="responsive-input-group flex flex-col sm:flex-row items-stretch sm:items-center justify-between mb-4 sm:mb-5">
-                        <label for="goldPurity2" class="text-base sm:text-lg font-semibold text-dark-text mb-2 sm:mb-0">عیار:</label>
+                    <div class="responsive-input-group flex flex-col mb-4">
+                        <label for="goldPurity2" class="text-sm sm:text-base font-semibold text-dark-text mb-2">عیار:</label>
                         <div class="input-wrapper flex-1 flex items-center w-full">
-                            <select id="goldPurity2" class="w-full p-2 sm:p-3 rounded-md border text-left text-base bg-input-bg-light text-dark-text border-input-border-light">
-                                <option value="750">18 عیار (750)</option>
-                                <option value="583.3">14 عیار (583.3)</option>
-                                <option value="708.3">17 عیار (708.3)</option>
-                                <option value="791.6">19 عیار (791.6)</option>
-                                <option value="875">21 عیار (875)</option>
-                                <option value="916">22 عیار (916)</option>
-                                <option value="999.9">24 عیار (999)</option>
-                            </select>
+                             <input type="number" id="goldPurity2" list="purity-list" value="750" step="any" class="w-full p-2 sm:p-3 rounded-md border text-left text-sm bg-input-bg-light text-dark-text border-input-border-light">
                         </div>
                     </div>
 
-                    <div class="responsive-input-group flex flex-col sm:flex-row items-stretch sm:items-center justify-between mb-4 sm:mb-5">
-                        <label for="weight2" class="text-base sm:text-lg font-semibold text-dark-text mb-2 sm:mb-0">وزن:</label>
+                    <div class="responsive-input-group flex flex-col mb-4">
+                        <label for="weight2" class="text-sm sm:text-base font-semibold text-dark-text mb-2">وزن:</label>
                         <div class="input-wrapper flex-1 flex items-center w-full">
-                            <input type="number" id="weight2" value="0" class="w-full p-2 sm:p-3 rounded-md border text-left text-base bg-input-bg-light text-dark-text border-input-border-light">
-                            <span class="text-gold-dark mr-2 text-base"></span>
+                            <input type="number" id="weight2" value="0" class="w-full p-2 sm:p-3 rounded-md border text-left text-sm bg-input-bg-light text-dark-text border-input-border-light">
+                            <span class="text-gold-dark mr-2 text-sm"></span>
                         </div>
                     </div>
 
-                    <div class="responsive-input-group flex flex-col sm:flex-row items-stretch sm:items-center justify-between mb-4 sm:mb-5">
-                        <label for="wage2" class="text-base sm:text-lg font-semibold text-dark-text mb-2 sm:mb-0">اجرت (%):</label>
+                    <div class="responsive-input-group flex flex-col mb-4">
+                        <label for="wage2" class="text-sm sm:text-base font-semibold text-dark-text mb-2">اجرت (%):</label>
                         <div class="input-wrapper flex-1 flex items-center w-full">
-                            <input type="number" id="wage2" value="20" class="w-full p-2 sm:p-3 rounded-md border text-left text-base bg-input-bg-light text-dark-text border-input-border-light">
+                            <input type="number" id="wage2" value="20" class="w-full p-2 sm:p-3 rounded-md border text-left text-sm bg-input-bg-light text-dark-text border-input-border-light">
                         </div>
                     </div>
 
-                    <div class="responsive-input-group flex flex-col sm:flex-row items-stretch sm:items-center justify-between mb-4 sm:mb-5">
-                        <label for="profit2" class="text-base sm:text-lg font-semibold text-dark-text mb-2 sm:mb-0">سود (%):</label>
+                    <div class="responsive-input-group flex flex-col mb-4">
+                        <label for="profit2" class="text-sm sm:text-base font-semibold text-dark-text mb-2">سود (%):</label>
                         <div class="input-wrapper flex-1 flex items-center w-full">
-                            <input type="number" id="profit2" value="7" class="w-full p-2 sm:p-3 rounded-md border text-left text-base bg-input-bg-light text-dark-text border-input-border-light">
+                            <input type="number" id="profit2" value="7" class="w-full p-2 sm:p-3 rounded-md border text-left text-sm bg-input-bg-light text-dark-text border-input-border-light">
                         </div>
                     </div>
 
-                    <div class="responsive-input-group flex flex-col sm:flex-row items-stretch sm:items-center justify-between mb-4 sm:mb-5">
-                        <label for="VAT2" class="text-base sm:text-lg font-semibold text-dark-text mb-2 sm:mb-0">مالیات (%):</label>
+                    <div class="responsive-input-group flex flex-col mb-4">
+                        <label for="VAT2" class="text-sm sm:text-base font-semibold text-dark-text mb-2">مالیات (%):</label>
                         <div class="input-wrapper flex-1 flex items-center w-full">
-                            <input type="number" id="VAT2" value="10" class="w-full p-2 sm:p-3 rounded-md border text-left text-base bg-input-bg-light text-dark-text border-input-border-light">
+                            <input type="number" id="VAT2" value="10" class="w-full p-2 sm:p-3 rounded-md border text-left text-sm bg-input-bg-light text-dark-text border-input-border-light">
                         </div>
                     </div>
                 </div>
-                <button id="calculateBtn2" class="btn-gold-gradient w-full py-2 sm:py-3 rounded-lg text-base sm:text-lg font-bold mt-4 sm:mt-6">
+                <button id="calculateBtn2" class="btn-gold-gradient w-full py-2 sm:py-3 rounded-lg text-sm sm:text-base font-bold mt-4 sm:mt-6">
                     محاسبه و ذخیره
                 </button>
 
                 <div class="results mt-4 sm:mt-6 p-3 sm:p-5 bg-results-bg rounded-lg border border-results-border">
                     <p class="highlighted-result">قیمت نهایی: <span id="display-price-after-tax2" class="font-bold text-gold-dark">0</span> تومان</p>
-                    <p class="text-base sm:text-lg mb-1 sm:mb-2 text-dark-text">مالیات بر ارزش افزوده: <span id="display-tax2" class="font-extrabold text-gold-dark">0</span> تومان</p>
-                    <p class="text-base sm:text-lg mb-1 sm:mb-2 text-dark-text">قیمت قبل از محاسبه مالیات: <span id="display-weight2" class="font-extrabold text-gold-dark">0</span> تومان</p>
-                    <p class="text-base sm:text-lg mb-1 sm:mb-2 text-dark-text">قیمت هر گرم با احتساب اجرت و سود: <span id="display-gram-price-after-tax2" class="font-extrabold text-gold-dark">0</span> تومان</p>
+                    <p class="text-sm sm:text-base mb-1 sm:mb-2 text-dark-text">مالیات بر ارزش افزوده: <span id="display-tax2" class="font-extrabold text-gold-dark">0</span> تومان</p>
+                    <p class="text-sm sm:text-base mb-1 sm:mb-2 text-dark-text">قیمت قبل از محاسبه مالیات: <span id="display-weight2" class="font-extrabold text-gold-dark">0</span> تومان</p>
+                    <p class="text-sm sm:text-base mb-1 sm:mb-2 text-dark-text">قیمت هر گرم با احتساب اجرت و سود: <span id="display-gram-price-after-tax2" class="font-extrabold text-gold-dark">0</span> تومان</p>
                 </div>
             </div>
 
             <div id="tab-column3" class="tab-content p-2 sm:p-4">
-                <h2 class="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-gold-dark border-b border-gold-dark pb-2 sm:pb-3">
+                <h2 class="text-lg sm:text-xl font-bold mb-4 sm:mb-6 text-gold-dark border-b border-gold-dark pb-2 sm:pb-3">
                     محاسبه طلای کهنه
                 </h2>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div class="responsive-input-group flex flex-col sm:flex-row items-stretch sm:items-center justify-between mb-4 sm:mb-5">
-                        <label for="price_gram3" class="text-base sm:text-lg font-semibold text-dark-text mb-2 sm:mb-0">نرخ گرم (18):</label>
+                    <div class="responsive-input-group flex flex-col mb-4">
+                        <label for="price_gram3" class="text-sm sm:text-base font-semibold text-dark-text mb-2">نرخ گرم (18):</label>
                         <div class="input-wrapper flex-1 flex items-center w-full">
-                            <input type="text" id="price_gram3" value="" oninput="App.Utils.formatNumberInput(this)" class="w-full p-2 sm:p-3 rounded-md border text-left text-base bg-input-bg-light text-dark-text border-input-border-light">
+                            <input type="text" id="price_gram3" value="" oninput="App.Utils.formatNumberInput(this)" class="w-full p-2 sm:p-3 rounded-md border text-left text-sm bg-input-bg-light text-dark-text border-input-border-light">
                         </div>
                     </div>
 
-                    <div class="responsive-input-group flex flex-col sm:flex-row items-stretch sm:items-center justify-between mb-4 sm:mb-5">
-                        <label for="goldPurity3" class="text-base sm:text-lg font-semibold text-dark-text mb-2 sm:mb-0">عیار:</label>
+                    <div class="responsive-input-group flex flex-col mb-4">
+                        <label for="goldPurity3" class="text-sm sm:text-base font-semibold text-dark-text mb-2">عیار:</label>
                         <div class="input-wrapper flex-1 flex items-center w-full">
-                            <select id="goldPurity3" class="w-full p-2 sm:p-3 rounded-md border text-left text-base bg-input-bg-light text-dark-text border-input-border-light">
-                                <option value="750">18 عیار (750)</option>
-                                <option value="583.3">14 عیار (583.3)</option>
-                                <option value="708.3">17 عیار (708.3)</option>
-                                <option value="791.6">19 عیار (791.6)</option>
-                                <option value="875">21 عیار (875)</option>
-                                <option value="916">22 عیار (916)</option>
-                                <option value="999.9">24 عیار (999)</option>
-                            </select>
+                             <input type="number" id="goldPurity3" list="purity-list" value="750" step="any" class="w-full p-2 sm:p-3 rounded-md border text-left text-sm bg-input-bg-light text-dark-text border-input-border-light">
                         </div>
                     </div>
 
-                    <div class="responsive-input-group flex flex-col sm:flex-row items-stretch sm:items-center justify-between mb-4 sm:mb-5">
-                        <label for="weight_input3" class="text-base sm:text-lg font-semibold text-dark-text mb-2 sm:mb-0">وزن:</label>
+                    <div class="responsive-input-group flex flex-col mb-4">
+                        <label for="weight_input3" class="text-sm sm:text-base font-semibold text-dark-text mb-2">وزن:</label>
                         <div class="input-wrapper flex-1 flex items-center w-full">
-                            <input type="number" id="weight_input3" value="1" class="w-full p-2 sm:p-3 rounded-md border text-left text-base bg-input-bg-light text-dark-text border-input-border-light">
-                            <span class="text-gold-dark mr-2 text-base"></span>
+                            <input type="number" id="weight_input3" value="1" class="w-full p-2 sm:p-3 rounded-md border text-left text-sm bg-input-bg-light text-dark-text border-input-border-light">
+                            <span class="text-gold-dark mr-2 text-sm"></span>
                         </div>
                     </div>
                 </div>
-                <button id="calculateBtn3" class="btn-gold-gradient w-full py-2 sm:py-3 rounded-lg text-base sm:text-lg font-bold mt-4 sm:mt-6">
+                <button id="calculateBtn3" class="btn-gold-gradient w-full py-2 sm:py-3 rounded-lg text-sm sm:text-base font-bold mt-4 sm:mt-6">
                     محاسبه و ذخیره
                 </button>
 
@@ -498,29 +474,29 @@
             </div>
 
             <div id="tab-column4" class="tab-content p-2 sm:p-4">
-                <h2 class="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-gold-dark border-b border-gold-dark pb-2 sm:pb-3">
+                <h2 class="text-lg sm:text-xl font-bold mb-4 sm:mb-6 text-gold-dark border-b border-gold-dark pb-2 sm:pb-3">
                     صدور فاکتور طلا
                 </h2>
 
                 <div class="mb-6 p-4 border rounded-lg bg-gray-50">
                     <h3 class="text-lg font-semibold mb-3 text-gold-dark">مشخصات مشتری</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="responsive-input-group flex flex-col sm:flex-row items-stretch sm:items-center justify-between mb-4 sm:mb-5">
-                            <label for="customerName" class="text-base sm:text-lg font-semibold text-dark-text mb-2 sm:mb-0">نام و نام خانوادگی:</label>
+                        <div class="responsive-input-group flex flex-col mb-4">
+                            <label for="customerName" class="text-sm sm:text-base font-semibold text-dark-text mb-2">نام و نام خانوادگی:</label>
                             <div class="input-wrapper flex-1 flex items-center w-full">
-                                <input type="text" id="customerName" class="w-full p-2 rounded-md border text-right bg-input-bg-light border-input-border-light">
+                                <input type="text" id="customerName" class="w-full p-2 rounded-md border text-right bg-input-bg-light border-input-border-light text-sm">
                             </div>
                         </div>
-                        <div class="responsive-input-group flex flex-col sm:flex-row items-stretch sm:items-center justify-between mb-4 sm:mb-5">
-                            <label for="customerPhone" class="text-base sm:text-lg font-semibold text-dark-text mb-2 sm:mb-0">شماره تماس:</label>
+                        <div class="responsive-input-group flex flex-col mb-4">
+                            <label for="customerPhone" class="text-sm sm:text-base font-semibold text-dark-text mb-2">شماره تماس:</label>
                             <div class="input-wrapper flex-1 flex items-center w-full">
-                                <input type="text" id="customerPhone" class="w-full p-2 rounded-md border text-left bg-input-bg-light border-input-border-light" placeholder="مثال: 09121234567">
+                                <input type="text" id="customerPhone" class="w-full p-2 rounded-md border text-left bg-input-bg-light border-input-border-light text-sm" placeholder="مثال: 09121234567">
                             </div>
                         </div>
-                        <div class="responsive-input-group flex flex-col sm:flex-row items-stretch sm:items-center justify-between mb-4 sm:mb-5">
-                            <label for="invoiceDate" class="text-base sm:text-lg font-semibold text-dark-text mb-2 sm:mb-0">تاریخ فاکتور:</label>
+                        <div class="responsive-input-group flex flex-col mb-4">
+                            <label for="invoiceDate" class="text-sm sm:text-base font-semibold text-dark-text mb-2">تاریخ فاکتور:</label>
                             <div class="input-wrapper flex-1 flex items-center w-full">
-                                <input type="text" id="invoiceDate" class="w-full p-2 rounded-md border text-left bg-input-bg-light border-input-border-light" placeholder="به صورت خودکار تکمیل می شود" readonly>
+                                <input type="text" id="invoiceDate" class="w-full p-2 rounded-md border text-left bg-input-bg-light border-input-border-light text-sm" placeholder="به صورت خودکار تکمیل می شود" readonly>
                             </div>
                         </div>
                     </div>
@@ -537,7 +513,7 @@
                         </div>
                 </div>
 
-                <button id="generateInvoiceBtn" class="btn-gold-gradient w-full py-2 sm:py-3 rounded-lg text-base sm:text-lg font-bold mt-4 sm:mt-6">
+                <button id="generateInvoiceBtn" class="btn-gold-gradient w-full py-2 sm:py-3 rounded-lg text-sm sm:text-base font-bold mt-4 sm:mt-6">
                     پیش‌نمایش و چاپ فاکتور
                 </button>
 
@@ -549,7 +525,7 @@
             </div>
 
             <div id="tab-column5" class="tab-content p-2 sm:p-4">
-                <h2 class="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-gold-dark border-b border-gold-dark pb-2 sm:pb-3">
+                <h2 class="text-lg sm:text-xl font-bold mb-4 sm:mb-6 text-gold-dark border-b border-gold-dark pb-2 sm:pb-3">
                     مدیریت اجناس (آفلاین)
                 </h2>
 
@@ -558,44 +534,36 @@
                     <form id="product-form">
                         <input type="hidden" id="productId">
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                            <div class="responsive-input-group flex flex-col sm:flex-row items-stretch sm:items-center justify-between mb-4 sm:mb-5">
-                                <label for="productName" class="text-base sm:text-lg font-semibold text-dark-text mb-2 sm:mb-0">نام/شرح کالا:</label>
+                            <div class="responsive-input-group flex flex-col mb-4">
+                                <label for="productName" class="text-sm sm:text-base font-semibold text-dark-text mb-2">نام/شرح کالا:</label>
                                 <div class="input-wrapper flex-1 flex items-center w-full">
-                                    <input type="text" id="productName" required class="w-full p-2 rounded-md border text-right bg-input-bg-light border-input-border-light">
+                                    <input type="text" id="productName" required class="w-full p-2 rounded-md border text-right bg-input-bg-light border-input-border-light text-sm">
                                 </div>
                             </div>
-                            <div class="responsive-input-group flex flex-col sm:flex-row items-stretch sm:items-center justify-between mb-4 sm:mb-5">
-                                <label for="productWeight" class="text-base sm:text-lg font-semibold text-dark-text mb-2 sm:mb-0">وزن:</label>
+                            <div class="responsive-input-group flex flex-col mb-4">
+                                <label for="productWeight" class="text-sm sm:text-base font-semibold text-dark-text mb-2">وزن:</label>
                                 <div class="input-wrapper flex-1 flex items-center w-full">
-                                    <input type="number" id="productWeight" step="0.01" required class="w-full p-2 rounded-md border text-left bg-input-bg-light border-input-border-light">
+                                    <input type="number" id="productWeight" step="0.01" required class="w-full p-2 rounded-md border text-left bg-input-bg-light border-input-border-light text-sm">
                                 </div>
                             </div>
-                            <div class="responsive-input-group flex flex-col sm:flex-row items-stretch sm:items-center justify-between mb-4 sm:mb-5">
-                                <label for="productPurity" class="text-base sm:text-lg font-semibold text-dark-text mb-2 sm:mb-0">عیار:</label>
+                            <div class="responsive-input-group flex flex-col mb-4">
+                                <label for="productPurity" class="text-sm sm:text-base font-semibold text-dark-text mb-2">عیار:</label>
                                 <div class="input-wrapper flex-1 flex items-center w-full">
-                                    <select id="productPurity" class="w-full p-2 rounded-md border text-left bg-input-bg-light border-input-border-light">
-                                        <option value="750">18 عیار (750)</option>
-                                        <option value="583.3">14 عیار (583.3)</option>
-                                        <option value="708.3">17 عیار (708.3)</option>
-                                        <option value="791.6">19 عیار (791.6)</option>
-                                        <option value="875">21 عیار (875)</option>
-                                        <option value="916">22 عیار (916)</option>
-                                        <option value="999.9">24 عیار (999)</option>
-                                    </select>
+                                    <input type="number" id="productPurity" list="purity-list" value="750" step="any" class="w-full p-2 rounded-md border text-left bg-input-bg-light border-input-border-light text-sm">
                                 </div>
                             </div>
-                            <div class="responsive-input-group flex flex-col sm:flex-row items-stretch sm:items-center justify-between mb-4 sm:mb-5">
-                                <label for="productWage" class="text-base sm:text-lg font-semibold text-dark-text mb-2 sm:mb-0">اجرت (%):</label>
+                            <div class="responsive-input-group flex flex-col mb-4">
+                                <label for="productWage" class="text-sm sm:text-base font-semibold text-dark-text mb-2">اجرت (%):</label>
                                 <div class="input-wrapper flex-1 flex items-center w-full">
-                                    <input type="number" id="productWage" value="20" class="w-full p-2 rounded-md border text-left bg-input-bg-light border-input-border-light">
+                                    <input type="number" id="productWage" value="20" class="w-full p-2 rounded-md border text-left bg-input-bg-light border-input-border-light text-sm">
                                 </div>
                             </div>
                         </div>
                         <div class="flex gap-4 mt-4">
-                            <button type="submit" class="btn-gold-gradient py-2 rounded-lg text-base font-bold flex-1">
+                            <button type="submit" class="btn-gold-gradient py-2 rounded-lg text-sm font-bold flex-1">
                                 <i class="fas fa-save mr-2"></i><span id="product-form-submit-btn-text">ذخیره جنس</span>
                             </button>
-                            <button type="button" id="cancelEditBtn" class="hidden py-2 px-4 rounded-lg text-base font-bold bg-gray-400 text-white hover:bg-gray-500 transition-colors">
+                            <button type="button" id="cancelEditBtn" class="hidden py-2 px-4 rounded-lg text-sm font-bold bg-gray-400 text-white hover:bg-gray-500 transition-colors">
                                 <i class="fas fa-times mr-2"></i>لغو ویرایش
                             </button>
                         </div>
@@ -604,10 +572,10 @@
 
                 <div class="p-4 border rounded-lg bg-gray-50">
                     <h3 class="text-lg font-semibold mb-3 text-gold-dark">لیست اجناس ذخیره شده</h3>
-                    <div class="responsive-input-group flex flex-col sm:flex-row items-stretch sm:items-center justify-between mb-4 sm:mb-5">
-                        <label for="productSearch" class="text-base sm:text-lg font-semibold text-dark-text mb-2 sm:mb-0">جستجو بر اساس نام:</label>
+                    <div class="responsive-input-group flex flex-col mb-4">
+                        <label for="productSearch" class="text-sm sm:text-base font-semibold text-dark-text mb-2">جستجو بر اساس نام:</label>
                         <div class="input-wrapper flex-1 flex items-center w-full">
-                            <input type="text" id="productSearch" class="w-full p-2 rounded-md border text-right bg-input-bg-light border-input-border-light" placeholder="نام کالا را وارد کنید...">
+                            <input type="text" id="productSearch" class="w-full p-2 rounded-md border text-right bg-input-bg-light border-input-border-light text-sm" placeholder="نام کالا را وارد کنید...">
                         </div>
                     </div>
                     <div id="productList" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -622,6 +590,16 @@
         </div>
     
     <div id="print-area" class="print-only"></div>
+
+    <datalist id="purity-list">
+        <option value="750">18 عیار</option>
+        <option value="583.3">14 عیار</option>
+        <option value="708.3">17 عیار</option>
+        <option value="791.6">19 عیار</option>
+        <option value="875">21 عیار</option>
+        <option value="916">22 عیار</option>
+        <option value="999.9">24 عیار</option>
+    </datalist>
 
 <script>
     // Global App Object for Modularity
@@ -952,8 +930,8 @@
 
         Calculators: {
              recalculate: function(id) {
-                 const calcId = id || document.querySelector('.tab-content.active').id.replace('tab-column', 'column');
-                 if(this[`calculate${calcId}`]) this[`calculate${calcId}`]();
+                  const calcId = id || document.querySelector('.tab-content.active').id.replace('tab-column', 'column');
+                  if(this[`calculate${calcId}`]) this[`calculate${calcId}`]();
              },
              calculatecolumn1: function() {
                 const U = App.Utils;
@@ -962,6 +940,10 @@
                 const VAT_rate = U.getInputValue('VAT1');
                 const price_gram_18k_input = U.getInputValue('price_gram1');
                 const price_whole = U.getInputValue('price_whole1');
+                const purity = U.getInputValue('goldPurity1');
+
+                // ** FIXED CALCULATION **
+                const adjusted_price_gram = price_gram_18k_input * (purity / 750);
 
                 const labor_cost_factor = wage / 100;
                 const profit_markup_factor = profit / 100;
@@ -971,25 +953,29 @@
                 const tax_base = (labor_cost_factor + (1 + labor_cost_factor) * profit_markup_factor);
                 const final_factor = total_factor + (tax_base * tax_factor);
                 
-                const calculated_weight = price_whole / (price_gram_18k_input * final_factor);
+                const calculated_weight = price_whole / (adjusted_price_gram * final_factor);
                 const rounded_weight = parseFloat(calculated_weight.toFixed(2));
                 
-                const price_before_tax = rounded_weight * price_gram_18k_input * total_factor;
-                const tax_amount = (rounded_weight * price_gram_18k_input * tax_base) * tax_factor;
+                const price_before_tax = rounded_weight * adjusted_price_gram * total_factor;
+                const tax_amount = (rounded_weight * adjusted_price_gram * tax_base) * tax_factor;
 
                 document.getElementById('display-weight1').textContent = U.formatNumber(rounded_weight);
                 document.getElementById('display-tax1').textContent = U.formatNumber(Math.round(tax_amount));
                 document.getElementById('display-price-before-tax1').textContent = U.formatNumber(Math.round(price_before_tax));
             },
-            calculatecolumn2: function() {
+             calculatecolumn2: function() {
                 const U = App.Utils;
                 const weight = U.getInputValue('weight2');
-                const price_gram = U.getInputValue('price_gram2');
+                const price_gram_18k = U.getInputValue('price_gram2');
                 const wage = U.getInputValue('wage2');
                 const profit = U.getInputValue('profit2');
                 const VAT_rate = U.getInputValue('VAT2');
+                const purity = U.getInputValue('goldPurity2');
+
+                // ** FIXED CALCULATION **
+                const adjusted_price_gram = price_gram_18k * (purity / 750);
                 
-                const price_of_gold = weight * price_gram;
+                const price_of_gold = weight * adjusted_price_gram;
                 const labor_cost = price_of_gold * (wage / 100);
                 const profit_amount = (price_of_gold + labor_cost) * (profit / 100);
                 const tax_base = labor_cost + profit_amount;
@@ -1004,12 +990,16 @@
                 document.getElementById('display-weight2').textContent = U.formatNumber(Math.round(price_before_tax));
                 document.getElementById('display-gram-price-after-tax2').textContent = isFinite(final_price_per_gram) ? U.formatNumber(Math.round(final_price_per_gram)) : '0';
             },
-            calculatecolumn3: function() {
+             calculatecolumn3: function() {
                 const U = App.Utils;
                 const weight = U.getInputValue('weight_input3');
-                const price_gram = U.getInputValue('price_gram3');
+                const price_gram_18k = U.getInputValue('price_gram3');
+                const purity = U.getInputValue('goldPurity3');
+
+                // ** FIXED CALCULATION **
+                const adjusted_price_gram = price_gram_18k * (purity / 750);
                 
-                const final_price = weight * price_gram * (735/750);
+                const final_price = weight * adjusted_price_gram; // Removed the (735/750) factor for a pure calculation
                 document.getElementById('display-total-price3').textContent = U.formatNumber(Math.round(final_price));
             }
         },
@@ -1052,10 +1042,10 @@
                 newItem.dataset.itemId = newId;
                 newItem.innerHTML = `
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <div class="responsive-input-group flex flex-col sm:flex-row items-stretch sm:items-center justify-between"><label for="itemWeight_${newId}" class="text-base sm:text-lg font-semibold text-dark-text mb-2 sm:mb-0">وزن:</label><div class="input-wrapper flex-1 flex items-center w-full"><input type="number" id="itemWeight_${newId}" class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-left" value="1" min="0" step="0.01"></div></div>
-                        <div class="responsive-input-group flex flex-col sm:flex-row items-stretch sm:items-center justify-between"><label for="itemGramPrice_${newId}" class="text-base sm:text-lg font-semibold text-dark-text mb-2 sm:mb-0">فی هر گرم:</label><div class="input-wrapper flex-1 flex items-center w-full"><input type="text" id="itemGramPrice_${newId}" class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-left" oninput="App.Utils.formatNumberInput(this)"></div></div>
-                        <div class="responsive-input-group flex flex-col sm:flex-row items-stretch sm:items-center justify-between"><label for="itemDescription_${newId}" class="text-base sm:text-lg font-semibold text-dark-text mb-2 sm:mb-0">توضیحات:</label><div class="input-wrapper flex-1 flex items-center w-full"><input type="text" id="itemDescription_${newId}" class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-right"></div></div>
-                        <div class="responsive-input-group flex flex-col sm:flex-row items-stretch sm:items-center justify-between"><label for="itemWage_${newId}" class="text-base sm:text-lg font-semibold text-dark-text mb-2 sm:mb-0">اجرت (%):</label><div class="input-wrapper flex-1 flex items-center w-full"><input type="number" id="itemWage_${newId}" class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-left" value="20" min="0" step="1"></div></div>
+                        <div class="responsive-input-group flex flex-col"><label for="itemWeight_${newId}" class="text-sm sm:text-base font-semibold text-dark-text mb-2">وزن:</label><div class="input-wrapper flex-1 flex items-center w-full"><input type="number" id="itemWeight_${newId}" class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-left text-sm" value="1" min="0" step="0.01"></div></div>
+                        <div class="responsive-input-group flex flex-col"><label for="itemGramPrice_${newId}" class="text-sm sm:text-base font-semibold text-dark-text mb-2">فی هر گرم:</label><div class="input-wrapper flex-1 flex items-center w-full"><input type="text" id="itemGramPrice_${newId}" class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-left text-sm" oninput="App.Utils.formatNumberInput(this)"></div></div>
+                        <div class="responsive-input-group flex flex-col"><label for="itemDescription_${newId}" class="text-sm sm:text-base font-semibold text-dark-text mb-2">توضیحات:</label><div class="input-wrapper flex-1 flex items-center w-full"><input type="text" id="itemDescription_${newId}" class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-right text-sm"></div></div>
+                        <div class="responsive-input-group flex flex-col"><label for="itemWage_${newId}" class="text-sm sm:text-base font-semibold text-dark-text mb-2">اجرت (%):</label><div class="input-wrapper flex-1 flex items-center w-full"><input type="number" id="itemWage_${newId}" class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-left text-sm" value="20" min="0" step="1"></div></div>
                     </div>
                     <button class="remove-item-btn mt-3 px-3 py-1 bg-red-500 text-white rounded-md text-xs hover:bg-red-600 transition-colors" data-item-id="${newId}"><i class="fas fa-trash-alt mr-1"></i>حذف آیتم</button>
                 `;
@@ -1232,9 +1222,8 @@
                     this.userModifiedPrices[e.target.id] = true;
                     this.Calculators.recalculate(`column${i}`);
                 });
+                // Recalculate when purity is changed
                 document.getElementById(`goldPurity${i}`).addEventListener('change', () => {
-                    this.userModifiedPrices[`price_gram${i}`] = false;
-                    this.UI.updateCalculatorPrices();
                     this.Calculators.recalculate(`column${i}`);
                 });
             });
