@@ -997,7 +997,7 @@
                 const purity = U.getInputValue('goldPurity3');
 
                 // ** FIXED CALCULATION **
-                const adjusted_price_gram = price_gram_18k * ((purity-15) / 750);
+                const adjusted_price_gram = price_gram_18k * (purity / 750) * (735 / 750);
                 
                 const final_price = weight * adjusted_price_gram; // Removed the (735/750) factor for a pure calculation
                 document.getElementById('display-total-price3').textContent = U.formatNumber(Math.round(final_price));
