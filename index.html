@@ -891,7 +891,7 @@
                 };
                 
                 // IMPROVED: Safer dollar price calculation
-                const dollarEl = document.getElementById('display-dollar-price');
+                /*const dollarEl = document.getElementById('display-dollar-price');
                 if (dollarEl) {
                     if (data.gold_ounce_Dollar > 0 && App.liveGoldPrice18k > 0) {
                         const price = (App.liveGoldPrice18k * 31.1034768 * 1000) / (data.gold_ounce_Dollar * 750);
@@ -899,10 +899,10 @@
                     } else {
                          dollarEl.textContent = '--';
                     }
-                }
-
+                }*/
+                updateDisplay('display-dollar-price', data.dollar_toman/10);
                 updateDisplay('display-gold18k-price', data.gold_18k_toman);
-                updateDisplay('display-ounce-price', data.gold_ounce_Dollar);
+                updateDisplay('display-ounce-price', data.gold_ounce_dollar);
                 updateDisplay('display-mesghal-price', data.gold_mesghal_toman);
                 updateDisplay('display-sekke-jadid-price', data.sekke_jadid_toman);
                 updateDisplay('display-sekke-nim-price', data.sekke_nim_toman);
