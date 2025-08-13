@@ -89,7 +89,7 @@
                 font-size: 0.9rem;
             }
         }
-        
+
         .tab-button:hover {
             background-color: #fcfcfc;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
@@ -98,17 +98,17 @@
             background-color: var(--color-results-bg);
             border-color: var(--color-gold-dark) !important;
         }
-        
+
         /* Desktop specific shadows/borders are handled by Tailwind classes */
         @media (min-width: 768px) {
             .tab-button.active {
-                 box-shadow: 4px 0 20px rgba(255, 193, 7, 0.4);
+                box-shadow: 4px 0 20px rgba(255, 193, 7, 0.4);
             }
         }
         /* Mobile specific shadows/borders */
          @media (max-width: 767px) {
             .tab-button.active {
-                 box-shadow: 0 4px 20px rgba(255, 193, 7, 0.4);
+                box-shadow: 0 4px 20px rgba(255, 193, 7, 0.4);
             }
         }
 
@@ -118,7 +118,7 @@
             color: var(--color-dark-text);
             transition: color 0.3s ease;
         }
-        
+
         .tab-button:hover .tab-button-content,
         .tab-button:hover .icon-placeholder {
             color: var(--color-gold-light);
@@ -131,7 +131,7 @@
         .tab-button.active:hover .icon-placeholder {
             color: var(--color-gold-dark);
         }
-        
+
         /* Icon Placeholder Sizing & Alignment */
         .tab-button .icon-placeholder {
             width: 2.5rem;
@@ -139,7 +139,7 @@
             justify-content: center;
             align-items: center;
         }
-        
+
         .tab-button-content {
             flex-grow: 1;
             text-align: right;
@@ -148,8 +148,8 @@
         }
         @media (max-width: 767px) {
             .tab-button-content {
-                 padding-right: 0.5rem;
-                 padding-left: 0;
+                padding-right: 0.5rem;
+                padding-left: 0;
             }
         }
 
@@ -198,7 +198,7 @@
             font-weight: 700;
             color: rgb(98, 37, 37);
         }
-        
+
         .navbar-top .last-updated-span {
             width: 100%;
             text-align: center;
@@ -214,7 +214,7 @@
             }
             .navbar-top span {
                 margin: 0 10px;
-                 padding: 5px 0;
+                padding: 5px 0;
             }
              .navbar-top .last-updated-span {
                 width: auto;
@@ -286,7 +286,7 @@
     </div>
 
     <div class="main-app-container flex flex-col md:flex-row md:justify-center gap-4 md:gap-10 max-w-7xl mx-auto w-full p-4 md:p-8 rounded-3xl shadow-[0_15px_60px_rgba(0,0,0,0.1)] bg-card-light-bg border border-gold-dark/20 transition-all duration-500 no-print">
-        
+
         <div class="w-full md:w-1/5 flex flex-col justify-start items-stretch min-w-[unset] md:min-w-[200px]">
             <h2 class="text-xl md:text-2xl font-bold mb-4 md:mb-8 text-gold-dark border-b-2 border-gold-dark pb-2 md:pb-3 text-center">
                 ابزارها
@@ -303,6 +303,10 @@
                 <button id="btn-tab3" class="tab-button group md:flex-none flex items-center justify-center p-2.5 my-1 rounded-xl border-t-4 border-r-0 border-transparent md:flex-row md:justify-start md:p-4 md:my-2 md:rounded-l-xl md:rounded-r-none md:border-r-4 md:border-t-0 flex-row-reverse md:flex-row transition-all duration-300 transform">
                     <div class="tab-button-content">محاسبه طلای کهنه</div>
                     <span class="icon-placeholder"><i class="fas fa-ring text-xl md:text-2xl"></i></span>
+                </button>
+                <button id="btn-tab6" class="tab-button group md:flex-none flex items-center justify-center p-2.5 my-1 rounded-xl border-t-4 border-r-0 border-transparent md:flex-row md:justify-start md:p-4 md:my-2 md:rounded-l-xl md:rounded-r-none md:border-r-4 md:border-t-0 flex-row-reverse md:flex-row transition-all duration-300 transform">
+                    <div class="tab-button-content">محاسبه آبشده</div>
+                    <span class="icon-placeholder"><i class="fas fa-fire text-xl md:text-2xl"></i></span>
                 </button>
                 <button id="btn-tab4" class="tab-button group md:flex-none flex items-center justify-center p-2.5 my-1 rounded-xl border-t-4 border-r-0 border-transparent md:flex-row md:justify-start md:p-4 md:my-2 md:rounded-l-xl md:rounded-r-none md:border-r-4 md:border-t-0 flex-row-reverse md:flex-row transition-all duration-300 transform">
                     <div class="tab-button-content">صدور فاکتور</div>
@@ -372,6 +376,9 @@
                     <p class="highlighted-result">وزن محاسبه شده: <span id="display-weight1" class="font-bold text-gold-dark">0</span> گرم</p>
                     <p class="text-sm sm:text-base mb-1 sm:mb-2 text-dark-text">مالیات بر ارزش افزوده : <span id="display-tax1" class="font-extrabold text-gold-dark">0</span> تومان</p>
                     <p class="text-sm sm:text-base mb-1 sm:mb-2 text-dark-text">قیمت قبل از محاسبه مالیات : <span id="display-price-before-tax1" class="font-extrabold text-gold-dark">0</span> تومان</p>
+                    <button id="invoiceFromCalc1" class="btn-gold-gradient w-full py-2 rounded-lg text-sm font-bold mt-4 hidden">
+                        <i class="fas fa-file-invoice-dollar mr-2"></i>صدور فاکتور برای این محاسبه
+                    </button>
                 </div>
             </div>
 
@@ -430,9 +437,13 @@
 
                 <div class="results mt-4 sm:mt-6 p-3 sm:p-5 bg-results-bg rounded-lg border border-results-border">
                     <p class="highlighted-result">قیمت نهایی: <span id="display-price-after-tax2" class="font-bold text-gold-dark">0</span> تومان</p>
+                    <p class="text-sm sm:text-base mb-1 sm:mb-2 text-dark-text">وزن در عیار 750: <span id="display-adjusted_wheight_to_750" class="font-bold text-gold-dark">0</span> گرم</p>
                     <p class="text-sm sm:text-base mb-1 sm:mb-2 text-dark-text">مالیات بر ارزش افزوده: <span id="display-tax2" class="font-extrabold text-gold-dark">0</span> تومان</p>
                     <p class="text-sm sm:text-base mb-1 sm:mb-2 text-dark-text">قیمت قبل از محاسبه مالیات: <span id="display-weight2" class="font-extrabold text-gold-dark">0</span> تومان</p>
                     <p class="text-sm sm:text-base mb-1 sm:mb-2 text-dark-text">قیمت هر گرم با احتساب اجرت و سود: <span id="display-gram-price-after-tax2" class="font-extrabold text-gold-dark">0</span> تومان</p>
+                    <button id="invoiceFromCalc2" class="btn-gold-gradient w-full py-2 rounded-lg text-sm font-bold mt-4 hidden">
+                        <i class="fas fa-file-invoice-dollar mr-2"></i>صدور فاکتور برای این محاسبه
+                    </button>
                 </div>
             </div>
 
@@ -470,7 +481,71 @@
 
                 <div class="results mt-4 sm:mt-6 p-3 sm:p-5 bg-results-bg rounded-lg border border-results-border">
                     <p class="highlighted-result">قیمت نهایی: <span id="display-total-price3" class="font-bold text-gold-dark">0</span> تومان</p>
+                    <button id="invoiceFromCalc3" class="btn-gold-gradient w-full py-2 rounded-lg text-sm font-bold mt-4 hidden">
+                        <i class="fas fa-file-invoice-dollar mr-2"></i>صدور فاکتور برای این محاسبه
+                    </button>
                 </div>
+            </div>
+
+            <div id="tab-column6" class="tab-content p-2 sm:p-4">
+                <h2 class="text-lg sm:text-xl font-bold mb-4 sm:mb-6 text-gold-dark border-b border-gold-dark pb-2 sm:pb-3">
+                    محاسبه خرید و فروش آبشده
+                </h2>
+
+                <div class="flex items-center justify-center gap-6 mb-6">
+                    <label class="flex items-center gap-2 cursor-pointer text-lg font-semibold">
+                        <input type="radio" name="transaction_type6" value="sell" class="form-radio h-5 w-5 text-gold-dark focus:ring-gold-accent" checked>
+                        <span>فروش</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer text-lg font-semibold">
+                        <input type="radio" name="transaction_type6" value="buy" class="form-radio h-5 w-5 text-gold-dark focus:ring-gold-accent">
+                        <span>خرید</span>
+                    </label>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="responsive-input-group flex flex-col mb-4">
+                        <label for="price_mesghal6" class="text-sm sm:text-base font-semibold text-dark-text mb-2">نرخ مثقال آبشده (750):</label>
+                        <div class="input-wrapper flex-1 flex items-center w-full">
+                            <input type="text" id="price_mesghal6" value="" oninput="App.Utils.formatNumberInput(this)" class="w-full p-2 sm:p-3 rounded-md border text-left text-sm bg-input-bg-light text-dark-text border-input-border-light">
+                        </div>
+                    </div>
+                    <div class="responsive-input-group flex flex-col mb-4">
+                        <label for="goldPurity6" class="text-sm sm:text-base font-semibold text-dark-text mb-2">عیار:</label>
+                        <div class="input-wrapper flex-1 flex items-center w-full">
+                             <input type="number" id="goldPurity6" list="purity-list" value="750" step="any" class="w-full p-2 sm:p-3 rounded-md border text-left text-sm bg-input-bg-light text-dark-text border-input-border-light">
+                        </div>
+                    </div>
+                    <div class="responsive-input-group flex flex-col mb-4">
+                        <label for="weight_mesghal6" class="text-sm sm:text-base font-semibold text-dark-text mb-2">وزن (مثقال):</label>
+                        <div class="input-wrapper flex-1 flex items-center w-full">
+                            <input type="number" id="weight_mesghal6" value="1" step="0.01" class="w-full p-2 sm:p-3 rounded-md border text-left text-sm bg-input-bg-light text-dark-text border-input-border-light">
+                        </div>
+                    </div>
+                    <div class="responsive-input-group flex flex-col mb-4">
+                        <label for="profit_melted" class="text-sm sm:text-base font-semibold text-dark-text mb-2">سود (%):</label>
+                        <div class="input-wrapper flex-1 flex items-center w-full">
+                            <input type="number" id="profit_melted" value="2" step="0.5" class="w-full p-2 sm:p-3 rounded-md border text-left text-sm bg-input-bg-light text-dark-text border-input-border-light">
+                        </div>
+                    </div>
+                    <div id="buyDeductionContainer6" class="responsive-input-group flex-col mb-4 hidden">
+                        <label for="buy_deduction6" class="text-sm sm:text-base font-semibold text-dark-text mb-2">کسری خرید (تومان):</label>
+                        <div class="input-wrapper flex-1 flex items-center w-full">
+                            <input type="text" id="buy_deduction6" value="100,000" oninput="App.Utils.formatNumberInput(this)" class="w-full p-2 sm:p-3 rounded-md border text-left text-sm bg-input-bg-light text-dark-text border-input-border-light">
+                        </div>
+                    </div>
+                </div>
+                <button id="calculateBtn6" class="btn-gold-gradient w-full py-2 sm:py-3 rounded-lg text-sm sm:text-base font-bold mt-4 sm:mt-6">
+                    محاسبه
+                </button>
+
+                <div class="results mt-4 sm:mt-6 p-3 sm:p-5 bg-results-bg rounded-lg border border-results-border">
+                    <p class="highlighted-result">قیمت نهایی: <span id="display-total-price6" class="font-bold text-gold-dark">0</span> تومان</p>
+                </div>
+
+                <button id="invoiceFromCalc6" class="btn-gold-gradient w-full py-2 rounded-lg text-sm font-bold mt-4 hidden">
+                    <i class="fas fa-file-invoice-dollar mr-2"></i>صدور فاکتور برای این محاسبه
+                </button>
             </div>
 
             <div id="tab-column4" class="tab-content p-2 sm:p-4">
@@ -510,7 +585,7 @@
                         </button>
                     </h3>
                     <div id="goldItemsContainer" class="p-2">
-                        </div>
+                    </div>
                 </div>
 
                 <button id="generateInvoiceBtn" class="btn-gold-gradient w-full py-2 sm:py-3 rounded-lg text-sm sm:text-base font-bold mt-4 sm:mt-6">
@@ -520,7 +595,7 @@
                 <div id="invoicePreviewContainerWrapper" class="hidden mt-6">
                      <h3 class="text-lg font-semibold mb-3 text-gold-dark">پیش‌نمایش فاکتور (سایز A5 Landscape)</h3>
                      <div id="invoicePreviewContainer" class="p-4 bg-white border border-gray-300 rounded-lg shadow-lg mx-auto" style="width: 210mm; min-height: 148mm; box-sizing: border-box;">
-                         </div>
+                             </div>
                 </div>
             </div>
 
@@ -587,8 +662,8 @@
     </div>
 
     <div id="messageBox" class="hidden">
-        </div>
-    
+    </div>
+
     <div id="print-area" class="print-only"></div>
 
     <datalist id="purity-list">
@@ -605,12 +680,12 @@
     // Global App Object for Modularity
     const App = {
         liveGoldPrice18k: 0,
+        liveMesghalPrice: 0,
         userModifiedPrices: {},
 
         DB: {
             db: null,
             initDB: function() {
-                // CORRECTED: Increased version to 2 to avoid VersionError
                 const request = window.indexedDB.open('SiminGoldDB', 2);
 
                 request.onerror = (event) => {
@@ -643,18 +718,18 @@
                 const transaction = this.db.transaction(["products"], "readwrite");
                 const objectStore = transaction.objectStore("products");
                 const request = product.id ? objectStore.put(product) : objectStore.add(product);
-                
+
                 request.onsuccess = () => {
                     App.UI.showMessage(`جنس "${product.name}" با موفقیت ذخیره شد.`, 'success');
                     this.renderProducts();
                 };
-                
+
                 request.onerror = (event) => {
                     console.error("خطا در ذخیره جنس:", event.target.error);
                     App.UI.showMessage("خطا در ذخیره جنس.");
                 };
             },
-            
+
             getProduct: function(id, callback) {
                 if (!this.db) return;
                 const transaction = this.db.transaction(["products"], "readonly");
@@ -668,7 +743,7 @@
                     console.error(`خطا در گرفتن جنس با ID ${id}:`, event.target.error);
                 };
             },
-            
+
             deleteProduct: function(id) {
                 if (!this.db) return;
                 const transaction = this.db.transaction(["products"], "readwrite");
@@ -679,7 +754,7 @@
                     App.UI.showMessage("جنس با موفقیت حذف شد.", 'success');
                     this.renderProducts();
                 };
-                
+
                 request.onerror = (event) => {
                     console.error(`خطا در حذف جنس با ID ${id}:`, event.target.error);
                     App.UI.showMessage("خطا در حذف جنس.");
@@ -699,7 +774,6 @@
                     }
                     noProductsMessage.classList.add('hidden');
                     products.forEach(product => {
-                        // CORRECTED: Added Tailwind classes directly here instead of using a custom class with @apply
                         const card = `
                             <div class="bg-white p-4 rounded-lg shadow-md border border-gray-200 flex flex-col gap-2">
                                 <p class="font-bold text-lg">${product.name}</p>
@@ -716,7 +790,7 @@
                         productListDiv.insertAdjacentHTML('beforeend', card);
                     });
                 };
-                
+
                 if (productsToRender) {
                     display(productsToRender);
                 } else {
@@ -724,7 +798,7 @@
                     const transaction = this.db.transaction(["products"], "readonly");
                     const objectStore = transaction.objectStore("products");
                     const request = objectStore.getAll();
-                    
+
                     request.onsuccess = (event) => {
                         display(event.target.result);
                     };
@@ -733,17 +807,17 @@
                     };
                 }
             },
-            
+
             searchProducts: function(query) {
                 if (!this.db) return;
                 const transaction = this.db.transaction(["products"], "readonly");
                 const objectStore = transaction.objectStore("products");
-                
+
                 if (query.trim() === '') {
                     this.renderProducts();
                     return;
                 }
-                
+
                 const request = objectStore.getAll();
                 request.onsuccess = (event) => {
                     const allProducts = event.target.result;
@@ -776,7 +850,7 @@
             setInputValueAndLocalStorage: function(id, value) {
                 const element = document.getElementById(id);
                 if (!element) return;
-                if (element.type.startsWith('text') && (id.includes('price_gram') || id.includes('price_whole'))) {
+                if (element.type.startsWith('text') && (id.includes('price_gram') || id.includes('price_whole') || id.includes('price_mesghal') || id.includes('buy_deduction'))) {
                     element.value = this.formatNumber(value);
                 } else {
                     element.value = value;
@@ -788,6 +862,7 @@
                     'price_whole1', 'wage1', 'profit1', 'VAT1', 'price_gram1', 'goldPurity1',
                     'weight2', 'wage2', 'profit2', 'VAT2', 'price_gram2', 'goldPurity2',
                     'weight_input3', 'price_gram3', 'goldPurity3',
+                    'price_mesghal6', 'weight_mesghal6', 'goldPurity6', 'profit_melted', 'buy_deduction6',
                     'customerName', 'customerPhone'
                 ];
                 inputs.forEach(id => {
@@ -795,7 +870,7 @@
                     if (savedValue !== null) {
                         const element = document.getElementById(id);
                         if (element) {
-                            if (element.type.startsWith('text') && (id.includes('price_gram') || id.includes('price_whole'))) {
+                            if (element.type.startsWith('text') && (id.includes('price_gram') || id.includes('price_whole') || id.includes('price_mesghal') || id.includes('buy_deduction'))) {
                                 element.value = this.formatNumber(parseFloat(savedValue));
                             } else {
                                 element.value = savedValue;
@@ -803,6 +878,12 @@
                         }
                     }
                 });
+                // Restore radio button state for melted gold calculator
+                const savedTransactionType = localStorage.getItem('transaction_type6');
+                if (savedTransactionType) {
+                    const radioBtn = document.querySelector(`input[name="transaction_type6"][value="${savedTransactionType}"]`);
+                    if (radioBtn) radioBtn.checked = true;
+                }
             },
             generateUniqueId: () => 'item_' + Date.now() + Math.floor(Math.random() * 1000)
         },
@@ -816,8 +897,7 @@
                 msgBox.classList.remove('hidden');
                 msgBox.querySelector('button').onclick = () => msgBox.classList.add('hidden');
             },
-            
-            // NEW: Confirmation dialog
+
             showConfirmation: function(message, onConfirm) {
                 const msgBox = document.getElementById('messageBox');
                 msgBox.style.backgroundColor = '#4a5568'; // gray-700
@@ -841,10 +921,10 @@
             showTab: function(tabId) {
                 document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
                 document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
-                
+
                 const content = document.getElementById(tabId);
                 const button = document.getElementById(tabId.replace('tab-column', 'btn-tab'));
-                
+
                 content.classList.add('active');
                 button.classList.add('active');
 
@@ -873,33 +953,24 @@
                 if (!data) return;
 
                 App.liveGoldPrice18k = data.gold_18k_toman > 0 ? data.gold_18k_toman : 0;
-                
+                App.liveMesghalPrice = data.gold_mesghal_toman > 0 ? data.gold_mesghal_toman : 0;
+
                 this.updateNavbarPrices(data, fetchedFrom);
                 this.updateCalculatorPrices();
-                
+
                 const activeTab = document.querySelector('.tab-content.active');
                 if (activeTab && App[activeTab.dataset.module]) {
                      App[activeTab.dataset.module].recalculate();
                 }
             },
-            
+
             updateNavbarPrices: function(data, source) {
                 const U = App.Utils;
                 const updateDisplay = (id, value) => {
                     const el = document.getElementById(id);
                     if (el) el.textContent = value !== undefined && !isNaN(value) ? U.formatNumber(Math.round(value)) : '--';
                 };
-                
-                // IMPROVED: Safer dollar price calculation
-                /*const dollarEl = document.getElementById('display-dollar-price');
-                if (dollarEl) {
-                    if (data.gold_ounce_Dollar > 0 && App.liveGoldPrice18k > 0) {
-                        const price = (App.liveGoldPrice18k * 31.1034768 * 1000) / (data.gold_ounce_Dollar * 750);
-                        dollarEl.textContent = U.formatNumber(price.toFixed(0));
-                    } else {
-                         dollarEl.textContent = '--';
-                    }
-                }*/
+
                 updateDisplay('display-dollar-price', data.dollar_toman/10);
                 updateDisplay('display-gold18k-price', data.gold_18k_toman);
                 updateDisplay('display-ounce-price', data.gold_ounce_dollar);
@@ -917,21 +988,28 @@
             },
 
             updateCalculatorPrices: function() {
-                if (App.liveGoldPrice18k <= 0) return;
-                ['1', '2', '3'].forEach(i => {
-                    const priceInputId = `price_gram${i}`;
+                if (App.liveGoldPrice18k > 0) {
+                    ['1', '2', '3'].forEach(i => {
+                        const priceInputId = `price_gram${i}`;
+                        if (!App.userModifiedPrices[priceInputId]) {
+                            document.getElementById(priceInputId).value = App.Utils.formatNumber(App.liveGoldPrice18k);
+                        }
+                    });
+                }
+                if (App.liveMesghalPrice > 0) {
+                    const priceInputId = 'price_mesghal6';
                     if (!App.userModifiedPrices[priceInputId]) {
-                        document.getElementById(priceInputId).value = App.Utils.formatNumber(App.liveGoldPrice18k);
+                        document.getElementById(priceInputId).value = App.Utils.formatNumber(App.liveMesghalPrice);
                     }
-                });
+                }
                 App.Invoice.updateAllItemPrices();
             }
         },
 
         Calculators: {
              recalculate: function(id) {
-                  const calcId = id || document.querySelector('.tab-content.active').id.replace('tab-column', 'column');
-                  if(this[`calculate${calcId}`]) this[`calculate${calcId}`]();
+                const calcId = id || document.querySelector('.tab-content.active').id.replace('tab-column', 'column');
+                if(this[`calculate${calcId}`]) this[`calculate${calcId}`]();
              },
              calculatecolumn1: function() {
                 const U = App.Utils;
@@ -942,27 +1020,30 @@
                 const price_whole = U.getInputValue('price_whole1');
                 const purity = U.getInputValue('goldPurity1');
 
-                // ** FIXED CALCULATION **
                 const adjusted_price_gram = price_gram_18k_input * (purity / 750);
 
                 const labor_cost_factor = wage / 100;
                 const profit_markup_factor = profit / 100;
                 const tax_factor = VAT_rate / 100;
-                
+
                 const total_factor = (1 + labor_cost_factor) * (1 + profit_markup_factor);
                 const tax_base = (labor_cost_factor + (1 + labor_cost_factor) * profit_markup_factor);
                 const final_factor = total_factor + (tax_base * tax_factor);
-                
+
                 const calculated_weight = price_whole / (adjusted_price_gram * final_factor);
                 const rounded_weight = parseFloat(calculated_weight.toFixed(2));
-                
+
                 const price_before_tax = rounded_weight * adjusted_price_gram * total_factor;
                 const tax_amount = (rounded_weight * adjusted_price_gram * tax_base) * tax_factor;
 
                 document.getElementById('display-weight1').textContent = U.formatNumber(rounded_weight);
                 document.getElementById('display-tax1').textContent = U.formatNumber(Math.round(tax_amount));
                 document.getElementById('display-price-before-tax1').textContent = U.formatNumber(Math.round(price_before_tax));
-            },
+
+                if (rounded_weight > 0) {
+                    document.getElementById('invoiceFromCalc1').classList.remove('hidden');
+                }
+             },
              calculatecolumn2: function() {
                 const U = App.Utils;
                 const weight = U.getInputValue('weight2');
@@ -971,42 +1052,86 @@
                 const profit = U.getInputValue('profit2');
                 const VAT_rate = U.getInputValue('VAT2');
                 const purity = U.getInputValue('goldPurity2');
-
-                // ** FIXED CALCULATION **
+                const adjusted_weight_to_750 = weight * (purity / 750);
                 const adjusted_price_gram = price_gram_18k * (purity / 750);
-                
+
                 const price_of_gold = weight * adjusted_price_gram;
                 const labor_cost = price_of_gold * (wage / 100);
                 const profit_amount = (price_of_gold + labor_cost) * (profit / 100);
                 const tax_base = labor_cost + profit_amount;
                 const tax_amount = tax_base * (VAT_rate / 100);
-                
+
                 const price_before_tax = price_of_gold + tax_base;
                 const final_price = price_before_tax + tax_amount;
                 const final_price_per_gram = final_price / weight;
-                
+
                 document.getElementById('display-price-after-tax2').textContent = U.formatNumber(Math.round(final_price));
+                document.getElementById('display-adjusted_wheight_to_750').textContent = U.formatNumber((adjusted_weight_to_750));
                 document.getElementById('display-tax2').textContent = U.formatNumber(Math.round(tax_amount));
                 document.getElementById('display-weight2').textContent = U.formatNumber(Math.round(price_before_tax));
                 document.getElementById('display-gram-price-after-tax2').textContent = isFinite(final_price_per_gram) ? U.formatNumber(Math.round(final_price_per_gram)) : '0';
-            },
+
+                if (weight > 0) {
+                    document.getElementById('invoiceFromCalc2').classList.remove('hidden');
+                }
+             },
              calculatecolumn3: function() {
                 const U = App.Utils;
                 const weight = U.getInputValue('weight_input3');
                 const price_gram_18k = U.getInputValue('price_gram3');
                 const purity = U.getInputValue('goldPurity3');
 
-                // ** FIXED CALCULATION **
                 const adjusted_price_gram = price_gram_18k * (purity / 750) * (735 / 750);
-                
-                const final_price = weight * adjusted_price_gram; // Removed the (735/750) factor for a pure calculation
+
+                const final_price = weight * adjusted_price_gram;
                 document.getElementById('display-total-price3').textContent = U.formatNumber(Math.round(final_price));
+
+                if (weight > 0) {
+                    document.getElementById('invoiceFromCalc3').classList.remove('hidden');
+                }
+             },
+             calculatecolumn6: function() {
+                const U = App.Utils;
+                const weight = U.getInputValue('weight_mesghal6');
+                const price_mesghal_750 = U.getInputValue('price_mesghal6');
+                const actual_purity = U.getInputValue('goldPurity6', 750);
+                const profit_for_melted = U.getInputValue('profit_melted');
+                const buy_deduction = U.getInputValue('buy_deduction6');
+                const transactionType = document.querySelector('input[name="transaction_type6"]:checked').value;
+
+                const resultDisplay = document.getElementById('display-total-price6');
+                const invoiceBtn = document.getElementById('invoiceFromCalc6');
+
+                if (price_mesghal_750 <= 0 || weight <= 0 || actual_purity <= 0) {
+                    resultDisplay.textContent = '0';
+                    invoiceBtn.classList.add('hidden');
+                    return;
+                }
+
+                const actual_value_per_mesghal = price_mesghal_750 * (actual_purity / 750);
+
+                let effective_price_per_mesghal;
+
+                if (transactionType === 'sell') {
+                    effective_price_per_mesghal = actual_value_per_mesghal * (1 + profit_for_melted / 100);
+                } else { // 'buy'
+                    effective_price_per_mesghal = actual_value_per_mesghal - buy_deduction;
+                }
+
+                const final_price = weight * effective_price_per_mesghal;
+
+                resultDisplay.textContent = U.formatNumber(Math.round(final_price));
+                if (final_price > 0) {
+                    invoiceBtn.classList.remove('hidden');
+                } else {
+                    invoiceBtn.classList.add('hidden');
+                }
             }
         },
 
         Invoice: {
-             recalculate: function() { this.updateTotal(); },
-             setCurrentInvoiceDate: function() {
+            recalculate: function() { this.updateTotal(); },
+            setCurrentInvoiceDate: function() {
                 const el = document.getElementById('invoiceDate');
                 if (el && !el.value) {
                     const now = new Date();
@@ -1017,6 +1142,7 @@
             updateAllItemPrices: function() {
                 document.querySelectorAll('.gold-item-row').forEach(row => {
                     const itemId = row.dataset.itemId;
+                    if (row.dataset.isMelted === 'true') return; // Don't update price for melted items
                     const priceInputId = `itemGramPrice_${itemId}`;
                     if (!App.userModifiedPrices[priceInputId] && App.liveGoldPrice18k > 0) {
                         document.getElementById(priceInputId).value = App.Utils.formatNumber(App.liveGoldPrice18k);
@@ -1024,42 +1150,71 @@
                 });
                 this.updateTotal();
             },
-            addGoldItemRow: function(productData = null) {
+
+            addGoldItemRow: function(itemData = {}) {
                 const container = document.getElementById('goldItemsContainer');
-                const firstItem = container.querySelector('.gold-item-row[data-item-id="0"]');
-                const allItems = container.querySelectorAll('.gold-item-row');
-
-                if (allItems.length === 1 && firstItem) {
-                    const weightInput = document.getElementById('itemWeight_0');
-                    if (weightInput && parseFloat(weightInput.value) === 1 && App.Utils.getInputValue('itemGramPrice_0') === 0) {
-                         firstItem.remove(); 
-                    }
-                }
-
                 const newId = App.Utils.generateUniqueId();
                 const newItem = document.createElement('div');
                 newItem.className = 'gold-item-row border-b pb-4 mb-4 pt-4';
                 newItem.dataset.itemId = newId;
+
                 newItem.innerHTML = `
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <div class="responsive-input-group flex flex-col"><label for="itemWeight_${newId}" class="text-sm sm:text-base font-semibold text-dark-text mb-2">وزن:</label><div class="input-wrapper flex-1 flex items-center w-full"><input type="number" id="itemWeight_${newId}" class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-left text-sm" value="1" min="0" step="0.01"></div></div>
-                        <div class="responsive-input-group flex flex-col"><label for="itemGramPrice_${newId}" class="text-sm sm:text-base font-semibold text-dark-text mb-2">فی هر گرم:</label><div class="input-wrapper flex-1 flex items-center w-full"><input type="text" id="itemGramPrice_${newId}" class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-left text-sm" oninput="App.Utils.formatNumberInput(this)"></div></div>
-                        <div class="responsive-input-group flex flex-col"><label for="itemDescription_${newId}" class="text-sm sm:text-base font-semibold text-dark-text mb-2">توضیحات:</label><div class="input-wrapper flex-1 flex items-center w-full"><input type="text" id="itemDescription_${newId}" class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-right text-sm"></div></div>
-                        <div class="responsive-input-group flex flex-col"><label for="itemWage_${newId}" class="text-sm sm:text-base font-semibold text-dark-text mb-2">اجرت (%):</label><div class="input-wrapper flex-1 flex items-center w-full"><input type="number" id="itemWage_${newId}" class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-left text-sm" value="20" min="0" step="1"></div></div>
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                        <div class="responsive-input-group flex flex-col lg:col-span-1">
+                            <label for="itemDescription_${newId}" class="text-sm sm:text-base font-semibold text-dark-text mb-2">توضیحات:</label>
+                            <div class="input-wrapper flex-1 flex items-center w-full"><input type="text" id="itemDescription_${newId}" class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-right text-sm"></div>
+                        </div>
+                        <div class="responsive-input-group flex flex-col">
+                            <label for="itemWeight_${newId}" class="text-sm sm:text-base font-semibold text-dark-text mb-2">وزن:</label>
+                            <div class="input-wrapper flex-1 flex items-center w-full"><input type="number" id="itemWeight_${newId}" class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-left text-sm" value="1" min="0" step="0.01"></div>
+                        </div>
+                        <div class="responsive-input-group flex flex-col">
+                            <label for="itemPurity_${newId}" class="text-sm sm:text-base font-semibold text-dark-text mb-2">عیار:</label>
+                            <div class="input-wrapper flex-1 flex items-center w-full"><input type="number" list="purity-list" id="itemPurity_${newId}" class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-left text-sm" value="750" step="any"></div>
+                        </div>
+                        <div class="responsive-input-group flex flex-col">
+                            <label for="itemGramPrice_${newId}" class="text-sm sm:text-base font-semibold text-dark-text mb-2">فی هر گرم (۱۸):</label>
+                            <div class="input-wrapper flex-1 flex items-center w-full"><input type="text" id="itemGramPrice_${newId}" class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-left text-sm" oninput="App.Utils.formatNumberInput(this)"></div>
+                        </div>
+                        <div class="responsive-input-group flex flex-col">
+                            <label for="itemWage_${newId}" class="text-sm sm:text-base font-semibold text-dark-text mb-2">اجرت (%):</label>
+                            <div class="input-wrapper flex-1 flex items-center w-full"><input type="number" id="itemWage_${newId}" class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-left text-sm" value="20" min="0" step="1"></div>
+                        </div>
                     </div>
                     <button class="remove-item-btn mt-3 px-3 py-1 bg-red-500 text-white rounded-md text-xs hover:bg-red-600 transition-colors" data-item-id="${newId}"><i class="fas fa-trash-alt mr-1"></i>حذف آیتم</button>
                 `;
                 container.appendChild(newItem);
 
-                const priceInput = document.getElementById(`itemGramPrice_${newId}`);
-                if (productData) {
-                    document.getElementById(`itemDescription_${newId}`).value = productData.name;
-                    document.getElementById(`itemWeight_${newId}`).value = productData.weight;
-                    document.getElementById(`itemWage_${newId}`).value = productData.wage;
+                // Populate with data
+                document.getElementById(`itemDescription_${newId}`).value = itemData.description || itemData.name || '';
+                document.getElementById(`itemWeight_${newId}`).value = itemData.weight || 1;
+                document.getElementById(`itemPurity_${newId}`).value = itemData.purity || 750;
+
+                if (itemData.isOldGold) {
+                    newItem.dataset.isOldGold = 'true';
                 }
-                
-                if (App.liveGoldPrice18k > 0) {
-                    priceInput.value = App.Utils.formatNumber(App.liveGoldPrice18k);
+
+                if (itemData.isMelted) {
+                    newItem.dataset.isMelted = 'true';
+                    newItem.dataset.finalPrice = itemData.finalPrice;
+
+                    const gramPriceInput = document.getElementById(`itemGramPrice_${newId}`);
+                    const wageInput = document.getElementById(`itemWage_${newId}`);
+                    gramPriceInput.value = '---';
+                    gramPriceInput.disabled = true;
+                    wageInput.value = '---';
+                    wageInput.disabled = true;
+                } else {
+                    document.getElementById(`itemWage_${newId}`).value = itemData.wage !== undefined ? itemData.wage : 20;
+                    const priceInput = document.getElementById(`itemGramPrice_${newId}`);
+                    let gramPriceToSet = itemData.gramPrice;
+
+                    if (gramPriceToSet) {
+                        App.userModifiedPrices[priceInput.id] = true;
+                        priceInput.value = App.Utils.formatNumber(gramPriceToSet);
+                    } else if (App.liveGoldPrice18k > 0) {
+                        priceInput.value = App.Utils.formatNumber(App.liveGoldPrice18k);
+                    }
                 }
 
                 this.updateTotal();
@@ -1076,120 +1231,227 @@
                     this.updateTotal();
                 }
             },
+
             updateTotal: function() {
-                // This function now just saves data to localStorage
                 const items = [];
                 document.querySelectorAll('.gold-item-row').forEach(row => {
                     const itemId = row.dataset.itemId;
-                    items.push({
+                    const isMelted = row.dataset.isMelted === 'true';
+
+                    const item = {
+                        description: document.getElementById(`itemDescription_${itemId}`).value,
                         weight: App.Utils.getInputValue(`itemWeight_${itemId}`),
-                        gramPrice: App.Utils.getInputValue(`itemGramPrice_${itemId}`),
-                        wage: App.Utils.getInputValue(`itemWage_${itemId}`),
-                        description: document.getElementById(`itemDescription_${itemId}`).value
-                    });
+                        purity: App.Utils.getInputValue(`itemPurity_${itemId}`),
+                        isOldGold: row.dataset.isOldGold === 'true',
+                        isMelted: isMelted
+                    };
+
+                    if (isMelted) {
+                        item.finalPrice = parseFloat(row.dataset.finalPrice || 0);
+                    } else {
+                        item.gramPrice = App.Utils.getInputValue(`itemGramPrice_${itemId}`);
+                        item.wage = App.Utils.getInputValue(`itemWage_${itemId}`);
+                    }
+                    items.push(item);
                 });
                 localStorage.setItem('goldInvoiceItems', JSON.stringify(items));
             },
+
+            // =========================================================================
+            // START OF MODIFIED INVOICE GENERATION FUNCTION
+            // =========================================================================
             generateInvoice: function() {
                 const U = App.Utils;
                 const customerName = document.getElementById('customerName').value;
                 const customerPhone = document.getElementById('customerPhone').value;
                 const invoiceDate = document.getElementById('invoiceDate').value;
-                
+
                 U.setInputValueAndLocalStorage('customerName', customerName);
                 U.setInputValueAndLocalStorage('customerPhone', customerPhone);
-                
-                let totalFinalPrice = 0;
-                let itemsHtml = '';
-                
-                document.querySelectorAll('.gold-item-row').forEach((row, i) => {
+
+                const invoiceItemsData = [];
+
+                document.querySelectorAll('.gold-item-row').forEach(row => {
                     const itemId = row.dataset.itemId;
+                    const description = document.getElementById(`itemDescription_${itemId}`).value;
+                    const purity = U.getInputValue(`itemPurity_${itemId}`, 750);
                     const weight = U.getInputValue(`itemWeight_${itemId}`);
-                    const gramPrice = U.getInputValue(`itemGramPrice_${itemId}`);
-                    const wage = U.getInputValue(`itemWage_${itemId}`);
-                    const description = document.getElementById(`itemDescription_${itemId}`).value || 'طلای ۱۸ عیار';
-                    
-                    if (weight > 0 && gramPrice > 0) {
-                        const priceOfGold = weight * gramPrice;
+                    const isMelted = row.dataset.isMelted === 'true';
+                    const isOldGold = row.dataset.isOldGold === 'true';
+
+                    if (weight <= 0) return; // Skip items with no weight
+
+                    const item = {
+                        description: description || (isOldGold ? 'طلای کهنه' : (isMelted ? 'آبشده' : 'طلای ساخته شده')),
+                        weight: weight,
+                        purity: purity,
+                        isMelted: isMelted,
+                        transactionType: description.toLowerCase().includes('خرید') ? 'buy' : 'sell'
+                    };
+
+                    if (isMelted) {
+                        item.finalPrice = parseFloat(row.dataset.finalPrice || 0);
+                        const convertedWeight750 = item.weight * (item.purity / 750);
+                        item.pricePer750Gram = convertedWeight750 > 0 ? item.finalPrice / convertedWeight750 : 0;
+                        item.gramPrice = null;
+                        item.wage = null;
+                    } else if (isOldGold) {
+                        const gramPrice = U.getInputValue(`itemGramPrice_${itemId}`);
+                        const adjustedGramPrice = gramPrice * (item.purity / 750) * (735 / 750);
+                        item.finalPrice = item.weight * adjustedGramPrice;
+                        item.gramPrice = gramPrice;
+                        item.wage = null;
+                        item.pricePer750Gram = null;
+                    } else { // New Gold
+                        const gramPrice = U.getInputValue(`itemGramPrice_${itemId}`);
+                        const wage = U.getInputValue(`itemWage_${itemId}`);
+                        const adjustedGramPrice = gramPrice * (item.purity / 750);
+                        const priceOfGold = item.weight * adjustedGramPrice;
                         const laborCost = priceOfGold * (wage / 100);
-                        const profit = (priceOfGold + laborCost) * 0.07; // 7% profit
-                        const tax = (laborCost + profit) * 0.10; // 10% VAT
-                        const finalPrice = priceOfGold + laborCost + profit + tax;
-                        totalFinalPrice += finalPrice;
-                        
-                        itemsHtml += `
-                            <tr style="border-bottom: 1px solid #ccc;">
-                                <td style="padding: 4px; text-align: center;">${i + 1}</td>
-                                <td style="padding: 4px;">${description}</td>
-                                <td style="padding: 4px; text-align: center;">${U.formatNumber(weight)}</td>
-                                <td style="padding: 4px; text-align: center;">${U.formatNumber(Math.round(gramPrice))}</td>
-                                <td style="padding: 4px; text-align: center;">${wage}%</td>
-                                <td style="padding: 4px; text-align: center;">${U.formatNumber(Math.round(finalPrice))}</td>
-                            </tr>
-                        `;
+                        const profit = (priceOfGold + laborCost) * 0.07;
+                        const tax = (laborCost + profit) * 0.10;
+                        item.finalPrice = priceOfGold + laborCost + profit + tax;
+                        item.gramPrice = gramPrice;
+                        item.wage = wage;
+                        item.pricePer750Gram = null;
                     }
+                    invoiceItemsData.push(item);
                 });
 
-                if (totalFinalPrice <= 0) {
+                if (invoiceItemsData.length === 0) {
                     App.UI.showMessage('لطفا حداقل یک آیتم معتبر برای صدور فاکتور وارد کنید.');
                     return;
                 }
 
-                const invoiceContent = `
-                    <div style="font-family: sans-serif; direction: rtl; width: 190mm; margin: auto; font-size: 10pt; color: #333;">
-                        <header style="text-align: center; border-bottom: 2px solid #DAA520; padding-bottom: 5px; margin-bottom: 10px;">
-                            <h1 style="margin: 0; color: #DAA520; font-size: 1.5rem;">فاکتور فروش طلا</h1>
-                            <p style="margin: 2px 0;">جواهری فانی - آدرس: خوی مجتمع تجاری اداری آنا آتا - تلفن: 09141610649</p>
-                        </header>
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 9pt;">
-                            <div><strong>نام مشتری:</strong> ${customerName || 'نامشخص'}</div>
-                            <div><strong>شماره تماس:</strong> ${customerPhone || 'نامشخص'}</div>
-                            <div><strong>تاریخ:</strong> ${invoiceDate}</div>
+                let totalSales = 0;
+                let totalPurchases = 0;
+                let itemsHtml = '';
+
+                invoiceItemsData.forEach((item, i) => {
+                    if (item.transactionType === 'buy') {
+                        totalPurchases += item.finalPrice;
+                    } else {
+                        totalSales += item.finalPrice;
+                    }
+
+                    // *** CHANGE STARTS HERE ***
+                    // Conditionally render the row based on whether the item is melted gold
+                    if (item.isMelted) {
+                        itemsHtml += `
+                            <tr style="border-bottom: 1px solid #ccc; ${item.transactionType === 'buy' ? 'background-color: #fff5f5;' : ''}">
+                                <td style="padding: 4px; text-align: center;">${i + 1}</td>
+                                <td style="padding: 4px;">${item.description}</td>
+                                <td style="padding: 4px; text-align: center;">${U.formatNumber(item.weight.toFixed(3))}</td>
+                                <td style="padding: 4px; text-align: center;">${item.purity}</td>
+                                <td style="padding: 4px; text-align: center;">${item.pricePer750Gram ? U.formatNumber(Math.round(item.pricePer750Gram)) : '---'}</td>
+                                <td style="padding: 4px; text-align: center;">---</td>
+                                <td style="padding: 4px; text-align: center;">---</td>
+                                <td style="padding: 4px; text-align: center;">${U.formatNumber(Math.round(item.finalPrice))}</td>
+                            </tr>
+                        `;
+                    } else {
+                        itemsHtml += `
+                            <tr style="border-bottom: 1px solid #ccc; ${item.transactionType === 'buy' ? 'background-color: #fff5f5;' : ''}">
+                                <td style="padding: 4px; text-align: center;">${i + 1}</td>
+                                <td style="padding: 4px;">${item.description}</td>
+                                <td style="padding: 4px; text-align: center;">${U.formatNumber(item.weight.toFixed(3))}</td>
+                                <td style="padding: 4px; text-align: center;">${item.purity}</td>
+                                <td style="padding: 4px; text-align: center;">${item.pricePer750Gram ? U.formatNumber(Math.round(item.pricePer750Gram)) : '---'}</td>
+                                <td style="padding: 4px; text-align: center;">${item.gramPrice ? U.formatNumber(Math.round(item.gramPrice)) : '---'}</td>
+                                <td style="padding: 4px; text-align: center;">${item.wage !== null ? item.wage + '%' : '---'}</td>
+                                <td style="padding: 4px; text-align: center;">${U.formatNumber(Math.round(item.finalPrice))}</td>
+                            </tr>
+                        `;
+                    }
+                    // *** CHANGE ENDS HERE ***
+                });
+
+                const finalPayableAmount = totalSales - totalPurchases;
+                const hasBuyAndSell = totalSales > 0 && totalPurchases > 0;
+
+                let footerHtml;
+                if (hasBuyAndSell) {
+                    footerHtml = `
+                        <div style="font-size: 10pt; line-height: 1.6;">
+                            <div>جمع کل فروش: <span style="font-weight: bold;">${U.formatNumber(Math.round(totalSales))}</span> تومان</div>
+                            <div>جمع کل خرید: <span style="font-weight: bold;">${U.formatNumber(Math.round(totalPurchases))}</span> تومان</div>
+                            <hr style="border: 0; border-top: 1px solid #ccc; margin: 4px 0;" />
+                            <div style="font-size: 11pt;"><strong>مبلغ نهایی ${finalPayableAmount >= 0 ? 'پرداختی' : 'دریافتی'}: </strong>
+                                <span style="font-size: 1.4rem; font-weight: bold;">${U.formatNumber(Math.round(Math.abs(finalPayableAmount)))}</span> تومان
+                            </div>
                         </div>
-                        <table style="width: 100%; border-collapse: collapse; font-size: 9pt;">
-                            <thead>
-                                <tr style="background-color: #f0f0f0;">
-                                    <th style="padding: 4px; border: 1px solid #ccc;">ردیف</th>
-                                    <th style="padding: 4px; border: 1px solid #ccc; text-align: right;">شرح کالا</th>
-                                    <th style="padding: 4px; border: 1px solid #ccc;">وزن (گرم)</th>
-                                    <th style="padding: 4px; border: 1px solid #ccc;">فی هر گرم</th>
-                                    <th style="padding: 4px; border: 1px solid #ccc;">اجرت</th>
-                                    <th style="padding: 4px; border: 1px solid #ccc;">مبلغ نهایی (تومان)</th>
-                                </tr>
-                            </thead>
-                            <tbody>${itemsHtml}</tbody>
-                        </table>
-                        <footer style="margin-top: 20px; display: flex; justify-content: space-between; align-items: flex-end;">
-                           <div style="font-size: 11pt;"><strong>مبلغ قابل پرداخت: </strong><span style="font-size: 1.4rem; font-weight: bold;">${U.formatNumber(Math.round(totalFinalPrice))}</span> تومان</div>
-                           <div style="text-align: center;">
-                                <p style="margin-bottom: 25px;">امضای فروشنده</p>
-                                <div style="border-top: 1px solid #333; width: 150px;"></div>
-                           </div>
-                        </footer>
-                    </div>`;
+                    `;
+                } else {
+                     footerHtml = `
+                        <div style="font-size: 11pt;"><strong>مبلغ قابل پرداخت: </strong><span style="font-size: 1.4rem; font-weight: bold;">${U.formatNumber(Math.round(finalPayableAmount))}</span> تومان</div>
+                    `;
+                }
+
+                const invoiceContent = `
+<div style="font-family: sans-serif; direction: rtl; width: 190mm; margin: auto; font-size: 10pt; color: #333;">
+    <header style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #DAA520; padding-bottom: 10px; margin-bottom: 15px;">
+        <p style="margin: 4px 0;"><i class="fas fa-map-marker-alt" style="margin-left: 5px; color: #DAA520;"></i>خوی، مجتمع تجاری اداری آنا آتا</p>
+        <div style="display: flex; flex-direction: column; align-items: center;">
+            <img src="logo.png" alt="لوگو" style="height: 50px; width: auto;">
+            <h1 style="margin: 5px 0 0; color: #DAA520; font-size: 1.2rem; text-align: center;">جواهری فانی</h1>
+        </div>
+        <p style="margin: 4px 0;"><i class="fas fa-phone-alt" style="margin-left: 5px; color: #DAA520;"></i>09141610649</p>
+    </header>
+    <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 9pt;">
+        <div><strong>نام مشتری:</strong> ${customerName || 'نامشخص'}</div>
+        <div><strong>شماره تماس:</strong> ${customerPhone || 'نامشخص'}</div>
+        <div><strong>تاریخ:</strong> ${invoiceDate}</div>
+    </div>
+    <table style="width: 100%; border-collapse: collapse; font-size: 8.5pt;">
+        <thead>
+            <tr style="background-color: #f0f0f0;">
+                <th style="padding: 4px; border: 1px solid #ccc;">ردیف</th>
+                <th style="padding: 4px; border: 1px solid #ccc; text-align: right; width: 25%;">شرح کالا</th>
+                <th style="padding: 4px; border: 1px solid #ccc;">وزن (گرم)</th>
+                <th style="padding: 4px; border: 1px solid #ccc;">عیار</th>
+                <th style="padding: 4px; border: 1px solid #ccc;">فی گرم (750)</th>
+                <th style="padding: 4px; border: 1px solid #ccc;">فی گرم (۱۸)</th>
+                <th style="padding: 4px; border: 1px solid #ccc;">اجرت</th>
+                <th style="padding: 4px; border: 1px solid #ccc;">مبلغ نهایی (تومان)</th>
+            </tr>
+        </thead>
+        <tbody>${itemsHtml}</tbody>
+    </table>
+    <footer style="margin-top: 20px; display: flex; justify-content: space-between; align-items: flex-end;">
+        ${footerHtml}
+        <div style="text-align: center;">
+            <p style="margin-bottom: 25px;">امضای فروشنده</p>
+            <div style="border-top: 1px solid #333; width: 150px;"></div>
+        </div>
+    </footer>
+</div>`;
 
                 document.getElementById('invoicePreviewContainerWrapper').classList.remove('hidden');
                 document.getElementById('invoicePreviewContainer').innerHTML = invoiceContent;
                 document.getElementById('print-area').innerHTML = invoiceContent;
-                
+
                 setTimeout(() => window.print(), 200);
-            }
+            },
+            // =========================================================================
+            // END OF MODIFIED INVOICE GENERATION FUNCTION
+            // =========================================================================
         },
 
         init: function() {
             this.DB.initDB();
             this.Utils.loadValuesFromLocalStorage();
-            
+
             const savedItems = JSON.parse(localStorage.getItem('goldInvoiceItems') || '[]');
             if (savedItems.length > 0) {
+                document.getElementById('goldItemsContainer').innerHTML = ''; // Clear default
                 savedItems.forEach(itemData => this.Invoice.addGoldItemRow(itemData));
             } else {
-                 this.Invoice.addGoldItemRow(); // Add one default item if none are saved
+                 this.Invoice.addGoldItemRow();
             }
 
             this.UI.fetchLivePrices();
             setInterval(() => this.UI.fetchLivePrices(), 60000); 
-            
+
             this.UI.showTab('tab-column1');
 
             document.querySelectorAll('.tab-button').forEach(btn => {
@@ -1199,7 +1461,7 @@
             document.querySelectorAll('[id^="calculateBtn"]').forEach(btn => {
                 btn.addEventListener('click', () => this.Calculators.recalculate(btn.id.replace('calculateBtn', 'column')));
             });
-            
+
             document.getElementById('generateInvoiceBtn').addEventListener('click', () => this.Invoice.generateInvoice());
             document.getElementById('addGoldItemBtn').addEventListener('click', () => this.Invoice.addGoldItemRow());
 
@@ -1207,7 +1469,7 @@
                 const button = e.target.closest('.remove-item-btn');
                 if (button) this.Invoice.removeGoldItemRow(button);
             });
-            
+
             document.getElementById('goldItemsContainer').addEventListener('input', (e) => {
                 const targetId = e.target.id;
                 if (targetId.startsWith('itemGramPrice_')) {
@@ -1222,10 +1484,122 @@
                     this.userModifiedPrices[e.target.id] = true;
                     this.Calculators.recalculate(`column${i}`);
                 });
-                // Recalculate when purity is changed
                 document.getElementById(`goldPurity${i}`).addEventListener('change', () => {
                     this.Calculators.recalculate(`column${i}`);
                 });
+            });
+
+            document.getElementById('price_mesghal6').addEventListener('input', (e) => {
+                this.Utils.formatNumberInput(e.target);
+                this.userModifiedPrices[e.target.id] = true;
+            });
+
+            ['price_mesghal6', 'weight_mesghal6', 'goldPurity6', 'profit_melted', 'buy_deduction6'].forEach(id => {
+                 document.getElementById(id).addEventListener('input', () => this.Calculators.recalculate('column6'));
+            });
+
+            const meltedProfitContainer = document.getElementById('profit_melted').parentElement.parentElement;
+            const meltedDeductionContainer = document.getElementById('buyDeductionContainer6');
+
+            const handleTransactionTypeChange = () => {
+                const type = document.querySelector('input[name="transaction_type6"]:checked').value;
+                if (type === 'buy') {
+                    meltedProfitContainer.classList.add('hidden');
+                    meltedDeductionContainer.classList.remove('hidden');
+                } else { // 'sell'
+                    meltedProfitContainer.classList.remove('hidden');
+                    meltedDeductionContainer.classList.add('hidden');
+                }
+                this.Calculators.recalculate('column6');
+            };
+
+            document.querySelectorAll('input[name="transaction_type6"]').forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    handleTransactionTypeChange();
+                    localStorage.setItem(e.target.name, e.target.value);
+                });
+            });
+
+            handleTransactionTypeChange(); // Set initial state on load
+
+            document.getElementById('invoiceFromCalc1').addEventListener('click', () => {
+                const U = App.Utils;
+                const weight = parseFloat(document.getElementById('display-weight1').textContent.replace(/,/g, ''));
+                if (weight > 0 && !isNaN(weight)) {
+                    const itemData = {
+                        description: `محصول محاسبه‌شده`,
+                        weight: weight,
+                        purity: U.getInputValue('goldPurity1'),
+                        wage: U.getInputValue('wage1'),
+                        gramPrice: U.getInputValue('price_gram1')
+                    };
+                    App.UI.showTab('tab-column4');
+                    App.Invoice.addGoldItemRow(itemData);
+                    App.UI.showMessage('آیتم با موفقیت به فاکتور اضافه شد.', 'success');
+                } else {
+                    App.UI.showMessage('ابتدا یک محاسبه معتبر انجام دهید.');
+                }
+            });
+
+            document.getElementById('invoiceFromCalc2').addEventListener('click', () => {
+                const U = App.Utils;
+                const weight = U.getInputValue('weight2');
+                if (weight > 0) {
+                    const itemData = {
+                        description: `محصول محاسبه‌شده`,
+                        weight: weight,
+                        purity: U.getInputValue('goldPurity2'),
+                        wage: U.getInputValue('wage2'),
+                        gramPrice: U.getInputValue('price_gram2')
+                    };
+                    App.UI.showTab('tab-column4');
+                    App.Invoice.addGoldItemRow(itemData);
+                    App.UI.showMessage('آیتم با موفقیت به فاکتور اضافه شد.', 'success');
+                } else {
+                    App.UI.showMessage('لطفا یک وزن معتبر وارد کنید.');
+                }
+            });
+
+            document.getElementById('invoiceFromCalc3').addEventListener('click', () => {
+                const U = App.Utils;
+                const weight = U.getInputValue('weight_input3');
+                if (weight > 0) {
+                    const purity = U.getInputValue('goldPurity3');
+                    const itemData = {
+                        description: `خرید طلای کهنه`,
+                        weight: weight,
+                        purity: purity,
+                        wage: 0, 
+                        gramPrice: U.getInputValue('price_gram3'),
+                        isOldGold: true
+                    };
+                    App.UI.showTab('tab-column4');
+                    App.Invoice.addGoldItemRow(itemData);
+                    App.UI.showMessage('آیتم طلای کهنه با موفقیت به فاکتور اضافه شد.', 'success');
+                } else {
+                    App.UI.showMessage('لطفا یک وزن معتبر وارد کنید.');
+                }
+            });
+
+            document.getElementById('invoiceFromCalc6').addEventListener('click', () => {
+                const U = App.Utils;
+                const finalPrice = U.unformatNumber(document.getElementById('display-total-price6').textContent);
+
+                if (finalPrice > 0) {
+                    const type = document.querySelector('input[name="transaction_type6"]:checked').value;
+                    const itemData = {
+                        description: (type === 'buy' ? 'خرید' : 'فروش') + ' آبشده',
+                        weight: U.getInputValue('weight_mesghal6') * 4.6083, // Convert to grams
+                        purity: U.getInputValue('goldPurity6'),
+                        finalPrice: finalPrice,
+                        isMelted: true
+                    };
+                    App.UI.showTab('tab-column4');
+                    App.Invoice.addGoldItemRow(itemData);
+                    App.UI.showMessage('آیتم آبشده با موفقیت به فاکتور اضافه شد.', 'success');
+                } else {
+                    App.UI.showMessage('ابتدا یک محاسبه معتبر انجام دهید.');
+                }
             });
 
             const productForm = document.getElementById('product-form');
@@ -1237,10 +1611,10 @@
                     purity: this.Utils.getInputValue('productPurity'),
                     wage: this.Utils.getInputValue('productWage')
                 };
-                
+
                 const productId = parseInt(document.getElementById('productId').value, 10);
                 if (productId) product.id = productId;
-                
+
                 this.DB.saveProduct(product);
                 productForm.reset();
                 document.getElementById('productId').value = '';
@@ -1248,7 +1622,7 @@
                 document.getElementById('product-form-submit-btn-text').textContent = 'ذخیره جنس';
                 document.getElementById('cancelEditBtn').classList.add('hidden');
             });
-            
+
             document.getElementById('cancelEditBtn').addEventListener('click', () => {
                  productForm.reset();
                  document.getElementById('productId').value = '';
@@ -1260,7 +1634,7 @@
             document.getElementById('productSearch').addEventListener('input', (e) => {
                 this.DB.searchProducts(e.target.value);
             });
-            
+
             document.getElementById('productList').addEventListener('click', (e) => {
                 const target = e.target;
                 const action = target.dataset.action;
@@ -1268,7 +1642,6 @@
                 if (!action || !productId) return;
 
                 if (action === 'delete') {
-                    // NEW: Use custom confirmation
                     this.UI.showConfirmation('آیا از حذف این جنس اطمینان دارید؟', () => {
                         this.DB.deleteProduct(productId);
                     });
