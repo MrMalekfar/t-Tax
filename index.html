@@ -586,6 +586,20 @@
                 </div>
 
                 <div class="mb-6 p-4 border rounded-lg bg-gray-50">
+                    <h3 class="text-lg font-semibold mb-3 text-gold-dark">تنظیمات پیش‌فرض فاکتور</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="responsive-input-group flex flex-col">
+                            <label for="invoiceProfit" class="text-sm sm:text-base font-semibold text-dark-text mb-2">سود پیش‌فرض (%):</label>
+                            <input type="number" id="invoiceProfit" value="7" class="w-full p-2 rounded-md border text-left bg-input-bg-light border-input-border-light text-sm">
+                        </div>
+                        <div class="responsive-input-group flex flex-col">
+                            <label for="invoiceVAT" class="text-sm sm:text-base font-semibold text-dark-text mb-2">مالیات پیش‌فرض (%):</label>
+                            <input type="number" id="invoiceVAT" value="10" class="w-full p-2 rounded-md border text-left bg-input-bg-light border-input-border-light text-sm">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-6 p-4 border rounded-lg bg-gray-50">
                     <h3 class="text-lg font-semibold mb-3 text-gold-dark flex justify-between items-center">
                         جزئیات اقلام طلا
                         <button id="addGoldItemBtn" class="px-4 py-2 text-white rounded-md text-sm hover:bg-gold-dark transition-colors inline-flex items-center justify-center" style="background-color: var(--color-gold-accent);">
@@ -596,7 +610,6 @@
                     </div>
                 </div>
 
-                <!-- NEW: Invoice Summary Section -->
                 <div id="invoiceSummary" class="mt-6 p-4 border rounded-lg bg-results-bg border-results-border">
                     <h3 class="text-lg font-semibold mb-3 text-gold-dark">خلاصه فاکتور</h3>
                     <div class="space-y-2">
@@ -885,7 +898,7 @@
                     'weight2', 'wage2', 'profit2', 'VAT2', 'price_gram2', 'goldPurity2',
                     'weight_input3', 'price_gram3', 'goldPurity3',
                     'price_gram6', 'weight_gram6', 'goldPurity6', 'profit_melted', 'buy_deduction6', 'VAT6',
-                    'customerName', 'customerPhone'
+                    'customerName', 'customerPhone', 'invoiceProfit', 'invoiceVAT'
                 ];
                 inputs.forEach(id => {
                     const savedValue = localStorage.getItem(id);
@@ -1021,7 +1034,6 @@
                             }
                         }
                     });
-                    // Handle melted gold calculator separately
                     const priceInput6 = document.getElementById('price_gram6');
                     const type6 = document.querySelector('input[name="transaction_type6"]:checked').value;
                     if (!App.userModifiedPrices['price_gram6']) {
@@ -1201,52 +1213,72 @@
                 newItem.dataset.itemType = itemData.itemType || 'manual'; 
 
                 newItem.innerHTML = `
-                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                        <div class="responsive-input-group flex flex-col lg:col-span-1">
-                            <label for="itemDescription_${newId}" class="text-sm sm:text-base font-semibold text-dark-text mb-2">توضیحات:</label>
-                            <div class="input-wrapper flex-1 flex items-center w-full"><input type="text" id="itemDescription_${newId}" class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-right text-sm"></div>
+                    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 items-end">
+                        <div class="responsive-input-group flex flex-col">
+                            <label for="itemDescription_${newId}" class="text-xs font-semibold text-dark-text mb-1">توضیحات:</label>
+                            <input type="text" id="itemDescription_${newId}" class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-right text-sm">
                         </div>
                         <div class="responsive-input-group flex flex-col">
-                            <label for="itemWeight_${newId}" class="text-sm sm:text-base font-semibold text-dark-text mb-2">وزن:</label>
-                            <div class="input-wrapper flex-1 flex items-center w-full"><input type="number" id="itemWeight_${newId}" class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-left text-sm" value="1" min="0" step="0.01"></div>
+                            <label for="itemWeight_${newId}" class="text-xs font-semibold text-dark-text mb-1">وزن:</label>
+                            <input type="number" id="itemWeight_${newId}" class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-left text-sm" value="1" min="0" step="0.01">
                         </div>
                         <div class="responsive-input-group flex flex-col">
-                            <label for="itemPurity_${newId}" class="text-sm sm:text-base font-semibold text-dark-text mb-2">عیار:</label>
-                            <div class="input-wrapper flex-1 flex items-center w-full"><input type="number" list="purity-list" id="itemPurity_${newId}" class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-left text-sm" value="750" step="any"></div>
+                            <label for="itemPurity_${newId}" class="text-xs font-semibold text-dark-text mb-1">عیار:</label>
+                            <input type="number" list="purity-list" id="itemPurity_${newId}" class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-left text-sm" value="750" step="any">
                         </div>
                         <div class="responsive-input-group flex flex-col">
-                            <label for="itemGramPrice_${newId}" class="text-sm sm:text-base font-semibold text-dark-text mb-2">فی هر گرم (۱۸):</label>
-                            <div class="input-wrapper flex-1 flex items-center w-full"><input type="text" id="itemGramPrice_${newId}" class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-left text-sm" oninput="App.Utils.formatNumberInput(this)"></div>
+                            <label id="itemGramPriceLabel_${newId}" for="itemGramPrice_${newId}" class="text-xs font-semibold text-dark-text mb-1">فی گرم (۱۸):</label>
+                            <input type="text" id="itemGramPrice_${newId}" class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-left text-sm" oninput="App.Utils.formatNumberInput(this)">
                         </div>
                         <div class="responsive-input-group flex flex-col">
-                            <label id="itemWageLabel_${newId}" for="itemWage_${newId}" class="text-sm sm:text-base font-semibold text-dark-text mb-2">اجرت (%):</label>
-                            <div class="input-wrapper flex-1 flex items-center w-full"><input type="number" id="itemWage_${newId}" class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-left text-sm" value="20" min="0" step="1"></div>
+                            <label for="itemWage_${newId}" class="text-xs font-semibold text-dark-text mb-1">اجرت (%):</label>
+                            <input type="number" id="itemWage_${newId}" class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-left text-sm" min="0" step="1">
+                        </div>
+                        <div class="responsive-input-group flex flex-col">
+                            <label for="itemProfit_${newId}" class="text-xs font-semibold text-dark-text mb-1">سود (%):</label>
+                            <input type="number" id="itemProfit_${newId}" class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-left text-sm" min="0" step="1">
+                        </div>
+                        <div class="responsive-input-group flex flex-col">
+                            <label for="itemVAT_${newId}" class="text-xs font-semibold text-dark-text mb-1">مالیات (%):</label>
+                            <input type="number" id="itemVAT_${newId}" class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-left text-sm" min="0" step="1">
                         </div>
                     </div>
                     <button class="remove-item-btn mt-3 px-3 py-1 bg-red-500 text-white rounded-md text-xs hover:bg-red-600 transition-colors" data-item-id="${newId}"><i class="fas fa-trash-alt mr-1"></i>حذف آیتم</button>
                 `;
                 container.appendChild(newItem);
 
-                // Populate with data
+                const defaultProfit = App.Utils.getInputValue('invoiceProfit', 7);
+                const defaultVAT = App.Utils.getInputValue('invoiceVAT', 10);
+
                 document.getElementById(`itemDescription_${newId}`).value = itemData.description || itemData.name || '';
                 document.getElementById(`itemWeight_${newId}`).value = itemData.weight || 1;
                 document.getElementById(`itemPurity_${newId}`).value = itemData.purity || 750;
-                
+
                 const wageInput = document.getElementById(`itemWage_${newId}`);
-                const wageLabel = document.getElementById(`itemWageLabel_${newId}`);
-                
-                if (itemData.itemType === 'melted-sell') {
-                    wageLabel.textContent = 'سود (%):';
-                    wageInput.value = itemData.profitPercent !== undefined ? itemData.profitPercent : 2;
-                } else if (itemData.itemType === 'melted-buy' || itemData.itemType === 'old-gold') {
+                const profitInput = document.getElementById(`itemProfit_${newId}`);
+                const vatInput = document.getElementById(`itemVAT_${newId}`);
+                const priceLabel = document.getElementById(`itemGramPriceLabel_${newId}`);
+
+                const allInputs = [wageInput, profitInput, vatInput];
+                allInputs.forEach(input => {
+                    input.disabled = false;
+                    input.style.backgroundColor = '';
+                });
+                priceLabel.textContent = 'فی گرم (۱۸):';
+
+                if (itemData.itemType === 'old-gold' || itemData.itemType === 'melted-buy') {
                     wageInput.value = 0;
-                    wageInput.disabled = true;
-                    wageInput.style.backgroundColor = '#e9ecef';
+                    profitInput.value = 0;
+                    vatInput.value = 0;
+                    allInputs.forEach(input => {
+                        input.disabled = true;
+                        input.style.backgroundColor = '#e9ecef';
+                    });
+                     if(itemData.itemType === 'melted-buy') priceLabel.textContent = 'فی مثقال:';
                 } else {
-                    wageLabel.textContent = 'اجرت (%):';
                     wageInput.value = itemData.wage !== undefined ? itemData.wage : 20;
-                    wageInput.disabled = false;
-                    wageInput.style.backgroundColor = '';
+                    profitInput.value = itemData.profit !== undefined ? itemData.profit : defaultProfit;
+                    vatInput.value = itemData.vat !== undefined ? itemData.vat : defaultVAT;
                 }
                 
                 const priceInput = document.getElementById(`itemGramPrice_${newId}`);
@@ -1256,7 +1288,11 @@
                     App.userModifiedPrices[priceInput.id] = true;
                     priceInput.value = App.Utils.formatNumber(gramPriceToSet);
                 } else if (App.liveGoldPrice18k > 0) {
-                    priceInput.value = App.Utils.formatNumber(App.liveGoldPrice18k);
+                    if (itemData.itemType === 'melted-buy' && App.liveMesghalPrice > 0) {
+                        priceInput.value = App.Utils.formatNumber(App.liveMesghalPrice);
+                    } else {
+                        priceInput.value = App.Utils.formatNumber(App.liveGoldPrice18k);
+                    }
                 }
 
                 this.updateTotal();
@@ -1294,21 +1330,19 @@
                     const price_gram_18k_from_mesghal = gramPrice / 4.3318;
                     const adjustedGramPrice = price_gram_18k_from_mesghal * (purity / 750);
                     finalPrice = weight * adjustedGramPrice;
-                } else if (itemType === 'melted-sell') {
-                    const profitPercent = U.getInputValue(`itemWage_${itemId}`);
-                    const adjustedGramPrice = gramPrice * (purity / 750);
-                    const priceOfGold = weight * adjustedGramPrice;
-                    const profitAmount = priceOfGold * (profitPercent / 100);
-                    const taxAmount = profitAmount * 0.10; // 10% VAT on profit
-                    finalPrice = priceOfGold + profitAmount + taxAmount;
-                } else { // 'manual', 'new-gold', etc.
+                } else { 
                     const wage = U.getInputValue(`itemWage_${itemId}`);
+                    const profit = U.getInputValue(`itemProfit_${itemId}`);
+                    const vat = U.getInputValue(`itemVAT_${itemId}`);
+
                     const adjustedGramPrice = gramPrice * (purity / 750);
                     const priceOfGold = weight * adjustedGramPrice;
                     const laborCost = priceOfGold * (wage / 100);
-                    const profit = (priceOfGold + laborCost) * 0.07; // 7% profit
-                    const tax = (laborCost + profit) * 0.10; // 10% VAT
-                    finalPrice = priceOfGold + laborCost + profit + tax;
+                    const profitAmount = (priceOfGold + laborCost) * (profit / 100);
+                    const taxBase = laborCost + profitAmount;
+                    const taxAmount = taxBase * (vat / 100);
+                    
+                    finalPrice = priceOfGold + laborCost + profitAmount + taxAmount;
                 }
                 return finalPrice;
             },
@@ -1344,6 +1378,8 @@
                         weight: App.Utils.getInputValue(`itemWeight_${itemId}`),
                         purity: App.Utils.getInputValue(`itemPurity_${itemId}`),
                         wage: App.Utils.getInputValue(`itemWage_${itemId}`),
+                        profit: App.Utils.getInputValue(`itemProfit_${itemId}`),
+                        vat: App.Utils.getInputValue(`itemVAT_${itemId}`),
                         gramPrice: App.Utils.getInputValue(`itemGramPrice_${itemId}`),
                         itemType: row.dataset.itemType
                     };
@@ -1371,6 +1407,7 @@
 
                 const invoiceItemsData = [];
                 const totals = this.calculateInvoiceTotals();
+                let showWage = false, showProfit = false, showVAT = false;
 
                 document.querySelectorAll('.gold-item-row').forEach(row => {
                     const itemId = row.dataset.itemId;
@@ -1384,8 +1421,16 @@
                         purity: U.getInputValue(`itemPurity_${itemId}`),
                         transactionType: description.toLowerCase().includes('خرید') ? 'buy' : 'sell',
                         finalPrice: this.calculateItemFinalPrice(row),
-                        wage: row.dataset.itemType.includes('buy') || row.dataset.itemType === 'old-gold' ? null : U.getInputValue(`itemWage_${itemId}`),
+                        wage: U.getInputValue(`itemWage_${itemId}`),
+                        profit: U.getInputValue(`itemProfit_${itemId}`),
+                        vat: U.getInputValue(`itemVAT_${itemId}`),
+                        gramPrice: U.getInputValue(`itemGramPrice_${itemId}`),
+                        itemType: row.dataset.itemType
                     };
+
+                    if(item.wage > 0) showWage = true;
+                    if(item.profit > 0) showProfit = true;
+                    if(item.vat > 0) showVAT = true;
                     
                     invoiceItemsData.push(item);
                 });
@@ -1396,28 +1441,42 @@
                 }
 
                 let baseGramPriceForDisplay = App.liveGoldPrice18k; 
-                const firstManualItem = invoiceItemsData.find(item => item.gramPrice);
-                if (firstManualItem) {
-                    baseGramPriceForDisplay = firstManualItem.gramPrice;
+                const firstRelevantItem = invoiceItemsData.find(item => item.itemType !== 'melted-buy' && item.gramPrice > 0);
+                if (firstRelevantItem) {
+                    baseGramPriceForDisplay = firstRelevantItem.gramPrice;
                 }
 
+                let tableHeaders = `
+                    <th style="padding: 4px; border: 1px solid #ccc;">ردیف</th>
+                    <th style="padding: 4px; border: 1px solid #ccc; text-align: right; width: 40%;">شرح کالا</th>
+                    <th style="padding: 4px; border: 1px solid #ccc;">وزن (گرم)</th>
+                    <th style="padding: 4px; border: 1px solid #ccc;">عیار</th>
+                    <th style="padding: 4px; border: 1px solid #ccc;">وزن (750)</th>
+                `;
+                if(showWage) tableHeaders += `<th style="padding: 4px; border: 1px solid #ccc;">اجرت (%)</th>`;
+                if(showProfit) tableHeaders += `<th style="padding: 4px; border: 1px solid #ccc;">سود (%)</th>`;
+                if(showVAT) tableHeaders += `<th style="padding: 4px; border: 1px solid #ccc;">مالیات (%)</th>`;
+                tableHeaders += `<th style="padding: 4px; border: 1px solid #ccc;">مبلغ نهایی (تومان)</th>`;
+
+
                 let itemsHtml = '';
-                
                 invoiceItemsData.forEach((item, i) => {
                     const convertedWeight = item.weight * (item.purity / 750);
                     const convertedWeight750Cell = `<td style="padding: 4px; text-align: center; background-color: #fefce8;">${U.formatNumber(convertedWeight.toFixed(3))}</td>`;
                     
-                    itemsHtml += `
+                    let rowHtml = `
                         <tr style="border-bottom: 1px solid #ccc; ${item.transactionType === 'buy' ? 'background-color: #fff5f5;' : ''}">
                             <td style="padding: 4px; text-align: center;">${i + 1}</td>
                             <td style="padding: 4px;">${item.description}</td>
                             <td style="padding: 4px; text-align: center;">${U.formatNumber(item.weight.toFixed(3))}</td>
                             <td style="padding: 4px; text-align: center;">${item.purity}</td>
                             ${convertedWeight750Cell}
-                            <td style="padding: 4px; text-align: center;">${item.wage !== null ? item.wage + '%' : '---'}</td>
-                            <td style="padding: 4px; text-align: center;">${U.formatNumber(Math.round(item.finalPrice))}</td>
-                        </tr>
                     `;
+                    if(showWage) rowHtml += `<td style="padding: 4px; text-align: center;">${item.wage > 0 ? item.wage + '%' : '---'}</td>`;
+                    if(showProfit) rowHtml += `<td style="padding: 4px; text-align: center;">${item.profit > 0 ? item.profit + '%' : '---'}</td>`;
+                    if(showVAT) rowHtml += `<td style="padding: 4px; text-align: center;">${item.vat > 0 ? item.vat + '%' : '---'}</td>`;
+                    rowHtml += `<td style="padding: 4px; text-align: center;">${U.formatNumber(Math.round(item.finalPrice))}</td></tr>`;
+                    itemsHtml += rowHtml;
                 });
                 
                 const finalPayableAmount = totals.finalAmount;
@@ -1461,15 +1520,7 @@
     </div>
     <table style="width: 100%; border-collapse: collapse; font-size: 8.5pt;">
         <thead>
-            <tr style="background-color: #f0f0f0;">
-                <th style="padding: 4px; border: 1px solid #ccc;">ردیف</th>
-                <th style="padding: 4px; border: 1px solid #ccc; text-align: right; width: 40%;">شرح کالا</th>
-                <th style="padding: 4px; border: 1px solid #ccc;">وزن (گرم)</th>
-                <th style="padding: 4px; border: 1px solid #ccc;">عیار</th>
-                <th style="padding: 4px; border: 1px solid #ccc;">وزن (750)</th>
-                <th style="padding: 4px; border: 1px solid #ccc;">اجرت/سود</th>
-                <th style="padding: 4px; border: 1px solid #ccc;">مبلغ نهایی (تومان)</th>
-            </tr>
+            <tr style="background-color: #f0f0f0;">${tableHeaders}</tr>
         </thead>
         <tbody>${itemsHtml}</tbody>
     </table>
@@ -1529,6 +1580,12 @@
                     App.userModifiedPrices[targetId] = true;
                 }
                 App.Invoice.updateTotal(); 
+            });
+
+            ['invoiceProfit', 'invoiceVAT'].forEach(id => {
+                document.getElementById(id).addEventListener('input', (e) => {
+                    App.Utils.setInputValueAndLocalStorage(id, e.target.value);
+                });
             });
 
             ['1', '2', '3'].forEach(i => {
@@ -1597,6 +1654,8 @@
                         weight: weight,
                         purity: U.getInputValue('goldPurity1'),
                         wage: U.getInputValue('wage1'),
+                        profit: U.getInputValue('profit1'),
+                        vat: U.getInputValue('VAT1'),
                         gramPrice: U.getInputValue('price_gram1'),
                         itemType: 'manual'
                     };
@@ -1615,6 +1674,8 @@
                         weight: weight,
                         purity: U.getInputValue('goldPurity2'),
                         wage: U.getInputValue('wage2'),
+                        profit: U.getInputValue('profit2'),
+                        vat: U.getInputValue('VAT2'),
                         gramPrice: U.getInputValue('price_gram2'),
                         itemType: 'manual'
                     };
@@ -1632,7 +1693,6 @@
                         description: `خرید طلای کهنه`,
                         weight: weight,
                         purity: U.getInputValue('goldPurity3'),
-                        wage: 0, 
                         gramPrice: U.getInputValue('price_gram3'),
                         itemType: 'old-gold'
                     };
@@ -1653,9 +1713,10 @@
                         weight: weight,
                         purity: U.getInputValue('goldPurity6'),
                         gramPrice: U.getInputValue('price_gram6'),
-                        wage: 0,
                         itemType: type === 'buy' ? 'melted-buy' : 'melted-sell',
-                        profitPercent: type === 'sell' ? U.getInputValue('profit_melted') : undefined
+                        profit: type === 'sell' ? U.getInputValue('profit_melted') : 0,
+                        vat: type === 'sell' ? U.getInputValue('VAT6') : 0,
+                        wage: 0
                     };
                     App.UI.showTab('tab-column4');
                     App.Invoice.addGoldItemRow(itemData);
