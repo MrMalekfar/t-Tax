@@ -1035,13 +1035,8 @@
                         }
                     });
                     const priceInput6 = document.getElementById('price_gram6');
-                    const type6 = document.querySelector('input[name="transaction_type6"]:checked').value;
                     if (!App.userModifiedPrices['price_gram6']) {
-                        if (type6 === 'buy' && App.liveMesghalPrice > 0) {
-                             priceInput6.value = App.Utils.formatNumber(App.liveMesghalPrice);
-                        } else {
-                             priceInput6.value = App.Utils.formatNumber(App.liveGoldPrice18k);
-                        }
+                        priceInput6.value = App.Utils.formatNumber(App.liveGoldPrice18k);
                     }
                 }
                 App.Invoice.updateAllItemPrices();
@@ -1166,9 +1161,10 @@
                     tax_amount = profit_amount * (VAT_rate / 100);
                     final_price = price_of_gold + profit_amount + tax_amount;
                 } else { // 'buy'
-                    const price_gram_18k_from_mesghal = price_input / 4.3318;
-                    const adjusted_price_per_gram = price_gram_18k_from_mesghal * (actual_purity / 750);
-                    final_price = weight_in_grams * adjusted_price_per_gram;
+                    const buy_deduction_toman = U.getInputValue('buy_deduction6');
+                    const effective_price_per_gram_18k = price_input - (buy_deduction_toman / 4.3318);
+                    const final_adjusted_price_per_gram = effective_price_per_gram_18k * (actual_purity / 750);
+                    final_price = weight_in_grams * final_adjusted_price_per_gram;
                     tax_amount = 0;
                 }
                 
@@ -1213,8 +1209,8 @@
                 newItem.dataset.itemType = itemData.itemType || 'manual'; 
 
                 newItem.innerHTML = `
-                    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 items-end">
-                        <div class="responsive-input-group flex flex-col">
+                    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4 items-end">
+                        <div class="responsive-input-group flex flex-col col-span-2">
                             <label for="itemDescription_${newId}" class="text-xs font-semibold text-dark-text mb-1">توضیحات:</label>
                             <input type="text" id="itemDescription_${newId}" class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-right text-sm">
                         </div>
@@ -1227,7 +1223,7 @@
                             <input type="number" list="purity-list" id="itemPurity_${newId}" class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-left text-sm" value="750" step="any">
                         </div>
                         <div class="responsive-input-group flex flex-col">
-                            <label id="itemGramPriceLabel_${newId}" for="itemGramPrice_${newId}" class="text-xs font-semibold text-dark-text mb-1">فی گرم (۱۸):</label>
+                            <label for="itemGramPrice_${newId}" class="text-xs font-semibold text-dark-text mb-1">فی گرم (۱۸):</label>
                             <input type="text" id="itemGramPrice_${newId}" class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-left text-sm" oninput="App.Utils.formatNumberInput(this)">
                         </div>
                         <div class="responsive-input-group flex flex-col">
@@ -1241,6 +1237,10 @@
                         <div class="responsive-input-group flex flex-col">
                             <label for="itemVAT_${newId}" class="text-xs font-semibold text-dark-text mb-1">مالیات (%):</label>
                             <input type="number" id="itemVAT_${newId}" class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-left text-sm" min="0" step="1">
+                        </div>
+                         <div class="responsive-input-group flex flex-col hidden" id="itemDeductionContainer_${newId}">
+                            <label for="itemBuyDeduction_${newId}" class="text-xs font-semibold text-dark-text mb-1">کسری خرید:</label>
+                            <input type="text" id="itemBuyDeduction_${newId}" class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-left text-sm" oninput="App.Utils.formatNumberInput(this)">
                         </div>
                     </div>
                     <button class="remove-item-btn mt-3 px-3 py-1 bg-red-500 text-white rounded-md text-xs hover:bg-red-600 transition-colors" data-item-id="${newId}"><i class="fas fa-trash-alt mr-1"></i>حذف آیتم</button>
@@ -1257,25 +1257,32 @@
                 const wageInput = document.getElementById(`itemWage_${newId}`);
                 const profitInput = document.getElementById(`itemProfit_${newId}`);
                 const vatInput = document.getElementById(`itemVAT_${newId}`);
-                const priceLabel = document.getElementById(`itemGramPriceLabel_${newId}`);
+                const deductionContainer = document.getElementById(`itemDeductionContainer_${newId}`);
+                const deductionInput = document.getElementById(`itemBuyDeduction_${newId}`);
 
-                const allInputs = [wageInput, profitInput, vatInput];
+                const allInputs = [wageInput, profitInput, vatInput, deductionInput];
                 allInputs.forEach(input => {
                     input.disabled = false;
                     input.style.backgroundColor = '';
+                    input.parentElement.classList.add('hidden');
                 });
-                priceLabel.textContent = 'فی گرم (۱۸):';
-
+                
                 if (itemData.itemType === 'old-gold' || itemData.itemType === 'melted-buy') {
                     wageInput.value = 0;
                     profitInput.value = 0;
                     vatInput.value = 0;
-                    allInputs.forEach(input => {
+                    [wageInput, profitInput, vatInput].forEach(input => {
                         input.disabled = true;
                         input.style.backgroundColor = '#e9ecef';
                     });
-                     if(itemData.itemType === 'melted-buy') priceLabel.textContent = 'فی مثقال:';
+                     if(itemData.itemType === 'melted-buy') {
+                        deductionContainer.classList.remove('hidden');
+                        deductionInput.value = App.Utils.formatNumber(itemData.buyDeduction || 100000);
+                     }
                 } else {
+                    wageInput.parentElement.classList.remove('hidden');
+                    profitInput.parentElement.classList.remove('hidden');
+                    vatInput.parentElement.classList.remove('hidden');
                     wageInput.value = itemData.wage !== undefined ? itemData.wage : 20;
                     profitInput.value = itemData.profit !== undefined ? itemData.profit : defaultProfit;
                     vatInput.value = itemData.vat !== undefined ? itemData.vat : defaultVAT;
@@ -1288,11 +1295,7 @@
                     App.userModifiedPrices[priceInput.id] = true;
                     priceInput.value = App.Utils.formatNumber(gramPriceToSet);
                 } else if (App.liveGoldPrice18k > 0) {
-                    if (itemData.itemType === 'melted-buy' && App.liveMesghalPrice > 0) {
-                        priceInput.value = App.Utils.formatNumber(App.liveMesghalPrice);
-                    } else {
-                        priceInput.value = App.Utils.formatNumber(App.liveGoldPrice18k);
-                    }
+                    priceInput.value = App.Utils.formatNumber(App.liveGoldPrice18k);
                 }
 
                 this.updateTotal();
@@ -1327,9 +1330,10 @@
                     const adjustedGramPrice = gramPrice * (purity / 750) * (735 / 750);
                     finalPrice = weight * adjustedGramPrice;
                 } else if (itemType === 'melted-buy') {
-                    const price_gram_18k_from_mesghal = gramPrice / 4.3318;
-                    const adjustedGramPrice = price_gram_18k_from_mesghal * (purity / 750);
-                    finalPrice = weight * adjustedGramPrice;
+                    const buyDeduction = U.getInputValue(`itemBuyDeduction_${itemId}`);
+                    const effectiveGramPrice18k = gramPrice - (buyDeduction / 4.3318);
+                    const adjustedPrice = effectiveGramPrice18k * (purity / 750);
+                    finalPrice = weight * adjustedPrice;
                 } else { 
                     const wage = U.getInputValue(`itemWage_${itemId}`);
                     const profit = U.getInputValue(`itemProfit_${itemId}`);
@@ -1381,7 +1385,8 @@
                         profit: App.Utils.getInputValue(`itemProfit_${itemId}`),
                         vat: App.Utils.getInputValue(`itemVAT_${itemId}`),
                         gramPrice: App.Utils.getInputValue(`itemGramPrice_${itemId}`),
-                        itemType: row.dataset.itemType
+                        itemType: row.dataset.itemType,
+                        buyDeduction: row.dataset.itemType === 'melted-buy' ? App.Utils.getInputValue(`itemBuyDeduction_${itemId}`) : 0
                     };
                     items.push(item);
                 });
@@ -1616,19 +1621,15 @@
 
             const handleTransactionTypeChange = () => {
                 const type = document.querySelector('input[name="transaction_type6"]:checked').value;
+                priceGram6Label.textContent = 'نرخ گرم (۱۸):';
+                if (!App.userModifiedPrices['price_gram6'] && App.liveGoldPrice18k > 0) {
+                    priceGram6Input.value = App.Utils.formatNumber(App.liveGoldPrice18k);
+                }
                 if (type === 'buy') {
-                    priceGram6Label.textContent = 'نرخ مثقال:';
-                    if (!App.userModifiedPrices['price_gram6'] && App.liveMesghalPrice > 0) {
-                        priceGram6Input.value = App.Utils.formatNumber(App.liveMesghalPrice);
-                    }
                     meltedProfitContainer.classList.add('hidden');
                     meltedDeductionContainer.classList.remove('hidden');
                     meltedVatContainer.classList.add('hidden');
                 } else { // 'sell'
-                    priceGram6Label.textContent = 'نرخ گرم (۱۸):';
-                    if (!App.userModifiedPrices['price_gram6'] && App.liveGoldPrice18k > 0) {
-                        priceGram6Input.value = App.Utils.formatNumber(App.liveGoldPrice18k);
-                    }
                     meltedProfitContainer.classList.remove('hidden');
                     meltedDeductionContainer.classList.add('hidden');
                     meltedVatContainer.classList.remove('hidden');
@@ -1716,7 +1717,8 @@
                         itemType: type === 'buy' ? 'melted-buy' : 'melted-sell',
                         profit: type === 'sell' ? U.getInputValue('profit_melted') : 0,
                         vat: type === 'sell' ? U.getInputValue('VAT6') : 0,
-                        wage: 0
+                        wage: 0,
+                        buyDeduction: type === 'buy' ? U.getInputValue('buy_deduction6') : 0
                     };
                     App.UI.showTab('tab-column4');
                     App.Invoice.addGoldItemRow(itemData);
