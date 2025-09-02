@@ -458,6 +458,14 @@
                     <span class="icon-placeholder"><i class="fas fa-gem text-xl md:text-2xl"></i></span>
                     <div class="tab-button-content">مدیریت اجناس</div>
                 </button>
+                <button id="btn-tab-archive" class="tab-button group flex items-center p-4 my-1 md:my-2 rounded-xl md:rounded-l-xl md:rounded-r-none border-t-4 md:border-t-0 md:border-r-4 border-transparent transition-all duration-300">
+                    <span class="icon-placeholder"><i class="fas fa-archive text-xl md:text-2xl"></i></span>
+                    <div class="tab-button-content">آرشیو فاکتورها</div>
+                </button>
+                <button id="btn-tab-customers" class="tab-button group flex items-center p-4 my-1 md:my-2 rounded-xl md:rounded-l-xl md:rounded-r-none border-t-4 md:border-t-0 md:border-r-4 border-transparent transition-all duration-300">
+                    <span class="icon-placeholder"><i class="fas fa-users text-xl md:text-2xl"></i></span>
+                    <div class="tab-button-content">مدیریت مشتریان</div>
+                </button>
             </div>
         </div>
 
@@ -843,11 +851,17 @@
                     <h3 id="product-form-title" class="text-lg font-semibold mb-3 text-gold-dark">افزودن جنس جدید</h3>
                     <form id="product-form">
                         <input type="hidden" id="productId">
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                            <div class="responsive-input-group flex flex-col mb-4">
+                        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                            <div class="responsive-input-group flex flex-col mb-4 lg:col-span-2">
                                 <label for="productName" class="text-sm sm:text-base font-semibold text-dark-text mb-2">نام/شرح کالا:</label>
                                 <div class="input-wrapper flex-1 flex items-center w-full">
                                     <input type="text" id="productName" required class="w-full p-2 rounded-md border text-right bg-input-bg-light border-input-border-light text-sm">
+                                </div>
+                            </div>
+                            <div class="responsive-input-group flex flex-col mb-4">
+                                <label for="productBarcode" class="text-sm sm:text-base font-semibold text-dark-text mb-2">بارکد:</label>
+                                <div class="input-wrapper flex-1 flex items-center w-full">
+                                    <input type="text" id="productBarcode" readonly class="w-full p-2 rounded-md bg-gray-200 border border-input-border-light text-left text-sm cursor-not-allowed" placeholder="خودکار">
                                 </div>
                             </div>
                             <div class="responsive-input-group flex flex-col mb-4">
@@ -892,17 +906,91 @@
                             </button>
                         </div>
                     </div>
-                    <div class="responsive-input-group flex flex-col mb-4">
-                        <label for="productSearch" class="text-sm sm:text-base font-semibold text-dark-text mb-2">جستجو بر اساس نام:</label>
+                    <div class="responsive-input-group flex flex-col mb-4 mt-4">
+                        <label for="productSearch" class="text-sm sm:text-base font-semibold text-dark-text mb-2">جستجو بر اساس نام یا بارکد:</label>
                         <div class="input-wrapper flex-1 flex items-center w-full">
-                            <input type="text" id="productSearch" class="w-full p-2 rounded-md border text-right bg-input-bg-light border-input-border-light text-sm" placeholder="نام کالا را وارد کنید...">
+                            <input type="text" id="productSearch" class="w-full p-2 rounded-md border text-right bg-input-bg-light border-input-border-light text-sm" placeholder="نام کالا یا بارکد را وارد کنید...">
                         </div>
                     </div>
-                    <div id="productList" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                        <p id="no-products-message" class="col-span-full text-center text-gray-500">هیچ جنسی ذخیره نشده است.</p>
+                    <div id="productList" class="overflow-x-auto">
+                        <!-- Product cards will be injected here -->
                     </div>
                 </div>
             </div>
+
+            <div id="tab-column-archive" class="tab-content p-2 sm:p-4">
+                <h2 class="text-lg sm:text-xl font-bold mb-4 sm:mb-6 text-gold-dark border-b border-gold-dark pb-2 sm:pb-3">
+                    آرشیو فاکتورها
+                </h2>
+
+                <div class="mb-6 p-4 border rounded-lg bg-gray-50">
+                    <h3 class="text-lg font-semibold mb-3 text-gold-dark">جستجو و نمایش</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div class="responsive-input-group flex flex-col">
+                            <label for="invoiceSearchNumber" class="text-sm sm:text-base font-semibold text-dark-text mb-2">شماره فاکتور:</label>
+                            <input type="text" id="invoiceSearchNumber" class="w-full p-2 rounded-md border text-left bg-input-bg-light border-input-border-light text-sm" placeholder="شماره فاکتور...">
+                        </div>
+                        <div class="responsive-input-group flex flex-col">
+                            <label for="invoiceSearchCustomer" class="text-sm sm:text-base font-semibold text-dark-text mb-2">نام مشتری:</label>
+                            <input type="text" id="invoiceSearchCustomer" class="w-full p-2 rounded-md border text-right bg-input-bg-light border-input-border-light text-sm" placeholder="بخشی از نام مشتری را وارد کنید...">
+                        </div>
+                        <div class="responsive-input-group flex flex-col">
+                            <label for="invoiceSearchDate" class="text-sm sm:text-base font-semibold text-dark-text mb-2">تاریخ (مثال: 1403/05/01):</label>
+                            <input type="text" id="invoiceSearchDate" class="w-full p-2 rounded-md border text-left bg-input-bg-light border-input-border-light text-sm" placeholder="تاریخ دقیق یا بخشی از آن...">
+                        </div>
+                        <div class="responsive-input-group flex flex-col">
+                            <label for="itemsPerPage" class="text-sm sm:text-base font-semibold text-dark-text mb-2">تعداد در صفحه:</label>
+                            <select id="itemsPerPage" class="w-full p-2 rounded-md border bg-input-bg-light border-input-border-light text-sm">
+                                <option value="5">5</option>
+                                <option value="10">10</option>
+                                <option value="20">20</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="invoice-archive-list" class="overflow-x-auto">
+                    <!-- Invoice cards will be injected here -->
+                </div>
+                <div id="pagination-controls" class="flex justify-center items-center gap-4 mt-4"></div>
+            </div>
+
+            <div id="tab-column-customers" class="tab-content p-2 sm:p-4">
+                <div id="customer-list-view">
+                    <h2 class="text-lg sm:text-xl font-bold mb-4 sm:mb-6 text-gold-dark border-b border-gold-dark pb-2 sm:pb-3">
+                        مدیریت مشتریان
+                    </h2>
+
+                    <div class="mb-6 p-4 border rounded-lg bg-gray-50">
+                        <h3 class="text-lg font-semibold mb-3 text-gold-dark">جستجوی مشتری</h3>
+                        <div class="responsive-input-group flex flex-col">
+                            <label for="customerSearch" class="text-sm sm:text-base font-semibold text-dark-text mb-2">نام یا شماره تماس مشتری:</label>
+                            <input type="text" id="customerSearch" class="w-full p-2 rounded-md border text-right bg-input-bg-light border-input-border-light text-sm" placeholder="بخشی از نام یا شماره تماس را وارد کنید...">
+                        </div>
+                    </div>
+
+                    <div id="customer-list" class="overflow-x-auto">
+                        <!-- Customer cards will be injected here -->
+                    </div>
+                </div>
+
+                <div id="customer-details-view" class="hidden">
+                    <div class="flex justify-between items-center mb-4 sm:mb-6 border-b border-gold-dark pb-2 sm:pb-3">
+                        <h2 class="text-lg sm:text-xl font-bold text-gold-dark">
+                            جزئیات مشتری: <span id="details-customer-name" class="text-gray-700"></span>
+                        </h2>
+                        <button id="back-to-customer-list" class="px-4 py-2 text-sm bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors inline-flex items-center justify-center">
+                            <i class="fas fa-arrow-right ml-2"></i> بازگشت به لیست
+                        </button>
+                    </div>
+                    <div id="customer-invoice-list" class="overflow-x-auto">
+                        <!-- Customer invoice list will be injected here -->
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -957,10 +1045,18 @@
                 const username = document.getElementById('username').value;
                 const password = document.getElementById('password').value;
 
+                const storedUserHash = localStorage.getItem('usernameHash') || this.CORRECT_USERNAME_HASH;
+                const storedPassHash = localStorage.getItem('passwordHash') || this.CORRECT_PASSWORD_HASH;
+
                 const usernameHash = await this.hashString(username + this.SECRET_SALT);
                 const passwordHash = await this.hashString(password + this.SECRET_SALT);
 
-                if (usernameHash === this.CORRECT_USERNAME_HASH && passwordHash === this.CORRECT_PASSWORD_HASH) {
+                if (usernameHash === storedUserHash && passwordHash === storedPassHash) {
+                    // On first successful login with default credentials, store them if not already stored.
+                    if (!localStorage.getItem('usernameHash')) {
+                        localStorage.setItem('usernameHash', usernameHash);
+                        localStorage.setItem('passwordHash', passwordHash);
+                    }
                     sessionStorage.setItem('isLoggedIn', 'true');
                     this.showApp();
                 } else {
@@ -999,33 +1095,112 @@
                     App.initAppLogic();
                     App.appLogicInitialized = true;
                 }
+            },
+
+            // تابع جدید برای تغییر رمز عبور
+            changePassword: async function(currentPassword, newPassword) {
+                const storedPassHash = localStorage.getItem('passwordHash');
+                const currentPasswordHash = await this.hashString(currentPassword + this.SECRET_SALT);
+
+                if (currentPasswordHash !== storedPassHash) {
+                    App.UI.showMessage('رمز عبور فعلی اشتباه است.');
+                    return false;
+                }
+
+                const newPasswordHash = await this.hashString(newPassword + this.SECRET_SALT);
+                localStorage.setItem('passwordHash', newPasswordHash);
+                App.UI.showMessage('رمز عبور با موفقیت تغییر کرد.', 'success');
+                return true;
             }
         },
 
         DB: { // مدیریت پایگاه داده آفلاین (IndexedDB) برای ذخیره اجناس
             db: null,
+            currentPage: 1,
+            itemsPerPage: 10,
             initDB: function() {
-                const request = window.indexedDB.open('SiminGoldDB', 2);
+                if (!window.indexedDB) {
+                    const errorMsg = "مرورگر شما از حافظه آفلاین (IndexedDB) پشتیبانی نمی‌کند. امکان ذخیره اجناس و فاکتورها وجود ندارد.";
+                    console.error(errorMsg);
+                    App.UI.showMessage(errorMsg);
+                    return;
+                }
+                // افزایش شماره نسخه برای حل خطای VersionError
+                const request = window.indexedDB.open('SiminGoldDB', 6);
 
                 request.onerror = (event) => {
-                    console.error("خطا در باز کردن IndexedDB:", event.target.error);
-                    App.UI.showMessage("خطا در دسترسی به حافظه آفلاین. امکان ذخیره اجناس وجود ندارد.");
+                    const error = event.target.error;
+                    console.error("خطا در باز کردن IndexedDB:", error);
+                    let userMessage = `خطا در دسترسی به حافظه آفلاین (${error.name}). امکان ذخیره اجناس وجود ندارد.`;
+                    userMessage += " لطفا از حالت ناشناس (Private) مرورگر خارج شده و دسترسی‌های لازم را به سایت بدهید.";
+                    App.UI.showMessage(userMessage);
+                };
+
+                request.onblocked = (event) => {
+                    // این رویداد زمانی رخ می‌دهد که پایگاه داده در تب دیگری باز باشد.
+                    console.warn("تلاش برای باز کردن IndexedDB مسدود شده است:", event);
+                    App.UI.showMessage("لطفاً تمام تب‌های دیگر این برنامه را ببندید و صفحه را دوباره بارگیری کنید. پایگاه داده در حال استفاده است و امکان دسترسی وجود ندارد.");
                 };
 
                 request.onupgradeneeded = (event) => {
                     this.db = event.target.result;
                     console.log("در حال ساخت یا بروزرسانی آبجکت استور...");
+
+                    let productStore;
                     if (!this.db.objectStoreNames.contains('products')) {
-                        const objectStore = this.db.createObjectStore("products", { keyPath: "id", autoIncrement: true });
-                        objectStore.createIndex("name", "name", { unique: false });
+                        productStore = this.db.createObjectStore("products", { keyPath: "id", autoIncrement: true });
                         console.log("آبجکت استور 'products' با موفقیت ساخته شد.");
+                    } else {
+                        productStore = event.target.transaction.objectStore('products');
+                    }
+
+                    if (!productStore.indexNames.contains('name')) {
+                        productStore.createIndex("name", "name", { unique: false });
+                    }
+                    if (!productStore.indexNames.contains('barcode')) {
+                        productStore.createIndex("barcode", "barcode", { unique: true });
+                    }
+
+                    if (!this.db.objectStoreNames.contains('invoices')) {
+                        const invoiceStore = this.db.createObjectStore("invoices", { keyPath: "id", autoIncrement: true });
+                        invoiceStore.createIndex("customerName", "customerName", { unique: false });
+                        invoiceStore.createIndex("date", "date", { unique: false });
+                        console.log("آبجکت استور 'invoices' با موفقیت ساخته شد.");
+                    }
+
+                    if (!this.db.objectStoreNames.contains('customers')) {
+                        const customerStore = this.db.createObjectStore("customers", { keyPath: "id", autoIncrement: true });
+                        customerStore.createIndex("name", "name", { unique: false });
+                        customerStore.createIndex("phone", "phone", { unique: false });
+                        console.log("آبجکت استور 'customers' با موفقیت ساخته شد.");
                     }
                 };
 
                 request.onsuccess = (event) => {
                     this.db = event.target.result;
+
+                    // این رویداد زمانی اجرا می‌شود که پایگاه داده در تب دیگری نیاز به بروزرسانی داشته باشد
+                    this.db.onversionchange = () => {
+                        console.log("نسخه جدیدی از پایگاه داده در دسترس است. این اتصال بسته می‌شود.");
+                        this.db.close();
+                        App.UI.showMessage("یک نسخه جدید از برنامه در تب دیگری باز شده است. لطفاً این تب را ببندید.", "info");
+                    };
+                    
+                    const savedItemsPerPage = localStorage.getItem('itemsPerPage');
+                    if (savedItemsPerPage) {
+                        this.itemsPerPage = parseInt(savedItemsPerPage, 10);
+                        document.getElementById('itemsPerPage').value = this.itemsPerPage;
+                    } else {
+                        document.getElementById('itemsPerPage').value = this.itemsPerPage;
+                    }
+
                     console.log("اتصال به IndexedDB با موفقیت برقرار شد.");
                     this.renderProducts();
+                    // When the archive tab is active, render invoices
+                    const activeTab = document.querySelector('.tab-content.active');
+                    if (activeTab && activeTab.id === 'tab-column-archive') {
+                        this.renderInvoices();
+                    }
                 };
             },
 
@@ -1036,16 +1211,33 @@
                 }
                 const transaction = this.db.transaction(["products"], "readwrite");
                 const objectStore = transaction.objectStore("products");
-                const request = product.id ? objectStore.put(product) : objectStore.add(product);
-                
-                request.onsuccess = () => {
-                    this.renderProducts();
-                };
-                
-                request.onerror = (event) => {
-                    console.error("خطا در ذخیره جنس:", event.target.error);
-                    App.UI.showMessage("خطا در ذخیره جنس.");
-                };
+
+                if (product.id) { // Update existing product
+                    const request = objectStore.put(product);
+                    request.onsuccess = () => this.renderProducts();
+                    request.onerror = (event) => {
+                        console.error("خطا در بروزرسانی جنس:", event.target.error);
+                        App.UI.showMessage("خطا در بروزرسانی جنس.");
+                    };
+                } else { // Add new product
+                    const addRequest = objectStore.add(product);
+                    addRequest.onsuccess = (event) => {
+                        const newId = event.target.result;
+                        // Now get the new product, add barcode, and update it
+                        const getRequest = objectStore.get(newId);
+                        getRequest.onsuccess = (event) => {
+                            const newProduct = event.target.result;
+                            newProduct.barcode = String(newId).padStart(6, '0');
+                            const updateRequest = objectStore.put(newProduct);
+                            updateRequest.onsuccess = () => this.renderProducts();
+                            updateRequest.onerror = (e) => console.error("خطا در بروزرسانی جنس با بارکد:", e.target.error);
+                        };
+                    };
+                    addRequest.onerror = (event) => {
+                        console.error("خطا در ذخیره جنس:", event.target.error);
+                        App.UI.showMessage("خطا در ذخیره جنس.");
+                    };
+                }
             },
             
             getProduct: function(id, callback) {
@@ -1079,73 +1271,77 @@
                 };
             },
 
-            renderProducts: function(productsToRender = null) {
+            renderProducts: function(filterQuery = null) {
                 const productListDiv = document.getElementById('productList');
-                const noProductsMessage = document.getElementById('no-products-message');
-                productListDiv.innerHTML = ''; 
+                if (!this.db) return;
 
-                const display = (products) => {
+                const transaction = this.db.transaction(["products"], "readonly");
+                const objectStore = transaction.objectStore("products");
+                const request = objectStore.getAll();
+
+                request.onerror = (event) => {
+                    console.error("خطا در خواندن اجناس:", event.target.error);
+                    productListDiv.innerHTML = '<p class="col-span-full text-center text-red-500">خطا در بارگذاری اجناس.</p>';
+                };
+
+                request.onsuccess = (event) => {
+                    let products = event.target.result;
+                    if (filterQuery) {
+                        products = products.filter(p => 
+                            p.name.includes(filterQuery) || 
+                            (p.barcode && p.barcode.includes(filterQuery))
+                        );
+                    }
+
                     if (products.length === 0) {
-                        productListDiv.appendChild(noProductsMessage);
-                        noProductsMessage.classList.remove('hidden');
+                        const message = filterQuery ? 'هیچ جنسی با این مشخصات یافت نشد.' : 'هیچ جنسی ذخیره نشده است.';
+                        productListDiv.innerHTML = `<p class="text-center text-gray-500 py-8">${message}</p>`;
                         return;
                     }
-                    noProductsMessage.classList.add('hidden');
-                    products.forEach(product => {
-                        const card = `
-                            <div class="bg-white p-4 rounded-lg shadow-md border border-gray-200 flex flex-col gap-2">
-                                <p class="font-bold text-lg">${product.name}</p>
-                                <p class="text-sm"><strong>وزن:</strong> ${product.weight}</p>
-                                <p class="text-sm"><strong>عیار:</strong> ${product.purity}</p>
-                                <p class="text-sm"><strong>اجرت:</strong> ${product.wage}%</p>
-                                <div class="flex gap-2 mt-2">
-                                    <button class="px-3 py-1 text-xs rounded-md text-white transition-colors flex-1 text-center bg-blue-500 hover:bg-blue-600" data-id="${product.id}" data-action="edit">ویرایش</button>
-                                    <button class="px-3 py-1 text-xs rounded-md text-white transition-colors flex-1 text-center bg-red-500 hover:bg-red-600" data-id="${product.id}" data-action="delete">حذف</button>
-                                    <button class="px-3 py-1 text-xs rounded-md text-white transition-colors flex-1 text-center bg-green-500 hover:bg-green-600" data-id="${product.id}" data-action="use">استفاده در فاکتور</button>
+
+                    const tableHeader = `
+                        <thead class="bg-gray-100">
+                            <tr class="border-b-2 border-gray-200 text-xs text-gray-600 uppercase tracking-wider">
+                                <th class="px-4 py-3 text-right">بارکد</th>
+                                <th class="px-4 py-3 text-right">نام کالا</th>
+                                <th class="px-4 py-3 text-center">وزن</th>
+                                <th class="px-4 py-3 text-center">عیار</th>
+                                <th class="px-4 py-3 text-center">اجرت (%)</th>
+                                <th class="px-4 py-3 text-center">عملیات</th>
+                            </tr>
+                        </thead>`;
+
+                    const tableRows = products.map(product => `
+                        <tr class="border-b border-gray-200 hover:bg-gray-50">
+                            <td class="px-4 py-3 text-sm text-gray-700 font-mono">${product.barcode || '---'}</td>
+                            <td class="px-4 py-3 text-sm text-gray-700 font-semibold">${product.name}</td>
+                            <td class="px-4 py-3 text-sm text-gray-700 text-center">${product.weight}</td>
+                            <td class="px-4 py-3 text-sm text-gray-700 text-center">${product.purity}</td>
+                            <td class="px-4 py-3 text-sm text-gray-700 text-center">${product.wage}</td>
+                            <td class="px-4 py-3 text-sm text-center whitespace-nowrap">
+                                <div class="flex justify-center gap-2">
+                                    <button class="px-3 py-1 text-xs rounded-md text-white transition-colors bg-blue-500 hover:bg-blue-600" data-id="${product.id}" data-action="edit">ویرایش</button>
+                                    <button class="px-3 py-1 text-xs rounded-md text-white transition-colors bg-red-500 hover:bg-red-600" data-id="${product.id}" data-action="delete">حذف</button>
+                                    <button class="px-3 py-1 text-xs rounded-md text-white transition-colors bg-green-500 hover:bg-green-600" data-id="${product.id}" data-action="use">استفاده</button>
                                 </div>
-                            </div>
-                        `;
-                        productListDiv.insertAdjacentHTML('beforeend', card);
-                    });
+                            </td>
+                        </tr>
+                    `).join('');
+
+                    const tableHtml = `
+                        <table class="min-w-full bg-white rounded-lg shadow-md border border-gray-200 text-sm">
+                            ${tableHeader}
+                            <tbody>
+                                ${tableRows}
+                            </tbody>
+                        </table>
+                    `;
+                    productListDiv.innerHTML = tableHtml;
                 };
-                
-                if (productsToRender) {
-                    display(productsToRender);
-                } else {
-                    if (!this.db) return;
-                    const transaction = this.db.transaction(["products"], "readonly");
-                    const objectStore = transaction.objectStore("products");
-                    const request = objectStore.getAll();
-                    
-                    request.onsuccess = (event) => {
-                        display(event.target.result);
-                    };
-                    request.onerror = (event) => {
-                        console.error("خطا در خواندن اجناس:", event.target.error);
-                    };
-                }
             },
             
             searchProducts: function(query) {
-                if (!this.db) return;
-                const transaction = this.db.transaction(["products"], "readonly");
-                const objectStore = transaction.objectStore("products");
-                
-                if (query.trim() === '') {
-                    this.renderProducts();
-                    return;
-                }
-                
-                const request = objectStore.getAll();
-                request.onsuccess = (event) => {
-                    const allProducts = event.target.result;
-                    const filteredProducts = allProducts.filter(p => p.name.includes(query));
-                    this.renderProducts(filteredProducts);
-                };
-
-                 request.onerror = (event) => {
-                    console.error("خطا در جستجو:", event.target.error);
-                };
+                this.renderProducts(query.trim() || null);
             },
             exportToExcel: function() {
                 if (!this.db) {
@@ -1236,7 +1432,307 @@
                     }
                 };
                 reader.readAsText(file);
-            }
+            },
+
+            saveInvoice: function(invoiceData) {
+                if (!this.db) {
+                    App.UI.showMessage("اتصال به پایگاه داده برقرار نیست.");
+                    return;
+                }
+                const transaction = this.db.transaction(["invoices"], "readwrite");
+                const objectStore = transaction.objectStore("invoices");
+                const request = objectStore.add(invoiceData);
+                
+                request.onsuccess = () => {
+                    App.UI.showMessage("فاکتور با موفقیت در آرشیو ذخیره شد.", 'success');
+                };
+                
+                request.onerror = (event) => {
+                    console.error("خطا در ذخیره فاکتور:", event.target.error);
+                    App.UI.showMessage("خطا در ذخیره فاکتور.");
+                };
+            },
+
+            deleteInvoice: function(id) {
+                if (!this.db) return;
+                const transaction = this.db.transaction(["invoices"], "readwrite");
+                const objectStore = transaction.objectStore("invoices");
+                const request = objectStore.delete(id);
+
+                request.onsuccess = () => {
+                    App.UI.showMessage("فاکتور با موفقیت حذف شد.", 'success');
+                    this.renderInvoices(); // Re-render the list
+                };
+                
+                request.onerror = (event) => {
+                    console.error(`خطا در حذف فاکتور با ID ${id}:`, event.target.error);
+                    App.UI.showMessage("خطا در حذف فاکتور.");
+                };
+            },
+
+            saveOrUpdateCustomer: function(customerData) {
+                if (!this.db || !customerData.name.trim()) {
+                    return; // Do not save if DB is not available or name is empty
+                }
+                const transaction = this.db.transaction(["customers"], "readwrite");
+                const store = transaction.objectStore("customers");
+                const phone = customerData.phone.trim();
+                const name = customerData.name.trim();
+
+                // If phone is empty, search by name to avoid duplicates for customers with no phone
+                if (phone === '') {
+                    const nameIndex = store.index("name");
+                    const nameRequest = nameIndex.getAll(name);
+                    nameRequest.onsuccess = (event) => {
+                        const customers = event.target.result;
+                        const customerWithoutPhoneExists = customers.some(c => c.phone === '');
+                        if (!customerWithoutPhoneExists) {
+                            store.add({ name: name, phone: '' });
+                        }
+                    };
+                    return;
+                }
+
+                // If phone exists, search by phone
+                const phoneIndex = store.index("phone");
+                const request = phoneIndex.get(phone);
+
+                request.onsuccess = (event) => {
+                    const existingCustomer = event.target.result;
+                    if (existingCustomer) {
+                        // Customer exists, update name if different
+                        if (existingCustomer.name !== name) {
+                            existingCustomer.name = name;
+                            store.put(existingCustomer);
+                        }
+                    } else {
+                        // Customer does not exist, add new one
+                        store.add({ name: name, phone: phone });
+                    }
+                };
+                request.onerror = (event) => {
+                    console.error("Error finding customer by phone:", event.target.error);
+                };
+            },
+
+            renderCustomers: function(filterQuery = '') {
+                if (!this.db) return;
+                const customerListDiv = document.getElementById('customer-list');
+                const transaction = this.db.transaction(["customers"], "readonly");
+                const store = transaction.objectStore("customers");
+                const request = store.getAll();
+
+                request.onerror = (event) => {
+                    console.error("Error fetching customers:", event.target.error);
+                    customerListDiv.innerHTML = '<p class="text-red-500 text-center">خطا در بارگذاری لیست مشتریان.</p>';
+                };
+
+                request.onsuccess = (event) => {
+                    let customers = event.target.result.reverse();
+                    if (filterQuery) {
+                        const query = filterQuery.toLowerCase().trim();
+                        customers = customers.filter(c => 
+                            c.name.toLowerCase().includes(query) || 
+                            (c.phone && c.phone.includes(query))
+                        );
+                    }
+
+                    if (customers.length === 0) {
+                        customerListDiv.innerHTML = `<p class="text-center text-gray-500 py-8">هیچ مشتری یافت نشد.</p>`;
+                        return;
+                    }
+
+                    const tableHeader = `
+                        <thead class="bg-gray-100">
+                            <tr class="border-b-2 border-gray-200 text-xs text-gray-600 uppercase tracking-wider">
+                                <th class="px-4 py-3 text-right">نام مشتری</th>
+                                <th class="px-4 py-3 text-right">شماره تماس</th>
+                                <th class="px-4 py-3 text-center">عملیات</th>
+                            </tr>
+                        </thead>`;
+
+                    const tableRows = customers.map(customer => `
+                        <tr class="border-b border-gray-200 hover:bg-gray-50">
+                            <td class="px-4 py-3 text-sm text-gray-700 font-semibold">${customer.name}</td>
+                            <td class="px-4 py-3 text-sm text-gray-700">${customer.phone || '---'}</td>
+                            <td class="px-4 py-3 text-sm text-center">
+                                <button class="px-3 py-1 text-xs rounded-md text-white transition-colors bg-blue-500 hover:bg-blue-600" data-id="${customer.id}" data-action="view-details">مشاهده سوابق</button>
+                            </td>
+                        </tr>
+                    `).join('');
+
+                    customerListDiv.innerHTML = `
+                        <table class="min-w-full bg-white rounded-lg shadow-md border border-gray-200 text-sm">
+                            ${tableHeader}
+                            <tbody>${tableRows}</tbody>
+                        </table>`;
+                };
+            },
+
+            showCustomerDetails: function(customerId) {
+                if (!this.db) return;
+                const transaction = this.db.transaction(["customers", "invoices"], "readonly");
+                const customerStore = transaction.objectStore("customers");
+                const customerRequest = customerStore.get(customerId);
+
+                customerRequest.onsuccess = (event) => {
+                    const customer = event.target.result;
+                    if (!customer) return;
+
+                    document.getElementById('details-customer-name').textContent = customer.name;
+                    document.getElementById('customer-list-view').classList.add('hidden');
+                    document.getElementById('customer-details-view').classList.remove('hidden');
+
+                    const invoiceStore = transaction.objectStore("invoices");
+                    const invoiceRequest = invoiceStore.getAll();
+                    
+                    invoiceRequest.onsuccess = (event) => {
+                        const allInvoices = event.target.result;
+                        // Filter invoices for this customer by name and phone
+                        const customerInvoices = allInvoices.filter(inv => 
+                            inv.customerName === customer.name && inv.customerPhone === customer.phone
+                        ).reverse();
+
+                        const invoiceListDiv = document.getElementById('customer-invoice-list');
+                        if (customerInvoices.length === 0) {
+                            invoiceListDiv.innerHTML = '<p class="text-center text-gray-500 py-8">هیچ فاکتوری برای این مشتری ثبت نشده است.</p>';
+                            return;
+                        }
+
+                        const tableHeader = `
+                            <thead class="bg-gray-100">
+                                <tr class="border-b-2 border-gray-200 text-xs text-gray-600 uppercase tracking-wider">
+                                    <th class="px-4 py-3 text-right">شماره فاکتور</th>
+                                    <th class="px-4 py-3 text-right">تاریخ</th>
+                                    <th class="px-4 py-3 text-right">مبلغ نهایی</th>
+                                    <th class="px-4 py-3 text-center">عملیات</th>
+                                </tr>
+                            </thead>`;
+
+                        const tableRows = customerInvoices.map(invoice => `
+                            <tr class="border-b border-gray-200 hover:bg-gray-50">
+                                <td class="px-4 py-3 text-sm text-gray-700">${invoice.invoiceNumber}</td>
+                                <td class="px-4 py-3 text-sm text-gray-700">${invoice.date}</td>
+                                <td class="px-4 py-3 text-sm text-gray-700 font-semibold">${App.Utils.formatNumber(Math.round(invoice.totals.finalAmount))} تومان</td>
+                                <td class="px-4 py-3 text-sm text-center">
+                                    <button class="px-3 py-1 text-xs rounded-md text-white transition-colors bg-blue-500 hover:bg-blue-600" data-id="${invoice.id}" data-action="reprint-from-customer">چاپ مجدد</button>
+                                </td>
+                            </tr>
+                        `).join('');
+
+                        invoiceListDiv.innerHTML = `
+                            <table class="min-w-full bg-white rounded-lg shadow-md border border-gray-200 text-sm">
+                                ${tableHeader}
+                                <tbody>${tableRows}</tbody>
+                            </table>`;
+                    };
+                };
+            },
+
+            renderInvoices: function(filters = {}, page = 1) {
+                if (!this.db) return;
+                this.currentPage = page;
+                const invoiceListDiv = document.getElementById('invoice-archive-list');
+
+                const transaction = this.db.transaction(["invoices"], "readonly");
+                const objectStore = transaction.objectStore("invoices");
+                const request = objectStore.getAll();
+
+                request.onerror = (event) => {
+                    console.error("خطا در خواندن فاکتورها:", event.target.error);
+                    invoiceListDiv.innerHTML = '<p class="text-red-500 text-center">خطا در بارگذاری فاکتورها.</p>';
+                };
+
+                request.onsuccess = (event) => {
+                    let allInvoices = event.target.result.reverse(); // Show newest first
+                    
+                    let filteredInvoices = allInvoices;
+                    let isFiltered = false;
+                    if (filters.invoiceNumber && filters.invoiceNumber.trim() !== '') {
+                        filteredInvoices = filteredInvoices.filter(inv => String(inv.invoiceNumber || '').includes(filters.invoiceNumber));
+                        isFiltered = true;
+                    }
+                    if (filters.customerName && filters.customerName.trim() !== '') {
+                        filteredInvoices = filteredInvoices.filter(inv => (inv.customerName || '').includes(filters.customerName));
+                        isFiltered = true;
+                    }
+                    if (filters.date && filters.date.trim() !== '') {
+                        filteredInvoices = filteredInvoices.filter(inv => inv.date.includes(filters.date));
+                        isFiltered = true;
+                    }
+
+                    const totalItems = filteredInvoices.length;
+                    const totalPages = Math.ceil(totalItems / this.itemsPerPage);
+                    
+                    if (this.currentPage > totalPages && totalPages > 0) {
+                        this.currentPage = totalPages;
+                    }
+                    if (this.currentPage < 1) {
+                        this.currentPage = 1;
+                    }
+
+                    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+                    const endIndex = startIndex + this.itemsPerPage;
+                    const paginatedInvoices = filteredInvoices.slice(startIndex, endIndex);
+
+                    if (paginatedInvoices.length === 0) {
+                        const message = isFiltered 
+                            ? 'هیچ فاکتوری با این مشخصات یافت نشد.' 
+                            : 'هیچ فاکتوری ذخیره نشده است.';
+                        invoiceListDiv.innerHTML = `<p class="col-span-full text-center text-gray-500 py-8">${message}</p>`;
+                        this.renderPaginationControls(0, 0);
+                        return;
+                    }
+
+                const tableHeader = `...`; // This part is unchanged, so I'm not copying it here.
+
+                    const tableRows = paginatedInvoices.map(invoice => {
+                        return `
+                            <tr class="border-b border-gray-200 hover:bg-gray-50">
+                                <td class="px-4 py-3 text-sm text-gray-700 whitespace-nowrap">${invoice.invoiceNumber || 'N/A'}</td>
+                                <td class="px-4 py-3 text-sm text-gray-700 font-semibold text-gold-dark whitespace-nowrap">${invoice.customerName || 'بدون نام'}</td>
+                                <td class="px-4 py-3 text-sm text-gray-700 whitespace-nowrap">${invoice.date}</td>
+                                <td class="px-4 py-3 text-sm text-gray-700 whitespace-nowrap">${App.Utils.formatNumber(Math.round(invoice.totals.finalAmount))} تومان</td>
+                                <td class="px-4 py-3 text-sm text-center whitespace-nowrap">
+                                    <div class="flex justify-center gap-2">
+                                        <button class="px-3 py-1 text-xs rounded-md text-white transition-colors bg-blue-500 hover:bg-blue-600" data-id="${invoice.id}" data-action="reprint">چاپ</button>
+                                        <button class="px-3 py-1 text-xs rounded-md text-white transition-colors bg-red-500 hover:bg-red-600" data-id="${invoice.id}" data-action="delete-invoice">حذف</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+
+                    const tableHtml = `
+                        <table class="min-w-full bg-white rounded-lg shadow-md border border-gray-200 text-sm">
+                            ${tableHeader}
+                            <tbody>
+                                ${tableRows}
+                            </tbody>
+                        </table>
+                    `;
+                    
+                    invoiceListDiv.innerHTML = tableHtml;
+                    this.renderPaginationControls(totalPages, this.currentPage);
+                };
+            },
+
+            renderPaginationControls: function(totalPages, currentPage) {
+                const paginationControlsDiv = document.getElementById('pagination-controls');
+                if (totalPages <= 1) {
+                    paginationControlsDiv.innerHTML = '';
+                    return;
+                }
+
+                const prevDisabled = currentPage === 1 ? 'disabled' : '';
+                const nextDisabled = currentPage === totalPages ? 'disabled' : '';
+
+                paginationControlsDiv.innerHTML = `
+                    <button data-page="${currentPage - 1}" ${prevDisabled} class="px-4 py-2 text-sm rounded-md text-white transition-colors bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed">قبلی</button>
+                    <span class="text-sm font-semibold text-gray-700">صفحه ${currentPage} از ${totalPages}</span>
+                    <button data-page="${currentPage + 1}" ${nextDisabled} class="px-4 py-2 text-sm rounded-md text-white transition-colors bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed">بعدی</button>
+                `;
+            },
         },
 
         Utils: { // مجموعه توابع کاربردی و عمومی
@@ -1605,7 +2101,14 @@
         },
 
         Invoice: { // مدیریت کامل فرآیند صدور فاکتور
+            currentInvoiceData: null,
             recalculate: function() { this.updateTotal(); },
+            getNextInvoiceNumber: function() {
+                return (parseInt(localStorage.getItem('lastInvoiceNumber') || '0', 10) + 1);
+            },
+            setLastInvoiceNumber: function(number) {
+                localStorage.setItem('lastInvoiceNumber', number);
+            },
             setCurrentInvoiceDate: function() {
                 const el = document.getElementById('invoiceDate');
                 if (el && !el.value) {
@@ -1859,6 +2362,7 @@
                 const customerName = document.getElementById('customerName').value;
                 const customerPhone = document.getElementById('customerPhone').value;
                 const invoiceDate = document.getElementById('invoiceDate').value;
+                const invoiceNumber = this.getNextInvoiceNumber();
 
                 U.setInputValueAndLocalStorage('customerName', customerName);
                 U.setInputValueAndLocalStorage('customerPhone', customerPhone);
@@ -1992,6 +2496,7 @@
         <p style="margin: 4px 0;"><i class="fas fa-phone-alt" style="margin-left: 5px; color: #DAA520;"></i>09141610649</p>
     </header>
     <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 9pt;">
+        <div><strong>شماره فاکتور:</strong> ${invoiceNumber}</div>
         <div><strong>نام مشتری:</strong> ${customerName || 'نامشخص'}</div>
         <div><strong>شماره تماس:</strong> ${customerPhone || 'نامشخص'}</div>
         <div><strong>تاریخ:</strong> ${invoiceDate}</div>
@@ -2015,7 +2520,22 @@
     </footer>
     ${footnoteHtml}
 </div>`;
-                
+
+                // Create a savable object
+                const invoiceDataToSave = {
+                    invoiceNumber: invoiceNumber,
+                    customerName: customerName,
+                    customerPhone: customerPhone,
+                    date: invoiceDate,
+                    items: invoiceItemsData,
+                    totals: totals,
+                    baseGramPrice: baseGramPriceForDisplay,
+                    invoiceHtml: invoiceContent // Save the generated HTML for re-printing
+                };
+
+                // Store data to be saved on print
+                this.currentInvoiceData = invoiceDataToSave;
+
                 document.getElementById('invoicePreviewContainerWrapper').classList.remove('hidden');
                 document.getElementById('invoicePreviewContainer').innerHTML = invoiceContent;
                 document.getElementById('print-area').innerHTML = invoiceContent;
@@ -2218,7 +2738,16 @@
             this.UI.showTab('tab-column1');
 
             document.querySelectorAll('.tab-button').forEach(btn => {
-                btn.addEventListener('click', () => this.UI.showTab(btn.id.replace('btn-tab', 'tab-column')));
+                btn.addEventListener('click', () => {
+                    const tabId = btn.id.replace('btn-tab', 'tab-column');
+                    this.UI.showTab(tabId);
+                    if (tabId === 'tab-column-archive') {
+                        this.DB.renderInvoices();
+                    }
+                    if (tabId === 'tab-column-customers') {
+                        this.DB.renderCustomers();
+                    }
+                });
             });
 
             document.querySelectorAll('[id^="calculateBtn"]').forEach(btn => {
@@ -2228,8 +2757,21 @@
                 });
             });
             
-            document.getElementById('generateInvoiceBtn').addEventListener('click', () => this.Invoice.generateInvoice());
-            document.getElementById('printInvoiceBtn').addEventListener('click', () => window.print());
+            document.getElementById('generateInvoiceBtn').addEventListener('click', () => this.Invoice.generateInvoice());            
+            document.getElementById('printInvoiceBtn').addEventListener('click', () => {
+                const customerData = {
+                    name: this.Invoice.currentInvoiceData.customerName,
+                    phone: this.Invoice.currentInvoiceData.customerPhone
+                };
+                this.DB.saveOrUpdateCustomer(customerData);
+
+                if (this.Invoice.currentInvoiceData) {
+                    this.Invoice.setLastInvoiceNumber(this.Invoice.currentInvoiceData.invoiceNumber);
+                    this.DB.saveInvoice(this.Invoice.currentInvoiceData);
+                    this.Invoice.currentInvoiceData = null; // Clear after saving to prevent re-saving
+                }
+                window.print();
+            });
             document.getElementById('addGoldItemBtn').addEventListener('click', () => this.Invoice.addGoldItemRow());
 
             document.getElementById('goldItemsContainer').addEventListener('click', (e) => {
@@ -2442,11 +2984,15 @@
                 };
                 
                 const productId = parseInt(document.getElementById('productId').value, 10);
-                if (productId) product.id = productId;
+                if (productId) {
+                    product.id = productId;
+                    product.barcode = document.getElementById('productBarcode').value;
+                }
                 
                 this.DB.saveProduct(product);
                 productForm.reset();
                 document.getElementById('productId').value = '';
+                document.getElementById('productBarcode').value = '';
                 document.getElementById('product-form-title').textContent = 'افزودن جنس جدید';
                 document.getElementById('product-form-submit-btn-text').textContent = 'ذخیره جنس';
                 document.getElementById('cancelEditBtn').classList.add('hidden');
@@ -2455,6 +3001,7 @@
             document.getElementById('cancelEditBtn').addEventListener('click', () => {
                  productForm.reset();
                  document.getElementById('productId').value = '';
+                 document.getElementById('productBarcode').value = '';
                  document.getElementById('product-form-title').textContent = 'افزودن جنس جدید';
                  document.getElementById('product-form-submit-btn-text').textContent = 'ذخیره جنس';
                  document.getElementById('cancelEditBtn').classList.add('hidden');
@@ -2479,6 +3026,7 @@
                         if (product) {
                             document.getElementById('productId').value = product.id;
                             document.getElementById('productName').value = product.name;
+                            document.getElementById('productBarcode').value = product.barcode || '';
                             document.getElementById('productWeight').value = product.weight;
                             document.getElementById('productPurity').value = product.purity;
                             document.getElementById('productWage').value = product.wage;
@@ -2514,6 +3062,70 @@
             document.getElementById('import-file-input').addEventListener('change', (event) => {
                 this.DB.importFromCSV(event.target.files[0]);
                 event.target.value = ''; // ریست کردن اینپوت تا بتوان دوباره همان فایل را انتخاب کرد
+            });
+
+            // Event listeners for invoice archive
+            const getArchiveFilters = () => ({
+                customerName: document.getElementById('invoiceSearchCustomer').value,
+                date: document.getElementById('invoiceSearchDate').value,
+                invoiceNumber: document.getElementById('invoiceSearchNumber').value
+            });
+
+            ['invoiceSearchCustomer', 'invoiceSearchDate', 'invoiceSearchNumber'].forEach(id => {
+                document.getElementById(id).addEventListener('input', () => {
+                    this.DB.renderInvoices(getArchiveFilters(), 1);
+                });
+            });
+
+            document.getElementById('itemsPerPage').addEventListener('change', (e) => {
+                this.DB.itemsPerPage = parseInt(e.target.value, 10);
+                localStorage.setItem('itemsPerPage', this.DB.itemsPerPage);
+                this.DB.renderInvoices(getArchiveFilters(), 1);
+            });
+
+            document.getElementById('pagination-controls').addEventListener('click', (e) => {
+                if (e.target.tagName === 'BUTTON' && e.target.dataset.page) {
+                    this.DB.renderInvoices(getArchiveFilters(), parseInt(e.target.dataset.page, 10));
+                }
+            });
+
+            document.getElementById('invoice-archive-list').addEventListener('click', (e) => {
+                const target = e.target;
+                const action = target.dataset.action;
+                const invoiceId = parseInt(target.dataset.id, 10);
+                if (!action || !invoiceId) return;
+
+                if (action === 'delete-invoice') { 
+                    this.UI.showConfirmation('آیا از حذف این فاکتور اطمینان دارید؟ این عمل غیرقابل بازگشت است.', () => {
+                        this.DB.deleteInvoice(invoiceId);
+                    });
+                } else if (action === 'reprint') {
+                    this.Invoice.reprintInvoice(invoiceId);
+                }
+            });
+
+            // --- Customer Management Event Listeners ---
+            document.getElementById('customerSearch').addEventListener('input', (e) => {
+                this.DB.renderCustomers(e.target.value);
+            });
+
+            document.getElementById('back-to-customer-list').addEventListener('click', () => {
+                document.getElementById('customer-details-view').classList.add('hidden');
+                document.getElementById('customer-list-view').classList.remove('hidden');
+            });
+
+            document.getElementById('customer-list').addEventListener('click', (e) => {
+                const target = e.target.closest('button[data-action="view-details"]');
+                if (target) {
+                    this.DB.showCustomerDetails(parseInt(target.dataset.id, 10));
+                }
+            });
+
+            document.getElementById('customer-invoice-list').addEventListener('click', (e) => {
+                const target = e.target.closest('button[data-action="reprint-from-customer"]');
+                if (target) {
+                    this.Invoice.reprintInvoice(parseInt(target.dataset.id, 10));
+                }
             });
         },
         
