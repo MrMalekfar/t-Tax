@@ -774,9 +774,10 @@
                     <h3 class="text-lg font-semibold mb-3 text-gold-dark">مشخصات مشتری</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="responsive-input-group flex flex-col mb-4">
-                            <label for="customerName" class="text-sm sm:text-base font-semibold text-dark-text mb-2">نام و نام خانوادگی:</label>
-                            <div class="input-wrapper flex-1 flex items-center w-full">
+                            <label for="customerName" class="text-sm sm:text-base font-semibold text-dark-text mb-2">نام مشتری (برای جستجو تایپ کنید):</label>
+                            <div class="input-wrapper relative flex-1 flex items-center w-full">
                                 <input type="text" id="customerName" class="w-full p-2 rounded-md border text-right bg-input-bg-light border-input-border-light text-sm">
+                                <div id="customer-suggestions" class="absolute top-full left-0 right-0 bg-white border border-gray-300 rounded-md mt-1 z-10 shadow-lg hidden max-h-60 overflow-y-auto"></div>
                             </div>
                         </div>
                         <div class="responsive-input-group flex flex-col mb-4">
@@ -998,6 +999,25 @@
                     <h2 class="text-lg sm:text-xl font-bold mb-4 sm:mb-6 text-gold-dark border-b border-gold-dark pb-2 sm:pb-3">
                         مدیریت مشتریان
                     </h2>
+
+                    <div class="mb-6 p-4 border rounded-lg bg-gray-50">
+                        <h3 class="text-lg font-semibold mb-3 text-gold-dark">افزودن مشتری جدید</h3>
+                        <form id="add-customer-form" class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                            <div class="responsive-input-group flex flex-col">
+                                <label for="newCustomerName" class="text-sm sm:text-base font-semibold text-dark-text mb-2">نام مشتری:</label>
+                                <input type="text" id="newCustomerName" class="w-full p-2 rounded-md border text-right bg-input-bg-light border-input-border-light text-sm" required>
+                            </div>
+                            <div class="responsive-input-group flex flex-col">
+                                <label for="newCustomerPhone" class="text-sm sm:text-base font-semibold text-dark-text mb-2">شماره تماس (اختیاری):</label>
+                                <input type="text" id="newCustomerPhone" class="w-full p-2 rounded-md border text-left bg-input-bg-light border-input-border-light text-sm">
+                            </div>
+                            <div class="responsive-input-group flex flex-col">
+                                <button type="submit" class="btn-gold-gradient w-full py-2 rounded-lg text-sm font-bold">
+                                    <i class="fas fa-plus mr-2"></i>افزودن مشتری
+                                </button>
+                            </div>
+                        </form>
+                    </div>
 
                     <div class="mb-6 p-4 border rounded-lg bg-gray-50">
                         <h3 class="text-lg font-semibold mb-3 text-gold-dark">جستجوی مشتری</h3>
@@ -1772,6 +1792,32 @@
                 };
             },
 
+            updateCustomerBalance: function(customerName, customerPhone, amount) {
+                if (!this.db || !customerName.trim()) return;
+
+                const transaction = this.db.transaction(["customers"], "readwrite");
+                const store = transaction.objectStore("customers");
+                const phoneIndex = store.index("phone");
+                const request = phoneIndex.get(customerPhone.trim());
+
+                request.onsuccess = (event) => {
+                    const customer = event.target.result;
+                    if (customer) {
+                        customer.balance = (customer.balance || 0) + amount;
+                        store.put(customer);
+                    }
+                };
+                request.onerror = (event) => {
+                    console.error("Error updating customer balance:", event.target.error);
+                };
+            },
+
+            getNextCustomerCode: function() {
+                let lastCode = parseInt(localStorage.getItem('lastCustomerCode') || '0', 10);
+                lastCode++;
+                localStorage.setItem('lastCustomerCode', lastCode);
+                return String(lastCode).padStart(6, '0');
+            },
             saveOrUpdateCustomer: function(customerData) {
                 if (!this.db || !customerData.name.trim()) {
                     return; // Do not save if DB is not available or name is empty
@@ -1781,19 +1827,20 @@
                 const phone = customerData.phone.trim();
                 const name = customerData.name.trim();
 
+                if (!name) return; // Do not save if name is empty
+
                 // If phone is empty, search by name to avoid duplicates for customers with no phone
                 if (phone === '') {
                     const nameIndex = store.index("name");
                     const nameRequest = nameIndex.getAll(name);
                     nameRequest.onsuccess = (event) => {
                         const customers = event.target.result;
-                        const customerWithoutPhoneExists = customers.some(c => c.phone === '');
+                        const customerWithoutPhoneExists = customers.some(c => c.name === name && c.phone === '');
                         if (!customerWithoutPhoneExists) {
-                            // Add balance property on creation
-                            if (!('balance' in customerData)) {
-                                customerData.balance = 0;
-                            }
-                            store.add({ name: name, phone: '' });
+                            const newCustomer = { name: name, phone: '', customerCode: this.getNextCustomerCode() };
+                            store.add(newCustomer);
+                        } else {
+                            // Customer without phone already exists, do nothing.
                         }
                     };
                     return;
@@ -1810,53 +1857,153 @@
                         if (existingCustomer.name !== name) {
                             existingCustomer.name = name;
                             store.put(existingCustomer);
+                        } else {
+                            // If a customer with the same name and phone exists, we don't add a new one.
+                            // This can happen if the user tries to add an existing customer.
+                            // We can show a message or just silently ignore it. For now, we'll ignore.
+                            console.log("Customer with this phone number already exists.");
                         }
                     } else {
                         // Customer does not exist, add new one
-                        // Add balance property on creation
-                        if (!('balance' in customerData)) {
-                            customerData.balance = 0;
-                        }
-                        store.add(customerData);
+                        const newCustomer = { ...customerData, customerCode: this.getNextCustomerCode() };
+                        store.add(newCustomer);
                     }
                 };
+
+
                 request.onerror = (event) => {
                     console.error("Error finding customer by phone:", event.target.error);
                 };
             },
 
-            renderCustomers: function(filterQuery = '', balanceFilter = 'all') {
+            deleteCustomer: function(customerId) {
                 if (!this.db) return;
-                const customerListDiv = document.getElementById('customer-list');
+                const transaction = this.db.transaction(["customers"], "readwrite");
+                const store = transaction.objectStore("customers");
+                const request = store.delete(customerId);
+
+                request.onsuccess = () => {
+                    App.UI.showMessage('مشتری با موفقیت حذف شد.', 'success');
+                    this.renderCustomers(); // Refresh the list
+                };
+                request.onerror = (event) => {
+                    App.UI.showMessage('خطا در حذف مشتری.');
+                    console.error("Delete customer error:", event.target.error);
+                };
+            },
+
+            updateCustomer: function(customerId, newName, newPhone) {
+                if (!this.db) return;
+                const transaction = this.db.transaction(["customers"], "readwrite");
+                const store = transaction.objectStore("customers");
+                const request = store.get(customerId);
+
+                request.onsuccess = (event) => {
+                    const customer = event.target.result;
+                    if (customer) {
+                        customer.name = newName;
+                        customer.phone = newPhone;
+                        const updateRequest = store.put(customer);
+                        updateRequest.onsuccess = () => {
+                            App.UI.showMessage('اطلاعات مشتری با موفقیت بروزرسانی شد.', 'success');
+                            this.renderCustomers(); // Refresh the list
+                        };
+                        updateRequest.onerror = (e) => {
+                            App.UI.showMessage('خطا در بروزرسانی اطلاعات مشتری.');
+                            console.error("Update customer error:", e.target.error);
+                        };
+                    }
+                };
+                request.onerror = (event) => {
+                    console.error("Get customer for update error:", event.target.error);
+                };
+            },
+
+            searchCustomersByName: function(query, callback) {
+                if (!this.db || query.length < 2) {
+                    callback([]);
+                    return;
+                }
                 const transaction = this.db.transaction(["customers"], "readonly");
                 const store = transaction.objectStore("customers");
                 const request = store.getAll();
 
+                request.onsuccess = (event) => {
+                    const customers = event.target.result;
+                    const filtered = customers.filter(c => c.name.toLowerCase().includes(query.toLowerCase()));
+                    callback(filtered);
+                };
+            },
+            addCustomer: function(name, phone) {
+                if (!this.db) return;
+                if (!name.trim()) {
+                    App.UI.showMessage('نام مشتری نمی‌تواند خالی باشد.');
+                    return;
+                }
+
+                const transaction = this.db.transaction(["customers"], "readwrite");
+                const store = transaction.objectStore("customers");
+                const newCustomer = { 
+                    name: name.trim(), 
+                    phone: phone.trim(), 
+                    customerCode: this.getNextCustomerCode(),
+                    balance: 0
+                };
+                const request = store.add(newCustomer);
+
+                request.onsuccess = () => {
+                    this.renderCustomers(); // Refresh the list
+                };
                 request.onerror = (event) => {
+                    console.error("Error searching customers:", event.target.error);
+                    callback([]);
+                };
+            },
+            renderCustomers: function(filterQuery = '', balanceFilter = 'all') {
+                if (!this.db) return;
+                const customerListDiv = document.getElementById('customer-list');
+                const transaction = this.db.transaction(["customers", "invoices"], "readonly");
+                const customerStore = transaction.objectStore("customers");
+                const invoiceStore = transaction.objectStore("invoices");
+
+                const customerRequest = customerStore.getAll();
+                const invoiceRequest = invoiceStore.getAll();
+
+                customerRequest.onerror = invoiceRequest.onerror = (event) => {
                     console.error("Error fetching customers:", event.target.error);
                     customerListDiv.innerHTML = '<p class="text-red-500 text-center">خطا در بارگذاری لیست مشتریان.</p>';
                 };
 
-                request.onsuccess = (event) => {
-                    let customers = event.target.result.reverse();
+                let allCustomers = [];
+                let allInvoices = [];
+
+                const render = () => {
+                    if (!allCustomers || !allInvoices) return;
+
+                    let customersWithBalance = allCustomers.map(customer => {
+                        const customerInvoices = allInvoices.filter(inv => inv.customerName === customer.name && inv.customerPhone === customer.phone);
+                        const balance = customerInvoices.reduce((acc, inv) => acc + (inv.payment.remaining || 0), 0);
+                        return { ...customer, balance };
+                    }).reverse();
+
                     if (filterQuery) {
                         const query = filterQuery.toLowerCase().trim();
-                        customers = customers.filter(c => 
-                            c.name.toLowerCase().includes(query) || 
-                            (c.phone && c.phone.includes(query))
+                        customersWithBalance = customersWithBalance.filter(c => 
+                            c.name.toLowerCase().includes(query) || (c.phone && c.phone.includes(query))
                         );
                     }
 
                     if (balanceFilter !== 'all') {
-                        customers = customers.filter(c => {
-                            const balance = c.balance || 0;
-                            if (balanceFilter === 'debtor') return balance < 0;
-                            if (balanceFilter === 'creditor') return balance > 0;
+                        customersWithBalance = customersWithBalance.filter(c => {
+                            const balance = c.balance;
+                            if (balanceFilter === 'debtor') return balance > 0;
+                            if (balanceFilter === 'creditor') return balance < 0;
                             if (balanceFilter === 'zero') return balance === 0;
                         });
                     }
-
-                    if (customers.length === 0) {
+                    // Calculate total balance for each customer
+                    
+                    if (customersWithBalance.length === 0) {
                         customerListDiv.innerHTML = `<p class="text-center text-gray-500 py-8">هیچ مشتری یافت نشد.</p>`;
                         return;
                     }
@@ -1864,6 +2011,7 @@
                     const tableHeader = `
                         <thead class="bg-gray-100">
                             <tr class="border-b-2 border-gray-200 text-xs text-gray-600 uppercase tracking-wider">
+                                <th class="px-4 py-3 text-right">کد مشتری</th>
                                 <th class="px-4 py-3 text-right">نام مشتری</th>
                                 <th class="px-4 py-3 text-right">شماره تماس</th>
                                 <th class="px-4 py-3 text-right">مانده حساب (تومان)</th>
@@ -1871,16 +2019,21 @@
                             </tr>
                         </thead>`;
 
-                    const tableRows = customers.map(customer => `
+                    const tableRows = customersWithBalance.map(customer => `
                         <tr class="border-b border-gray-200 hover:bg-gray-50">
+                            <td class="px-4 py-3 text-sm text-gray-700 font-mono">${customer.customerCode || '---'}</td>
                             <td class="px-4 py-3 text-sm text-gray-700 font-semibold">${customer.name}</td>
                             <td class="px-4 py-3 text-sm text-gray-700">${customer.phone || '---'}</td>
-                            <td class="px-4 py-3 text-sm font-mono ${ (customer.balance || 0) < 0 ? 'text-red-600' : (customer.balance || 0) > 0 ? 'text-green-600' : 'text-gray-700'}">
+                            <td class="px-4 py-3 text-sm font-mono ${ (customer.balance || 0) > 0 ? 'text-red-600' : (customer.balance || 0) < 0 ? 'text-green-600' : 'text-gray-700'}">
                                 ${App.Utils.formatNumber(Math.abs(customer.balance || 0))}
-                                <span class="text-xs">${(customer.balance || 0) < 0 ? 'بدهکار' : (customer.balance || 0) > 0 ? 'بستانکار' : ''}</span>
+                                <span class="text-xs">${(customer.balance || 0) > 0 ? 'بدهکار' : (customer.balance || 0) < 0 ? 'بستانکار' : ''}</span>
                             </td>
                             <td class="px-4 py-3 text-sm text-center">
-                                <button class="px-3 py-1 text-xs rounded-md text-white transition-colors bg-blue-500 hover:bg-blue-600" data-id="${customer.id}" data-action="view-details">مشاهده سوابق</button>
+                                <div class="flex justify-center gap-2">
+                                    <button class="px-3 py-1 text-xs rounded-md text-white transition-colors bg-blue-500 hover:bg-blue-600" data-id="${customer.id}" data-action="view-details">سوابق</button>
+                                    <button class="px-3 py-1 text-xs rounded-md text-white transition-colors bg-yellow-500 hover:bg-yellow-600" data-id="${customer.id}" data-name="${customer.name}" data-phone="${customer.phone || ''}" data-action="edit-customer">ویرایش</button>
+                                    <button class="px-3 py-1 text-xs rounded-md text-white transition-colors bg-red-500 hover:bg-red-600" data-id="${customer.id}" data-action="delete-customer">حذف</button>
+                                </div>
                             </td>
                         </tr>
                     `).join('');
@@ -1890,6 +2043,16 @@
                             ${tableHeader}
                             <tbody>${tableRows}</tbody>
                         </table>`;
+                };
+
+                customerRequest.onsuccess = (event) => {
+                    allCustomers = event.target.result;
+                    if (allInvoices) render();
+                };
+
+                invoiceRequest.onsuccess = (event) => {
+                    allInvoices = event.target.result;
+                    if (allCustomers) render();
                 };
             },
 
@@ -1904,14 +2067,6 @@
                     if (!customer) return;
 
                     document.getElementById('details-customer-name').textContent = customer.name;
-                    document.getElementById('customer-list-view').classList.add('hidden');
-                    const balanceEl = document.getElementById('details-customer-balance');
-                    const balance = customer.balance || 0;
-                    balanceEl.textContent = `${App.Utils.formatNumber(Math.abs(balance))} تومان (${balance < 0 ? 'بدهکار' : balance > 0 ? 'بستانکار' : 'بی حساب'})`;
-                    balanceEl.className = 'font-bold ';
-                    if (balance < 0) balanceEl.classList.add('text-red-600');
-                    else if (balance > 0) balanceEl.classList.add('text-green-600');
-                    else balanceEl.classList.add('text-gray-800');
                     document.getElementById('customer-details-view').classList.remove('hidden');
 
                     const invoiceStore = transaction.objectStore("invoices");
@@ -1923,6 +2078,20 @@
                         const customerInvoices = allInvoices.filter(inv => 
                             inv.customerName === customer.name && inv.customerPhone === customer.phone
                         ).reverse();
+
+                        // Recalculate total balance from all invoices
+                        const totalBalance = customerInvoices.reduce((acc, inv) => acc + (inv.payment.remaining || 0), 0);
+
+                        document.getElementById('customer-list-view').classList.add('hidden');
+                        const balanceEl = document.getElementById('details-customer-balance');
+                        
+                        balanceEl.textContent = `${App.Utils.formatNumber(Math.round(Math.abs(totalBalance)))} تومان (${totalBalance > 0 ? 'بدهکار' : totalBalance < 0 ? 'بستانکار' : 'بی حساب'})`;
+                        balanceEl.className = 'font-bold ';
+                        if (totalBalance > 0) balanceEl.classList.add('text-red-600');
+                        else if (totalBalance < 0) balanceEl.classList.add('text-green-600');
+                        else balanceEl.classList.add('text-gray-800');
+
+
 
                         const invoiceListDiv = document.getElementById('customer-invoice-list');
                         if (customerInvoices.length === 0) {
@@ -1936,6 +2105,7 @@
                                     <th class="px-4 py-3 text-right">شماره فاکتور</th>
                                     <th class="px-4 py-3 text-right">تاریخ</th>
                                     <th class="px-4 py-3 text-right">مبلغ نهایی</th>
+                                    <th class="px-4 py-3 text-right">وضعیت حساب</th>
                                     <th class="px-4 py-3 text-center">عملیات</th>
                                 </tr>
                             </thead>`;
@@ -1943,8 +2113,15 @@
                         const tableRows = customerInvoices.map(invoice => `
                             <tr class="border-b border-gray-200 hover:bg-gray-50">
                                 <td class="px-4 py-3 text-sm text-gray-700">${invoice.invoiceNumber}</td>
-                                <td class="px-4 py-3 text-sm text-gray-700">${invoice.date}</td>
+                                <td class="px-4 py-3 text-sm text-gray-700 ltr">${invoice.date}</td>
                                 <td class="px-4 py-3 text-sm text-gray-700 font-semibold">${App.Utils.formatNumber(Math.round(invoice.totals.finalAmount))} تومان</td>
+                                <td class="px-4 py-3 text-sm font-semibold ${
+                                    invoice.payment.remaining > 0 ? 'text-red-600' :
+                                    invoice.payment.remaining < 0 ? 'text-green-600' :
+                                    'text-gray-500'
+                                }">
+                                    ${App.Utils.formatNumber(Math.round(Math.abs(invoice.payment.remaining)))} تومان ${ invoice.payment.remaining > 0 ? 'بدهکار' : invoice.payment.remaining < 0 ? 'بستانکار' : 'تسویه'}
+                                </td>
                                 <td class="px-4 py-3 text-sm text-center">
                                     <button class="px-3 py-1 text-xs rounded-md text-white transition-colors bg-blue-500 hover:bg-blue-600" data-id="${invoice.id}" data-action="reprint-from-customer">چاپ مجدد</button>
                                 </td>
@@ -2027,6 +2204,7 @@
                                 <th class="px-4 py-3 text-right">نام مشتری</th>
                                 <th class="px-4 py-3 text-right">تاریخ</th>
                                 <th class="px-4 py-3 text-right">مبلغ نهایی</th>
+                                    <th class="px-4 py-3 text-right">مبلغ بدهکاری/بستانکاری</th>
                                 <th class="px-4 py-3 text-center">عملیات</th>
                             </tr>
                         </thead>
@@ -3123,20 +3301,6 @@
                 const button = e.target.closest('.remove-item-btn');
                 if (button) this.Invoice.removeGoldItemRow(button);
             });
-            
-            document.getElementById('goldItemsContainer').addEventListener('input', (e) => {
-                const targetId = e.target.id;
-                if (targetId.startsWith('itemGramPrice_')) {
-                    App.userModifiedPrices[targetId] = true;
-                }
-                App.Invoice.updateTotal(); 
-            });
-
-            ['invoiceProfit', 'invoiceVAT'].forEach(id => {
-                document.getElementById(id).addEventListener('input', (e) => {
-                    App.Utils.setInputValueAndLocalStorage(id, e.target.value);
-                });
-            });
 
             ['1', '2', '3', '6'].forEach(i => {
                 const priceGramInput = document.getElementById(`price_gram${i}`);
@@ -3155,6 +3319,20 @@
                         });
                     }
                 }
+            });
+
+            document.getElementById('goldItemsContainer').addEventListener('input', (e) => {
+                const targetId = e.target.id;
+                if (targetId.startsWith('itemGramPrice_')) {
+                    App.userModifiedPrices[targetId] = true;
+                }
+                App.Invoice.updateTotal(); 
+            });
+
+            ['invoiceProfit', 'invoiceVAT'].forEach(id => {
+                document.getElementById(id).addEventListener('input', (e) => {
+                    App.Utils.setInputValueAndLocalStorage(id, e.target.value);
+                });
             });
             
             // In UI.updateNavbarPrices, we should trigger an adjustment
@@ -3342,6 +3520,30 @@
                 document.getElementById('product-form-submit-btn-text').textContent = 'ذخیره جنس';
                 document.getElementById('cancelEditBtn').classList.add('hidden');
             });
+
+            document.getElementById('printInvoiceBtn').addEventListener('click', () => {
+                const { customerName, customerPhone, payment, invoiceNumber } = this.Invoice.currentInvoiceData;
+                
+                // Save/Update customer and then update their balance
+                const transaction = this.DB.db.transaction(["customers"], "readwrite");
+                const store = transaction.objectStore("customers");
+                const phoneIndex = store.index("phone");
+                const request = phoneIndex.get(customerPhone.trim());
+                
+                request.onsuccess = (event) => {
+                    let customer = event.target.result;
+                    if (!customer) {
+                        customer = { name: customerName, phone: customerPhone, balance: 0 };
+                    }
+                    // The remaining amount is what the customer owes (positive) or is credited (negative)
+                    customer.balance = (customer.balance || 0) + payment.remaining;
+                    store.put(customer);
+                };
+
+                this.DB.saveInvoice(this.Invoice.currentInvoiceData);
+                this.Invoice.setLastInvoiceNumber(invoiceNumber);
+                window.print();
+            });
             
             document.getElementById('cancelEditBtn').addEventListener('click', () => {
                  productForm.reset();
@@ -3471,12 +3673,65 @@
             });
 
             document.getElementById('customer-list').addEventListener('click', (e) => {
-                const target = e.target.closest('button[data-action="view-details"]');
-                if (target) {
-                    this.DB.showCustomerDetails(parseInt(target.dataset.id, 10));
+                const button = e.target.closest('button[data-action]');
+                if (!button) return;
+
+                const action = button.dataset.action;
+                const customerId = parseInt(button.dataset.id, 10);
+
+                if (action === 'view-details') {
+                    this.DB.showCustomerDetails(customerId);
+                } else if (action === 'edit-customer') {
+                    const currentName = button.dataset.name;
+                    const currentPhone = button.dataset.phone;
+                    const newName = prompt('نام جدید مشتری را وارد کنید:', currentName);
+                    const newPhone = prompt('شماره تلفن جدید مشتری را وارد کنید:', currentPhone);
+                    if (newName !== null && newPhone !== null) this.DB.updateCustomer(customerId, newName.trim(), newPhone.trim());
+                }
+                else if (action === 'delete-customer') {
+                    this.UI.showConfirmation('آیا از حذف این مشتری و تمام سوابق فاکتورهای او اطمینان دارید؟ این عمل غیرقابل بازگشت است.', 
+                        () => this.DB.deleteCustomer(customerId));
                 }
             });
 
+            document.getElementById('add-customer-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const nameInput = document.getElementById('newCustomerName');
+                const phoneInput = document.getElementById('newCustomerPhone');
+                this.DB.addCustomer(nameInput.value, phoneInput.value);
+                nameInput.value = '';
+                phoneInput.value = '';
+            });
+            // --- Autocomplete for Customer Name in Invoice ---
+            const customerNameInput = document.getElementById('customerName');
+            const suggestionsDiv = document.getElementById('customer-suggestions');
+
+            customerNameInput.addEventListener('input', () => {
+                const query = customerNameInput.value;
+                if (query.length < 2) {
+                    suggestionsDiv.innerHTML = '';
+                    suggestionsDiv.classList.add('hidden');
+                    return;
+                }
+                this.DB.searchCustomersByName(query, (customers) => {
+                    if (customers.length > 0) {
+                        suggestionsDiv.innerHTML = customers.map(c => 
+                            `<div class="p-2 hover:bg-gray-100 cursor-pointer" data-name="${c.name}" data-phone="${c.phone || ''}">${c.name} (${c.phone || 'بدون شماره'})</div>`
+                        ).join('');
+                        suggestionsDiv.classList.remove('hidden');
+                    } else {
+                        suggestionsDiv.classList.add('hidden');
+                    }
+                });
+            });
+
+            suggestionsDiv.addEventListener('click', (e) => {
+                if (e.target.dataset.name) {
+                    customerNameInput.value = e.target.dataset.name;
+                    document.getElementById('customerPhone').value = e.target.dataset.phone;
+                    suggestionsDiv.classList.add('hidden');
+                }
+            });
             document.getElementById('customer-invoice-list').addEventListener('click', (e) => {
                 const target = e.target.closest('button[data-action="reprint-from-customer"]');
                 if (target) {
