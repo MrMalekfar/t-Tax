@@ -1773,6 +1773,11 @@
                     console.error("خطا در ذخیره فاکتور:", event.target.error);
                     App.UI.showMessage("خطا در ذخیره فاکتور.");
                 };
+
+                transaction.oncomplete = () => {
+                    // After successfully saving the invoice, update the customer's balance
+                    if (invoiceData.customerId) this.updateCustomerBalance(invoiceData.customerId, invoiceData.payment.remaining);
+                }
             },
 
             deleteInvoice: function(id) {
@@ -1792,19 +1797,21 @@
                 };
             },
 
-            updateCustomerBalance: function(customerName, customerPhone, amount) {
-                if (!this.db || !customerName.trim()) return;
+            updateCustomerBalance: function(customerId, amount) {
+                if (!this.db || !customerId) return;
 
                 const transaction = this.db.transaction(["customers"], "readwrite");
                 const store = transaction.objectStore("customers");
-                const phoneIndex = store.index("phone");
-                const request = phoneIndex.get(customerPhone.trim());
+                const request = store.get(customerId);
 
                 request.onsuccess = (event) => {
                     const customer = event.target.result;
                     if (customer) {
                         customer.balance = (customer.balance || 0) + amount;
-                        store.put(customer);
+                        const updateRequest = store.put(customer);
+                        updateRequest.onerror = (e) => {
+                            console.error("Error putting customer update:", e.target.error);
+                        };
                     }
                 };
                 request.onerror = (event) => {
@@ -1978,11 +1985,17 @@
                 let allInvoices = [];
 
                 const render = () => {
-                    if (!allCustomers || !allInvoices) return;
-
+                    // Wait for both fetches to complete
+                    if (!allCustomers || !allInvoices) return; 
+                    
                     let customersWithBalance = allCustomers.map(customer => {
-                        const customerInvoices = allInvoices.filter(inv => inv.customerName === customer.name && inv.customerPhone === customer.phone);
-                        const balance = customerInvoices.reduce((acc, inv) => acc + (inv.payment.remaining || 0), 0);
+                        // Find all invoices for the current customer
+                        const customerInvoices = allInvoices.filter(inv => {
+                            // Match by ID if available, otherwise by name and phone for older invoices
+                            return inv.customerId === customer.id || (inv.customerName === customer.name && inv.customerPhone === customer.phone);
+                        });
+                        // Calculate the balance by summing up the remaining amounts from their invoices
+                        const balance = customerInvoices.reduce((acc, inv) => acc + (inv.payment?.remaining || 0), 0);
                         return { ...customer, balance };
                     }).reverse();
 
@@ -1995,14 +2008,12 @@
 
                     if (balanceFilter !== 'all') {
                         customersWithBalance = customersWithBalance.filter(c => {
-                            const balance = c.balance;
+                            const balance = c.balance || 0;
                             if (balanceFilter === 'debtor') return balance > 0;
                             if (balanceFilter === 'creditor') return balance < 0;
                             if (balanceFilter === 'zero') return balance === 0;
                         });
                     }
-                    // Calculate total balance for each customer
-                    
                     if (customersWithBalance.length === 0) {
                         customerListDiv.innerHTML = `<p class="text-center text-gray-500 py-8">هیچ مشتری یافت نشد.</p>`;
                         return;
@@ -2026,7 +2037,7 @@
                             <td class="px-4 py-3 text-sm text-gray-700">${customer.phone || '---'}</td>
                             <td class="px-4 py-3 text-sm font-mono ${ (customer.balance || 0) > 0 ? 'text-red-600' : (customer.balance || 0) < 0 ? 'text-green-600' : 'text-gray-700'}">
                                 ${App.Utils.formatNumber(Math.abs(customer.balance || 0))}
-                                <span class="text-xs">${(customer.balance || 0) > 0 ? 'بدهکار' : (customer.balance || 0) < 0 ? 'بستانکار' : ''}</span>
+                                <span class="text-xs">${(customer.balance || 0) > 0 ? 'بدهکار' : (customer.balance || 0) < 0 ? 'بستانکار' : 'بی حساب'}</span>
                             </td>
                             <td class="px-4 py-3 text-sm text-center">
                                 <div class="flex justify-center gap-2">
@@ -2046,13 +2057,13 @@
                 };
 
                 customerRequest.onsuccess = (event) => {
-                    allCustomers = event.target.result;
-                    if (allInvoices) render();
+                    allCustomers = event.target.result || [];
+                    if (allInvoices !== null) render();
                 };
 
                 invoiceRequest.onsuccess = (event) => {
-                    allInvoices = event.target.result;
-                    if (allCustomers) render();
+                    allInvoices = event.target.result || [];
+                    if (allCustomers !== null) render();
                 };
             },
 
@@ -2074,9 +2085,10 @@
                     
                     invoiceRequest.onsuccess = (event) => {
                         const allInvoices = event.target.result;
-                        // Filter invoices for this customer by name and phone
+                        // Filter invoices for this customer by ID, or by name/phone for older invoices
                         const customerInvoices = allInvoices.filter(inv => 
-                            inv.customerName === customer.name && inv.customerPhone === customer.phone
+                            inv.customerId === customerId || 
+                            (inv.customerName === customer.name && inv.customerPhone === customer.phone)
                         ).reverse();
 
                         // Recalculate total balance from all invoices
@@ -2217,6 +2229,13 @@
                                 <td class="px-4 py-3 text-sm text-gray-700 font-semibold text-gold-dark whitespace-nowrap">${invoice.customerName || 'بدون نام'}</td>
                                 <td class="px-4 py-3 text-sm text-gray-700 whitespace-nowrap">${invoice.date}</td>
                                 <td class="px-4 py-3 text-sm text-gray-700 whitespace-nowrap">${App.Utils.formatNumber(Math.round(invoice.totals.finalAmount))} تومان</td>
+                                <td class="px-4 py-3 text-sm font-semibold ${
+                                    invoice.payment.remaining > 0 ? 'text-red-600' :
+                                    invoice.payment.remaining < 0 ? 'text-green-600' :
+                                    'text-gray-500'
+                                }">
+                                    ${App.Utils.formatNumber(Math.round(Math.abs(invoice.payment.remaining)))} تومان ${ invoice.payment.remaining > 0 ? 'بدهکار' : invoice.payment.remaining < 0 ? 'بستانکار' : 'تسویه'}
+                                </td>
                                 <td class="px-4 py-3 text-sm text-center whitespace-nowrap">
                                     <div class="flex justify-center gap-2">
                                         <button class="px-3 py-1 text-xs rounded-md text-white transition-colors bg-blue-500 hover:bg-blue-600" data-id="${invoice.id}" data-action="reprint">چاپ</button>
@@ -2921,6 +2940,7 @@
                 const U = App.Utils;
                 const customerName = document.getElementById('customerName').value;
                 const customerPhone = document.getElementById('customerPhone').value;
+                const customerId = document.getElementById('customerName').dataset.customerId ? parseInt(document.getElementById('customerName').dataset.customerId, 10) : null;
                 const invoiceDate = document.getElementById('invoiceDate').value;
                 const invoiceNumber = this.getNextInvoiceNumber();
 
@@ -3111,6 +3131,7 @@
                     invoiceNumber: invoiceNumber,
                     customerName: customerName,
                     customerPhone: customerPhone,
+                    customerId: customerId ? parseInt(customerId, 10) : null,
                     date: invoiceDate,
                     items: invoiceItemsData,
                     totals: totals,
@@ -3524,6 +3545,7 @@
             document.getElementById('printInvoiceBtn').addEventListener('click', () => {
                 const { customerName, customerPhone, payment, invoiceNumber } = this.Invoice.currentInvoiceData;
                 
+                // This logic is flawed if customer name is edited. It should be based on ID.
                 // Save/Update customer and then update their balance
                 const transaction = this.DB.db.transaction(["customers"], "readwrite");
                 const store = transaction.objectStore("customers");
@@ -3532,12 +3554,18 @@
                 
                 request.onsuccess = (event) => {
                     let customer = event.target.result;
-                    if (!customer) {
-                        customer = { name: customerName, phone: customerPhone, balance: 0 };
+                    if (customer) {
+                        // The remaining amount is what the customer owes (positive) or is credited (negative)
+                        customer.balance = (customer.balance || 0) + payment.remaining;
+                        store.put(customer);
+                    } else if (customerName.trim()) {
+                        // If customer doesn't exist, create them
+                        const newCustomer = { 
+                            name: customerName, phone: customerPhone, 
+                            balance: payment.remaining, customerCode: this.DB.getNextCustomerCode() 
+                        };
+                        store.add(newCustomer);
                     }
-                    // The remaining amount is what the customer owes (positive) or is credited (negative)
-                    customer.balance = (customer.balance || 0) + payment.remaining;
-                    store.put(customer);
                 };
 
                 this.DB.saveInvoice(this.Invoice.currentInvoiceData);
@@ -3716,7 +3744,7 @@
                 this.DB.searchCustomersByName(query, (customers) => {
                     if (customers.length > 0) {
                         suggestionsDiv.innerHTML = customers.map(c => 
-                            `<div class="p-2 hover:bg-gray-100 cursor-pointer" data-name="${c.name}" data-phone="${c.phone || ''}">${c.name} (${c.phone || 'بدون شماره'})</div>`
+                            `<div class="p-2 hover:bg-gray-100 cursor-pointer" data-id="${c.id}" data-name="${c.name}" data-phone="${c.phone || ''}">${c.name} (${c.phone || 'بدون شماره'})</div>`
                         ).join('');
                         suggestionsDiv.classList.remove('hidden');
                     } else {
@@ -3729,6 +3757,7 @@
                 if (e.target.dataset.name) {
                     customerNameInput.value = e.target.dataset.name;
                     document.getElementById('customerPhone').value = e.target.dataset.phone;
+                    customerNameInput.dataset.customerId = e.target.dataset.id;
                     suggestionsDiv.classList.add('hidden');
                 }
             });
