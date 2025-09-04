@@ -8,21 +8,21 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* متغیرهای اصلی CSS برای تم برنامه */
+        /* Main CSS variables for the application theme */
         :root {
-            --color-gold-light: #FFD700; /* طلایی روشن */
-            --color-gold-dark: #DAA520; /* طلایی تیره */
-            --color-light-bg: #F8F8F8; /* پس‌زمینه خاکستری روشن */
-            --color-card-light-bg: #FFFFFF; /* پس‌زمینه سفید کارت‌ها */
-            --color-dark-text: #333333; /* متن خاکستری تیره */
-            --color-gold-accent: #FFC107; /* طلایی کهربایی برای تاکید */
-            --color-input-bg-light: #F0F0F0; /* پس‌زمینه روشن ورودی */
-            --color-input-border-light: #E0E0E0; /* حاشیه روشن ورودی */
-            --color-results-bg: #FFFBF0; /* پس‌زمینه بسیار روشن طلایی برای نتایج */
-            --color-results-border: #FFD700; /* حاشیه طلایی برای نتایج */
+            --color-gold-light: #FFD700; /* Light Gold */
+            --color-gold-dark: #DAA520; /* Dark Gold */
+            --color-light-bg: #F8F8F8; /* Light Gray Background */
+            --color-card-light-bg: #FFFFFF; /* White Card Background */
+            --color-dark-text: #333333; /* Dark Gray Text */
+            --color-gold-accent: #FFC107; /* Amber Gold for Accents */
+            --color-input-bg-light: #F0F0F0; /* Light Input Background */
+            --color-input-border-light: #E0E0E0; /* Light Input Border */
+            --color-results-bg: #FFFBF0; /* Very Light Gold Background for Results */
+            --color-results-border: #FFD700; /* Gold Border for Results */
         }
 
-        /* استایل‌های پایه و فونت اصلی */
+        /* Base styles and main font */
         body {
             font-family: "IranSans", sans-serif;
             direction: rtl;
@@ -35,12 +35,12 @@
             padding: 10px;
         }
         
-        /* ایجاد فاصله در بالای صفحه برای نوار ثابت */
+        /* Add top padding for the fixed navbar */
         body.app-view {
-             padding-top: 60px; /* مقدار پیش‌فرض؛ توسط جاوااسکریپت تنظیم می‌شود */
+             padding-top: 60px; /* Default value; will be adjusted by JavaScript */
         }
 
-        /* استایل متن نتایج محاسبات */
+        /* Style for calculation result text */
         .highlighted-result {
             font-size: 1.125rem; /* اندازه فونت برای موبایل */
             color: var(--color-gold-dark);
@@ -55,7 +55,7 @@
             }
         }
 
-        /* استایل دکمه‌های طلایی با گرادینت */
+        /* Style for gold gradient buttons */
         .btn-gold-gradient {
             background: linear-gradient(145deg, var(--color-gold-light), var(--color-gold-dark));
             color: var(--color-dark-text);
@@ -69,14 +69,14 @@
             transform: translateY(-2px);
         }
 
-        /* استایل اینپوت‌ها در حالت فوکوس */
+        /* Style for focused inputs */
         input:focus, select:focus {
             outline: none;
             border-color: var(--color-gold-accent);
             box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.5);
         }
 
-        /* استایل دکمه‌های تب (ابزارها) */
+        /* Style for tab buttons (tools) */
         .tab-button {
             font-weight: 600;
             background-color: var(--color-card-light-bg);
@@ -93,7 +93,7 @@
             background-color: #fcfcfc;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
-        /* FIX: Add correct active state styling for tab buttons */
+        /* Active state styling for tab buttons */
         .tab-button.active {
             background-color: var(--color-results-bg);
             border-color: var(--color-gold-dark) !important;
@@ -110,7 +110,7 @@
             }
         }
 
-        /* رنگ متن و آیکون دکمه‌های تب */
+        /* Color for tab button text and icons */
         .tab-button .tab-button-content,
         .tab-button .icon-placeholder {
             color: var(--color-dark-text);
@@ -122,8 +122,7 @@
             color: var(--color-gold-dark);
         }
 
-        /* رنگ طلایی ثابت برای تب فعال */
-        /* FIX: Keep icon color gold on active */
+        /* Keep icon and text color gold on active state */
         .tab-button.active .tab-button-content,
         .tab-button.active .icon-placeholder,
         .tab-button.active:hover .tab-button-content,
@@ -131,7 +130,7 @@
             color: var(--color-gold-dark);
         }
         
-        /* اندازه و چینش آیکون در دکمه تب */
+        /* Size and alignment for tab button icons */
         .tab-button .icon-placeholder {
             width: 2.5rem;
             display: flex;
@@ -152,7 +151,7 @@
             }
         }
 
-        /* انیمیشن نمایش محتوای تب‌ها */
+        /* Animation for displaying tab content */
         .tab-content {
             display: none;
             animation: fadeInSlideUp 0.5s ease-in-out forwards;
@@ -167,7 +166,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* --- استایل‌های نوار اطلاعات بالای صفحه --- */
+        /* --- Top Info Navbar Styles --- */
         .navbar-top {
             background-color: var(--color-gold-dark);
             color: #333;
@@ -190,13 +189,13 @@
             display: flex;
             flex-wrap: nowrap;
             gap: 15px;
-            align-items: center;
-            overflow: hidden; /* مخفی کردن آیتم‌های اضافی که در یک خط جا نمی‌شوند */
+            align-items: center; 
+            overflow: hidden; /* Hide items that don't fit on one line */
             flex-grow: 1;
-            min-width: 0; /* جلوگیری از سرریز شدن آیتم‌های فلکس از کانتینر */
+            min-width: 0; /* Prevent flex items from overflowing the container */
         }
 
-        .navbar-top.expanded .navbar-content-wrapper {
+        .navbar-top.expanded .navbar-content-wrapper { 
             flex-wrap: wrap;
             justify-content: flex-start; /* چینش از راست در حالت باز شده */
             padding-bottom: 10px;
@@ -209,12 +208,12 @@
             display: block; /* Default display */
         }
 
-        /* این کلاس توسط جاوااسکریپت برای مخفی کردن آیتم‌ها اضافه می‌شود */
+        /* This class is added by JavaScript to hide items */
         .navbar-content-wrapper > .nav-item-hidden {
             display: none;
         }
 
-        /* در حالت باز شده، آیتم‌های مخفی نمایش داده می‌شوند */
+        /* In expanded mode, hidden items are displayed */
         .navbar-top.expanded .navbar-content-wrapper > .nav-item-hidden {
             display: block;
         }
@@ -225,7 +224,7 @@
         }
 
         #navbar-toggle-btn {
-            /* نمایش این دکمه توسط جاوااسکریپت کنترل می‌شود */
+            /* This button's visibility is controlled by JavaScript */
             background: transparent;
             border: none;
             color: #333;
@@ -248,7 +247,7 @@
             transform: rotate(180deg);
         }
         
-        /* --- استایل‌های منوی ابزار کناری --- */
+        /* --- Sidebar Tools Menu Styles --- */
         .tools-sidebar {
             transition: width 0.3s ease-in-out;
         }
@@ -256,8 +255,8 @@
         .tools-sidebar .tab-button-content {
             transition: width 0.2s 0.1s ease-in-out, opacity 0.2s 0.1s ease-in-out, padding 0.2s 0.1s ease-in-out;
         }
-
-        /* استایل موبایل: منو به صورت پیش‌فرض بسته است */
+        
+        /* Mobile styles: Menu is collapsed by default */
         @media (max-width: 767px) {
             .main-app-container {
                 flex-direction: row;
@@ -265,7 +264,7 @@
             }
 
             .tools-sidebar {
-                width: 60px; /* عرض کمتر برای ظاهر فشرده‌تر */
+                width: 60px; /* Smaller width for a compact look */
                 flex-shrink: 0;
                 overflow: hidden;
                 border-left: 1px solid var(--color-input-border-light);
@@ -276,13 +275,13 @@
             }
 
             .tools-sidebar .tab-button {
-                justify-content: center; /* وسط‌چین کردن آیکون */
-                padding: 0.75rem 0; /* معادل p-3 عمودی و p-0 افقی */
+                justify-content: center; /* Center the icon */
+                padding: 0.75rem 0; /* Equivalent to p-3 vertical, p-0 horizontal */
             }
 
             .tools-sidebar.is-expanded .tab-button {
                 justify-content: flex-start;
-                padding: 1rem; /* بازگرداندن p-4 در حالت باز شده */
+                padding: 1rem; /* Restore p-4 in expanded state */
             }
 
             .tools-sidebar .tab-button-content {
@@ -313,7 +312,7 @@
             border-radius: 5px;
         }
 
-        /* استایل جعبه پیام (برای خطا و موفقیت) */
+        /* Style for the message box (for errors and success messages) */
         #messageBox {
             background-color: #4a5568; /* Gray-700 */
             color: white;
@@ -330,17 +329,17 @@
             min-width: 300px;
         }
 
-        /* استایل صفحه ورود */
+        /* Login Page Styles */
         #login-page {
-            /* نمایش این بخش توسط جاوااسکریپت کنترل می‌شود */
+            /* This section's display is controlled by JavaScript */
             align-items: center;
             justify-content: center;
             flex-grow: 1;
             width: 100%;
             min-height: 100vh;
         }
-
-        /* استایل‌های مربوط به چاپ */
+        
+        /* Print-related styles */
         @media print {
             body { display: none; } /* مخفی کردن بدنه اصلی برنامه هنگام چاپ */
         }
@@ -349,7 +348,7 @@
         }
         @media print {
             .no-print { display: none !important; }
-            .print-only { display: block; }
+            .print-only { display: block; } 
             body { display: block !important; } /* نمایش مجدد بدنه برای چاپ */
 
             @page {
@@ -1143,10 +1142,10 @@
     </datalist>
 
 <script>
-    // آبجکت اصلی برنامه برای سازماندهی کد
+    // Main application object to organize the code
     const App = {
-        appLogicInitialized: false, // فلگ برای جلوگیری از اجرای چندباره‌ی منطق برنامه
-        liveGoldPrice18k: 0,
+        appLogicInitialized: false, // Flag to prevent running the app logic multiple times
+        liveGoldPrice18k: 0, 
         liveMesghalPrice: 0,
         livePrices: {}, // Store all live prices
         userModifiedPrices: {},
@@ -1197,11 +1196,11 @@
             
             handleLogout: function() {
                 sessionStorage.removeItem('isLoggedIn');
-                location.reload(); // ساده‌ترین راه برای ریست کردن برنامه و نمایش صفحه ورود
+                location.reload(); // The simplest way to reset the app and show the login page
             },
 
             checkSession: function() {
-                if (sessionStorage.getItem('isLoggedIn') === 'true') {
+                if (sessionStorage.getItem('isLoggedIn') === 'true') { 
                     this.showApp();
                 } else {
                     this.showLogin();
@@ -1221,7 +1220,7 @@
                 document.querySelector('.main-app-container').style.display = 'flex';
                 document.querySelector('.navbar-top').style.display = 'flex';
                 
-                // منطق اصلی برنامه فقط یک بار پس از ورود موفق اجرا می‌شود
+                // The main app logic runs only once after a successful login
                 if (!App.appLogicInitialized) {
                     App.initAppLogic();
                     App.appLogicInitialized = true;
@@ -1438,12 +1437,12 @@
             }
         },
 
-        DB: { // مدیریت پایگاه داده آفلاین (IndexedDB) برای ذخیره اجناس
+        DB: { // Manages the offline database (IndexedDB) for storing products
             db: null,
             currentPage: 1,
             itemsPerPage: 10,
             initDB: function() {
-                if (!window.indexedDB) {
+                if (!window.indexedDB) { 
                     const errorMsg = "مرورگر شما از حافظه آفلاین (IndexedDB) پشتیبانی نمی‌کند. امکان ذخیره اجناس و فاکتورها وجود ندارد.";
                     console.error(errorMsg);
                     App.UI.showMessage(errorMsg);
@@ -1461,7 +1460,7 @@
                 };
 
                 request.onblocked = (event) => {
-                    // این رویداد زمانی رخ می‌دهد که پایگاه داده در تب دیگری باز باشد.
+                    // This event fires when the database is open in another tab.
                     console.warn("تلاش برای باز کردن IndexedDB مسدود شده است:", event);
                     App.UI.showMessage("لطفاً تمام تب‌های دیگر این برنامه را ببندید و صفحه را دوباره بارگیری کنید. پایگاه داده در حال استفاده است و امکان دسترسی وجود ندارد.");
                 };
@@ -1503,7 +1502,7 @@
                 request.onsuccess = (event) => {
                     this.db = event.target.result;
 
-                    // این رویداد زمانی اجرا می‌شود که پایگاه داده در تب دیگری نیاز به بروزرسانی داشته باشد
+                    // This event fires when the database in another tab needs to be updated
                     this.db.onversionchange = () => {
                         console.log("نسخه جدیدی از پایگاه داده در دسترس است. این اتصال بسته می‌شود.");
                         this.db.close();
@@ -1684,7 +1683,7 @@
                     }
 
                     const headers = ["ID", "نام کالا", "وزن", "عیار", "اجرت (%)"];
-                    let csvContent = headers.join(",") + "\n";
+                    let csvContent = headers.join(",") + "\n"; 
 
                     products.forEach(product => {
                         // برای جلوگیری از خطا، نام محصولی که کاما دارد داخل کوتیشن قرار می‌گیرد
@@ -1728,7 +1727,7 @@
                     
                     // Skip header, process rows
                     const productsToImport = lines.slice(1).map(line => {
-                        // پارس کردن ساده CSV؛ ممکن است موارد خاص مثل کاما داخل کوتیشن را به درستی مدیریت نکند
+                        // Simple CSV parsing; might not handle special cases like commas within quotes correctly
                         const values = line.split(',');
                         // ستون‌های مورد انتظار: شناسه، نام، وزن، عیار، اجرت
                         if (values.length < 5) return null;
@@ -2280,7 +2279,7 @@
             },
         },
 
-        Utils: { // مجموعه توابع کاربردی و عمومی
+        Utils: { // A collection of general-purpose utility functions
             formatNumber: (number) => new Intl.NumberFormat('en-US').format(number),
             unformatNumber: (string) => parseFloat(String(string).replace(/,/g, '')) || 0,
             formatNumberInput: function(input) {
@@ -2337,7 +2336,7 @@
             generateUniqueId: () => 'item_' + Date.now() + Math.floor(Math.random() * 1000)
         },
 
-        UI: { // مدیریت رابط کاربری، نمایش تب‌ها، دریافت قیمت‌ها و پیام‌ها
+        UI: { // Manages the user interface, including tabs, price fetching, and messages
             showMessage: function(message, type = 'error') {
                 const msgBox = document.getElementById('messageBox');
                 let bgColor = type === 'success' ? '#2f855a' : (type === 'info' ? '#2b6cb0' : '#c53030'); // green, blue, or red
@@ -2466,11 +2465,11 @@
                     });
                 }
                 App.Calculators.updateCoinPrice(); // به‌روزرسانی قیمت در ماشین‌حساب سکه
-                App.Invoice.updateAllItemPrices();
+                App.Invoice.updateAllItemPrices(); 
             }
         },
 
-        Calculators: { // منطق مربوط به تمام ماشین‌حساب‌ها
+        Calculators: { // Contains the logic for all calculators
              recalculate: function(id) {
                  const calcId = id || document.querySelector('.tab-content.active').id.replace('tab-column', 'column');
                  if(this[`calculate${calcId}`]) this[`calculate${calcId}`]();
@@ -2654,7 +2653,7 @@
             }
         },
 
-        Invoice: { // مدیریت کامل فرآیند صدور فاکتور
+        Invoice: { // Manages the entire invoice creation process
             currentInvoiceData: null,
             recalculate: function() { this.updateTotal(); },
             getNextInvoiceNumber: function() {
@@ -2685,7 +2684,7 @@
             addGoldItemRow: function(itemData = {}) {
                 const container = document.getElementById('goldItemsContainer');
                 const newId = App.Utils.generateUniqueId();
-                const newItem = document.createElement('div');
+                const newItem = document.createElement('div'); 
                 newItem.className = 'gold-item-row border-b pb-4 mb-4 pt-4'; // Add a class for easy selection
                 newItem.dataset.itemId = newId;
                 newItem.dataset.itemType = itemData.itemType || 'manual'; 
@@ -2807,12 +2806,12 @@
                 const purity = U.getInputValue(`itemPurity_${itemId}`); // Corrected from itemPurity_
                 const weight = U.getInputValue(`itemWeight_${itemId}`);
                 const gramPrice = U.getInputValue(`itemGramPrice_${itemId}`);
-                
+
                 if (weight <= 0 && !itemType.startsWith('coin')) return { finalPrice: 0, profitAmount: 0, taxAmount: 0 };
 
                 let finalPrice = 0;
                 let profitAmount = 0;
-                let taxAmount = 0;
+                let taxAmount = 0; 
 
                 if (itemType.startsWith('coin')) return { finalPrice: weight, profitAmount: 0, taxAmount: 0, transactionType: transactionType }; // برای سکه، قیمت کل در فیلد وزن ذخیره می‌شود تا محاسبات فاکتور ساده‌تر شود
                 
@@ -2876,7 +2875,7 @@
                     }
                 });
 
-                // If there are no items, it's not "only melted items"
+                // If there are no items, it's not "only melted items" 
                 if (!hasItems) {
                     onlyMeltedItems = false;
                 }           
@@ -2959,7 +2958,7 @@
                 document.querySelectorAll('.gold-item-row').forEach(row => {
                     const itemId = row.dataset.itemId;
                     const description = document.getElementById(`itemDescription_${itemId}`).value;
-                    
+
                     if (U.getInputValue(`itemWeight_${itemId}`) <= 0 && !row.dataset.itemType.startsWith('coin')) return;
 
                     const { finalPrice, transactionType } = this.calculateItemFinalPrice(row);
@@ -2971,7 +2970,7 @@
                         transactionType: description.toLowerCase().includes('خرید') ? 'buy' : 'sell',
                         finalPrice: finalPrice,
                         wage: U.getInputValue(`itemWage_${itemId}`), // Corrected from itemWage_
-                        gramPrice: U.getInputValue(`itemGramPrice_${itemId}`),
+                        gramPrice: U.getInputValue(`itemGramPrice_${itemId}`), 
                         itemType: row.dataset.itemType
                     };
 
@@ -3141,7 +3140,7 @@
                     invoiceHtml: invoiceContent // Save the generated HTML for re-printing
                 };
 
-                // Store data to be saved on print
+                // Store data to be saved on print 
                 this.currentInvoiceData = invoiceDataToSave;
 
                 document.getElementById('invoicePreviewContainerWrapper').classList.remove('hidden');
@@ -3257,7 +3256,7 @@
             }
         },
 
-        // این تابع فقط یک بار پس از ورود موفق فراخوانی می‌شود
+        // This function is called only once after a successful login
         initAppLogic: function() {
             this.DB.initDB();
             this.Utils.loadValuesFromLocalStorage();
@@ -3353,7 +3352,7 @@
                 });
             });
             
-            // In UI.updateNavbarPrices, we should trigger an adjustment
+            // In UI.updateNavbarPrices, we should trigger an adjustment 
             const originalUpdateNavbarPrices = this.UI.updateNavbarPrices.bind(this.UI);
             this.UI.updateNavbarPrices = (data, source) => {
                 originalUpdateNavbarPrices(data, source);
@@ -3632,7 +3631,7 @@
             });
 
             document.getElementById('import-file-input').addEventListener('change', (event) => {
-                this.DB.importFromCSV(event.target.files[0]);
+                this.DB.importFromCSV(event.target.files[0]); 
                 event.target.value = ''; // ریست کردن اینپوت تا بتوان دوباره همان فایل را انتخاب کرد
             });
 
@@ -3766,9 +3765,9 @@
             });
         },
         
-        // نقطه شروع اصلی برنامه
+        // Main entry point of the application
         init: function() {
-            // در ابتدا فقط بخش احراز هویت فعال می‌شود. مابقی برنامه پس از ورود موفق اجرا خواهد شد.
+            // Initially, only the authentication module is activated. The rest of the app runs after a successful login.
             this.Auth.init();
         }
     };
