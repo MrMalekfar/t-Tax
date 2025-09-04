@@ -13,18 +13,17 @@ def fetch_gold_price():
     
     try:
         response = requests.get(url, headers=headers, timeout=10)
-        response.raise_for_status() # Raise an exception for HTTP errors
+        response.raise_for_status() #
         
         print(f"Successfully fetched data. Status Code: {response.status_code}")
-        # print(f"Response content (first 500 chars): {response.text[:500]}...") # Keep commented unless needed for deep debug
+       
         
         data = response.json()
         print(f"Parsed JSON data successfully. Top-level keys: {list(data.keys())}")
 
-        # Initialize a dictionary to store all extracted prices
+        
         extracted_prices = {}
 
-        # --- Extract 18k Gold Price ---
         gold_18k_price_string = data.get('gold', {}).get('gold_18k', {}).get('v')
         if gold_18k_price_string:
             gold_18k_price = float(gold_18k_price_string.replace(',', ''))
@@ -32,19 +31,17 @@ def fetch_gold_price():
             print(f"DEBUG: Successfully found 18k Gold 'v' key with value: {gold_18k_price_string}")
         else:
             print("WARNING: Could not find 18k gold price.")
-            # print(f"Full 'gold' section: {json.dumps(data.get('gold'), indent=2)}") # Uncomment for deeper debug if this fails
+            
 
-        # --- Extract Dollar Price ---
+       
         dollar_price_string = data.get('arz', {}).get('arz_dolar', {}).get('v')
-        if dollar_price_string and dollar_price_string != "0": # Some entries are '0' when market is closed or no valid price
+        if dollar_price_string and dollar_price_string != "0": 
             dollar_price = float(dollar_price_string.replace(',', ''))
             extracted_prices["dollar_toman"] = dollar_price
             print(f"DEBUG: Successfully found Dollar 'v' key with value: {dollar_price_string}")
         else:
             print("WARNING: Could not find Dollar price or it was zero.")
-            # print(f"Full 'arz_dolar' section: {json.dumps(data.get('arz', {}).get('arz_dolar'), indent=2)}") # Uncomment for deep debug
-
-        # --- Extract Sekke Jadid (Full Coin) Price ---
+            
         sekke_jad_price_string = data.get('sekke', {}).get('sekke-jad', {}).get('v')
         if sekke_jad_price_string and sekke_jad_price_string != "0":
             sekke_jad_price = float(sekke_jad_price_string.replace(',', ''))
@@ -71,7 +68,6 @@ def fetch_gold_price():
         else:
             print("WARNING: Could not find Sekke Rob price or it was zero.")
 
-        # --- Extract Gold Mesghal (Mesghal Gold) Price ---
         gold_mesghal_price_string = data.get('gold', {}).get('gold_mesghal_usd', {}).get('v')
         if gold_mesghal_price_string and gold_mesghal_price_string != "0":
             gold_mesghal_price = float(gold_mesghal_price_string.replace(',', ''))
@@ -79,9 +75,7 @@ def fetch_gold_price():
             print(f"DEBUG: Successfully found Gold Mesghal 'v' key with value: {gold_mesghal_price_string}")
         else:
             print("WARNING: Could not find Gold Mesghal price or it was zero.")
-            # print(f"Full 'gold_mesghal_usd' section: {json.dumps(data.get('gold', {}).get('gold_mesghal_usd'), indent=2)}") # Uncomment for deep debug
 
-        # --- Extract Gold Mesghal (Mesghal Gold) Price ---
         gold_ounce_price_string = data.get('gold', {}).get('gold_ounce', {}).get('v')
         if gold_ounce_price_string and gold_ounce_price_string != "0":
             gold_ounce_price = float(gold_ounce_price_string.replace(',', ''))
@@ -89,16 +83,12 @@ def fetch_gold_price():
             print(f"DEBUG: Successfully found Gold Ounce 'v' key with value: {gold_ounce_price_string}")
         else:
             print("WARNING: Could not find Gold Ounce price or it was zero.")
-            # print(f"Full 'gold_mesghal_usd' section: {json.dumps(data.get('gold', {}).get('gold_mesghal_usd'), indent=2)}") # Uncomment for deep debug
 
 
 
-        # Check if any prices were extracted
         if extracted_prices:
-            # Add timestamp to the collected prices
             extracted_prices["timestamp"] = datetime.now().isoformat()
             
-            # Define the path for the JSON file
             output_dir = "data"
             output_path = os.path.join(output_dir, "gold-price.json")
             
@@ -111,7 +101,7 @@ def fetch_gold_price():
             print(f"All prices fetched and saved to {os.path.abspath(output_path)}")
         else:
             print("No prices were extracted from the response. Skipping file save.")
-            print(f"Full JSON data received: {json.dumps(data, indent=2)}") # Print full JSON if nothing was extracted
+            print(f"Full JSON data received: {json.dumps(data, indent=2)}") 
             
     except requests.exceptions.Timeout:
         print("Error: Request timed out.")
