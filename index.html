@@ -408,10 +408,9 @@
             <span class="last-updated-span">
                 <strong id="display-last-updated">--</strong>
             </span>
-            <button id="logout-btn" class="text-red-800 font-bold hover:text-red-600 transition-colors">
-                <i class="fas fa-sign-out-alt ml-1"></i>خروج
-            </button>
+            <span>گرم (دلار واونس): <strong id="display-gold18k-ounce-price">--</strong> تومان</span>
         </div>
+
         <!-- Toggle button for mobile -->
         <button id="navbar-toggle-btn">
             <i class="fas fa-chevron-down"></i>
@@ -422,13 +421,16 @@
     <div class="main-app-container flex flex-row md:justify-center gap-4 md:gap-10 max-w-7xl mx-auto w-full p-4 md:p-8 rounded-3xl shadow-[0_15px_60px_rgba(0,0,0,0.1)] bg-card-light-bg border border-gold-dark/20 transition-all duration-500 no-print">
 
         <div class="md:w-1/5 flex flex-col justify-start items-stretch min-w-[unset] md:min-w-[200px] tools-sidebar">
-            <div class="flex items-center border-b-2 border-gold-dark pb-2 md:pb-3 mb-4 md:mb-8 flex-shrink-0">
+            <div class="flex items-center justify-between border-b-2 border-gold-dark pb-2 md:pb-3 mb-4 md:mb-8 flex-shrink-0">
                 <button id="tools-toggle-btn" class="md:hidden p-2 text-gold-dark text-xl">
                     <i class="fas fa-bars"></i>
                 </button>
                 <h2 class="text-xl md:text-2xl font-bold text-gold-dark tab-button-content flex-grow text-right pr-2">
                     ابزارها
                 </h2>
+                <button id="logout-btn" class="text-red-800 font-bold hover:text-red-600 transition-colors p-2 rounded-md hover:bg-red-100/50">
+                    <i class="fas fa-sign-out-alt text-xl"></i>
+                </button>
             </div>
             <div id="tools-menu" class="flex flex-col">
                 <button id="btn-tab1" class="tab-button group flex items-center p-4 my-1 md:my-2 rounded-xl md:rounded-l-xl md:rounded-r-none border-t-4 md:border-t-0 md:border-r-4 border-transparent transition-all duration-300">
@@ -2440,6 +2442,7 @@
                 updateDisplay('display-gold18k-price', data.gold_18k_toman);
                 updateDisplay('display-ounce-price', data.gold_ounce_dollar);
                 updateDisplay('display-mesghal-price', data.gold_mesghal_toman);
+                updateDisplay('display-gold18k-ounce-price', data.gold_ounce_dollar*0.75*(data.dollar_toman/10)/31.1035);
                 updateDisplay('display-sekke-jadid-price', data.sekke_jadid_toman);
                 updateDisplay('display-sekke-nim-price', data.sekke_nim_toman);
                 updateDisplay('display-sekke-rob-price', data.sekke_rob_toman);
