@@ -143,23 +143,20 @@
             }
         }
 
-        /* Color for tab button text and icons */
-        .tab-button .tab-button-content,
-        .tab-button .icon-placeholder {
+        /* --- Tab Button (Tools) Text & Icon Colors --- */
+        .tab-button .tab-button-content, .tab-button .icon-placeholder {
             color: var(--color-dark-text);
             transition: color 0.3s ease;
         }
-        
-        .tab-button:hover .tab-button-content,
-        .tab-button:hover .icon-placeholder {
+
+        /* Hover state for non-active buttons */
+        .tab-button:not(.active):hover .tab-button-content,
+        .tab-button:not(.active):hover .icon-placeholder {
             color: var(--color-gold-dark);
         }
 
-        /* Keep icon and text color gold on active state */
-        .tab-button.active .tab-button-content,
-        .tab-button.active .icon-placeholder,
-        .tab-button.active:hover .tab-button-content,
-        .tab-button.active:hover .icon-placeholder {
+        /* Active state (selected button) */
+        .tab-button.active .tab-button-content, .tab-button.active .icon-placeholder {
             color: var(--color-gold-dark);
         }
         
@@ -427,18 +424,16 @@
         .draggable-tool-item {
             cursor: grab;
             background-color: #fff;
-            border: 1px solid #e0e0e0;
-        }
-        html.dark .draggable-tool-item {
-            background-color: var(--color-input-bg-light);
-            border-color: var(--color-input-border-light);
-
             padding: 0.75rem 1rem;
             border-radius: 0.375rem;
             display: flex;
             align-items: center;
             gap: 0.75rem;
             transition: background-color 0.2s;
+        }
+        html.dark .draggable-tool-item {
+            background-color: var(--color-input-bg-light);
+            border-color: var(--color-input-border-light);
         }
         .draggable-tool-item.dragging {
             opacity: 0.5;
@@ -1183,6 +1178,10 @@
                             <input type="file" id="settingStoreLogo" class="text-sm" accept="image/png, image/jpeg">
                             <img id="logoPreview" src="" alt="پیش‌نمایش لوگو" class="hidden mt-2 h-16 w-16 object-contain border p-1 rounded-md">
                         </div>
+                        <div class="responsive-input-group flex flex-col col-span-1 md:col-span-2">
+                            <label for="settingAppTitle" class="text-sm font-semibold text-dark-text mb-2">عنوان برنامه (نمایش در تب مرورگر):</label>
+                            <input type="text" id="settingAppTitle" class="w-full p-2 rounded-md border bg-input-bg-light border-input-border-light text-sm" placeholder="مثال: Simin.Gold">
+                        </div>
                     </div>
                 </div>
                 </div>
@@ -1603,6 +1602,7 @@
                     storePhone: localStorage.getItem('settingStorePhone') || '',
                     defaultProfit: localStorage.getItem('settingDefaultProfit') || '7',
                     defaultVAT: localStorage.getItem('settingDefaultVAT') || '10',
+                    appTitle: localStorage.getItem('settingAppTitle') || 'Simin.Gold',
                     oldGoldDeduction: localStorage.getItem('settingOldGoldDeduction') || '15', // Load new setting
                     storeLogo: localStorage.getItem('settingStoreLogo') || '',
                     invoiceFooter: localStorage.getItem('settingInvoiceFooter') || 'جنس فوق با اجرت مشخص و سود مشخص شده و مالیات ارزش افزوده از اجرت و سود عرضه شده و در موقع فروش با فاکتور و به نرخ روز خریداری خواهد شد.',
@@ -1640,6 +1640,7 @@
                 document.getElementById('settingStoreAddress').value = settings.storeAddress;
                 document.getElementById('settingStorePhone').value = settings.storePhone;
                 document.getElementById('settingInvoiceFooter').value = settings.invoiceFooter;
+                document.getElementById('settingAppTitle').value = settings.appTitle;
                 document.getElementById('settingDefaultProfit').value = settings.defaultProfit;
                 document.getElementById('settingDefaultVAT').value = settings.defaultVAT;
                 document.getElementById('settingOldGoldDeduction').value = settings.oldGoldDeduction;
@@ -1687,6 +1688,9 @@
                 } else {
                     logoPreview.classList.add('hidden');
                 }
+
+                // Apply App Title
+                document.title = settings.appTitle;
             },
 
             saveSettings: function() {
@@ -1732,6 +1736,7 @@
                     localStorage.setItem('settingStoreAddress', document.getElementById('settingStoreAddress').value);
                     localStorage.setItem('settingStorePhone', document.getElementById('settingStorePhone').value);
                     localStorage.setItem('settingDefaultProfit', document.getElementById('settingDefaultProfit').value);
+                    localStorage.setItem('settingAppTitle', document.getElementById('settingAppTitle').value);
                     localStorage.setItem('settingInvoiceFooter', document.getElementById('settingInvoiceFooter').value);
                     localStorage.setItem('settingDefaultVAT', document.getElementById('settingDefaultVAT').value);
                     localStorage.setItem('settingOldGoldDeduction', document.getElementById('settingOldGoldDeduction').value); // Save new setting
@@ -1780,8 +1785,8 @@
                     localStorage.setItem('settingAppTheme', selectedTheme);
 
                     // Save custom colors if any are set
-                    const customColors = this.getCustomColorsFromInputs();
-                    if (Object.values(customColors).some(c => c)) { // Only save if at least one color is set
+                    if (selectedTheme === 'custom') {
+                        const customColors = this.getCustomColorsFromInputs();
                         localStorage.setItem('settingCustomColors', JSON.stringify(customColors));
                         this.applyCustomColors(customColors);
                     } else {
@@ -1789,15 +1794,11 @@
                         this.applyAppTheme(selectedTheme);
                     }
 
-                    this.applyNavbarSettings(navbarSettings);
-                    this.applyToolOrder(newOrder);
-
                     if (logoDataUrl) {
                         localStorage.setItem('settingStoreLogo', logoDataUrl);
                     }
 
                     App.UI.showMessage('تنظیمات با موفقیت ذخیره شد.', 'success');
-                    this.loadSettings(); // Reload to reflect changes everywhere
                 };
 
                 if (logoFile) {
