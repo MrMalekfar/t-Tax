@@ -1462,6 +1462,9 @@
                         </button>
                         <input type="file" id="restoreFileInput" class="hidden" accept=".json">
                     </div>
+                    <button id="resetSettingsBtn" class="w-full mt-4 px-4 py-2 text-white rounded-md bg-red-600 hover:bg-red-700 transition-colors inline-flex items-center justify-center">
+                        <i class="fas fa-undo ml-2"></i>بازنشانی تمام تنظیمات به حالت پیش‌فرض (غیرقابل بازگشت)
+                    </button>
                 </div>
                 </div>
                 
@@ -1592,6 +1595,7 @@
                     document.getElementById('restoreFileInput').click();
                 });
                 document.getElementById('restoreFileInput').addEventListener('change', (e) => this.handleRestoreFile(e));
+                document.getElementById('resetSettingsBtn').addEventListener('click', () => this.resetSettings());
                 document.getElementById('settingStoreLogo').addEventListener('change', (e) => this.previewLogo(e));
             },
 
@@ -1718,7 +1722,7 @@
                 // Purity Management
                 const purityItems = Array.from(document.querySelectorAll('#purity-management-list .purity-item')).map(item => ({
                     value: item.dataset.value,
-                    label: item.querySelector('span').textContent,
+                    label: item.querySelector('span').textContent.split('(')[0].trim(), // FIX: Save only the label part, not the value
                     enabled: item.querySelector('input[type="checkbox"]').checked,
                     isDefault: item.dataset.isDefault === 'true'
                 }));
