@@ -16,10 +16,43 @@
             --color-card-light-bg: #FFFFFF; /* White Card Background */
             --color-dark-text: #333333; /* Dark Gray Text */
             --color-gold-accent: #FFC107; /* Amber Gold for Accents */
+            --color-btn-text: #333333; /* Text color for gold buttons */
             --color-input-bg-light: #F0F0F0; /* Light Input Background */
             --color-input-border-light: #E0E0E0; /* Light Input Border */
             --color-results-bg: #FFFBF0; /* Very Light Gold Background for Results */
             --color-results-border: #FFD700; /* Gold Border for Results */
+        }
+
+        /* Dark theme variables */
+        html.dark {
+            --color-gold-light: #FFD700;
+            --color-gold-dark: #DAA520;
+            --color-light-bg: #1a202c; /* gray-900 */
+            --color-card-light-bg: #2d3748; /* gray-800 */
+            --color-dark-text: #edf2f7; /* gray-200 */
+            --color-btn-text: #edf2f7; /* Text color for gold buttons in dark mode */
+            --color-gold-accent: #FFC107;
+            --color-input-bg-light: #4a5568; /* gray-700 */
+            --color-input-border-light: #718096; /* gray-600 */
+            --color-results-bg: #3c362a; /* Darker gold-ish bg */
+            --color-results-border: #b8860b; /* DarkGoldenRod */
+
+            color-scheme: dark;
+        }
+
+        /* New Dark Gold Theme */
+        html.theme-dark-gold {
+            --color-gold-light: #FBBF24; /* amber-400 */
+            --color-gold-dark: #D97706; /* amber-600 */
+            --color-light-bg: #1f1d1a; /* Dark, warm gray */
+            --color-card-light-bg: #292524; /* stone-800 */
+            --color-dark-text: #f5f5f4; /* stone-100 */
+            --color-btn-text: #1c1917; /* stone-900 */
+            --color-gold-accent: #F59E0B; /* amber-500 */
+            --color-input-bg-light: #44403c; /* stone-700 */
+            --color-input-border-light: #57534e; /* stone-600 */
+            --color-results-bg: #3a3226; /* Darker gold-ish bg */
+            --color-results-border: #b45309; /* amber-700 */
         }
 
         /* Base styles and main font */
@@ -58,7 +91,7 @@
         /* Style for gold gradient buttons */
         .btn-gold-gradient {
             background: linear-gradient(145deg, var(--color-gold-light), var(--color-gold-dark));
-            color: var(--color-dark-text);
+            color: var(--color-btn-text);
             transition: all 0.3s ease-in-out;
             box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
         }
@@ -365,6 +398,57 @@
                 width: 100% !important;
                 height: 100% !important;
             }
+
+            /* Dynamically applied font families for invoice */
+            .invoice-font-main { font-family: var(--invoice-main-font, sans-serif); }
+            .invoice-font-numbers { font-family: var(--invoice-numbers-font, sans-serif); }
+            /* Specific targeting for numbers in invoice */
+            #invoicePreviewContainer .invoice-font-numbers { font-feature-settings: "tnum"; /* Tabular nums */ }
+
+        }
+
+        /* Styles for Settings Tabs */
+        .settings-tab-button {
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            font-weight: 600;
+            color: var(--color-dark-text);
+            background-color: transparent;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        .settings-tab-button.active {
+            color: var(--color-gold-dark);
+            background-color: var(--color-results-bg);
+            border-color: var(--color-gold-dark);
+        }
+
+        /* Styles for Draggable Tool List in Settings */
+        .draggable-tool-item {
+            cursor: grab;
+            background-color: #fff;
+            border: 1px solid #e0e0e0;
+        }
+        html.dark .draggable-tool-item {
+            background-color: var(--color-input-bg-light);
+            border-color: var(--color-input-border-light);
+
+            padding: 0.75rem 1rem;
+            border-radius: 0.375rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: background-color 0.2s;
+        }
+        .draggable-tool-item.dragging {
+            opacity: 0.5;
+            background-color: #fefce8; /* yellow-50 */
+            border-style: dashed;
+        }
+        html.dark .draggable-tool-item.dragging {
+            background-color: var(--color-results-bg);
+            border-color: var(--color-gold-dark);
+
         }
     </style>
 </head>
@@ -1059,10 +1143,25 @@
                     تنظیمات برنامه
                 </h2>
 
+                <!-- Settings Tab Navigation -->
+                <div class="flex flex-wrap gap-2 border-b mb-6">
+                    <button class="settings-tab-button active" data-target="settings-store-profile">مشخصات فروشگاه</button>
+                    <button class="settings-tab-button" data-target="settings-default-values">مقادیر پیش‌فرض</button>
+                    <button class="settings-tab-button" data-target="settings-invoice-appearance">ظاهر فاکتور</button>
+                    <button class="settings-tab-button" data-target="settings-app-appearance">ظاهر برنامه</button>
+                    <button class="settings-tab-button" data-target="settings-customization">شخصی‌سازی</button>
+                    <button class="settings-tab-button" data-target="settings-data-management">مدیریت داده‌ها</button>
+                    <button class="settings-tab-button" data-target="settings-security">امنیت</button>
+                </div>
+
+                <!-- Settings Tab Content Panes -->
+                <div id="settings-store-profile" class="settings-tab-content active">
                 <!-- Store Profile Settings -->
                 <div class="mb-6 p-4 border rounded-lg bg-gray-50">
                     <h3 class="text-lg font-semibold mb-3 text-gold-dark">مشخصات فروشگاه (برای فاکتور)</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Store Name, Phone, Address, Footer, Logo inputs remain here -->
+
                         <div class="responsive-input-group flex flex-col">
                             <label for="settingStoreName" class="text-sm font-semibold text-dark-text mb-2">نام فروشگاه:</label>
                             <input type="text" id="settingStoreName" class="w-full p-2 rounded-md border bg-input-bg-light border-input-border-light text-sm" placeholder="مثال: جواهری فانی">
@@ -1076,9 +1175,35 @@
                             <input type="text" id="settingStoreAddress" class="w-full p-2 rounded-md border bg-input-bg-light border-input-border-light text-sm" placeholder="مثال: خوی، مجتمع تجاری ...">
                         </div>
                         <div class="responsive-input-group flex flex-col col-span-1 md:col-span-2">
+                            <label for="settingInvoiceFooter" class="text-sm font-semibold text-dark-text mb-2">متن پاورقی فاکتور:</label>
+                            <textarea id="settingInvoiceFooter" class="w-full p-2 rounded-md border bg-input-bg-light border-input-border-light text-sm" rows="3" placeholder="متنی که در پایین فاکتور نمایش داده می‌شود..."></textarea>
+                        </div>
+                        <div class="responsive-input-group flex flex-col col-span-1 md:col-span-2">
                             <label for="settingStoreLogo" class="text-sm font-semibold text-dark-text mb-2">لوگو (اختیاری):</label>
                             <input type="file" id="settingStoreLogo" class="text-sm" accept="image/png, image/jpeg">
                             <img id="logoPreview" src="" alt="پیش‌نمایش لوگو" class="hidden mt-2 h-16 w-16 object-contain border p-1 rounded-md">
+                        </div>
+                    </div>
+                </div>
+                </div>
+
+                <div id="settings-default-values" class="settings-tab-content hidden">
+
+                <!-- NEW: Melted Gold Default Values -->
+                <div class="mb-6 p-4 border rounded-lg bg-gray-50">
+                    <h3 class="text-lg font-semibold mb-3 text-gold-dark">مقادیر پیش‌فرض آبشده</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="responsive-input-group flex flex-col">
+                            <label for="settingDefaultMeltedProfit" class="text-sm font-semibold text-dark-text mb-2">سود فروش آبشده (%):</label>
+                            <input type="number" id="settingDefaultMeltedProfit" class="w-full p-2 rounded-md border bg-input-bg-light border-input-border-light text-left text-sm" placeholder="مثال: 2">
+                        </div>
+                        <div class="responsive-input-group flex flex-col">
+                            <label for="settingDefaultMeltedVAT" class="text-sm font-semibold text-dark-text mb-2">مالیات فروش آبشده (%):</label>
+                            <input type="number" id="settingDefaultMeltedVAT" class="w-full p-2 rounded-md border bg-input-bg-light border-input-border-light text-left text-sm" placeholder="مثال: 0">
+                        </div>
+                        <div class="responsive-input-group flex flex-col">
+                            <label for="settingDefaultMeltedDeduction" class="text-sm font-semibold text-dark-text mb-2">کسری خرید (تومان/مثقال):</label>
+                            <input type="text" id="settingDefaultMeltedDeduction" oninput="App.Utils.formatNumberInput(this)" class="w-full p-2 rounded-md border bg-input-bg-light border-input-border-light text-left text-sm" placeholder="مثال: 100,000">
                         </div>
                     </div>
                 </div>
@@ -1101,12 +1226,230 @@
                         </div>
                     </div>
                 </div>
-                
-                <!-- Save All Settings Button -->
-                <button id="saveSettingsBtn" class="btn-gold-gradient w-full py-3 rounded-lg font-bold text-lg mb-6">
-                    <i class="fas fa-save mr-2"></i>ذخیره تمام تنظیمات
-                </button>
-                
+
+                <!-- Purity Management Settings -->
+                <div class="mb-6 p-4 border rounded-lg bg-gray-50">
+                    <h3 class="text-lg font-semibold mb-3 text-gold-dark">مدیریت عیارها</h3>
+                    <p class="text-sm text-gray-600 mb-4">عیارهای مورد نظر خود را برای نمایش در لیست‌های کشویی انتخاب و یا عیار جدید اضافه کنید.</p>
+                    <div id="purity-management-list" class="space-y-3 mb-4">
+                        <!-- Purity items will be injected by JS -->
+                    </div>
+                    <div class="flex gap-4 items-end">
+                        <input type="number" id="new-purity-value" placeholder="عیار جدید (مثال: 900)" class="w-full p-2 rounded-md border bg-input-bg-light border-input-border-light text-left text-sm">
+                        <input type="text" id="new-purity-label" placeholder="برچسب (مثال: عیار 21.6)" class="w-full p-2 rounded-md border bg-input-bg-light border-input-border-light text-sm">
+                        <button id="add-new-purity-btn" class="px-4 py-2 text-white rounded-md text-sm bg-green-600 hover:bg-green-700 transition-colors">افزودن</button>
+                    </div>
+                </div>
+                </div>
+
+                <!-- NEW: Invoice Appearance Settings -->
+                <div id="settings-invoice-appearance" class="settings-tab-content hidden">
+                    <div class="mb-6 p-4 border rounded-lg bg-gray-50">
+                        <h3 class="text-lg font-semibold mb-3 text-gold-dark">تنظیمات ظاهری فاکتور</h3>
+                        <p class="text-sm text-gray-600 mb-4">این تنظیمات بر روی پیش‌نمایش و نسخه چاپی فاکتور اعمال می‌شوند.</p>
+                        
+                        <!-- Font Family & Color Settings -->
+                        <div class="border-b pb-4 mb-4">
+                            <h4 class="text-md font-semibold mb-3 text-gray-700">گزینه‌های نمایش</h4>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" id="settingShowLogoInInvoice" class="form-checkbox h-5 w-5 text-gold-dark focus:ring-gold-accent">
+                                    <span>نمایش لوگو در فاکتور</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" id="settingShowFooterInInvoice" class="form-checkbox h-5 w-5 text-gold-dark focus:ring-gold-accent">
+                                    <span>نمایش متن پاورقی</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Font Size Settings -->
+                        <div class="border-b pb-4 mb-4">
+                            <h4 class="text-md font-semibold mb-3 text-gray-700">اندازه فونت بخش‌های مختلف (pt)</h4>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                                <div class="responsive-input-group flex flex-col">
+                                    <label for="settingInvoiceFontSize" class="text-sm font-semibold text-dark-text mb-2">فونت اصلی:</label>
+                                    <input type="number" id="settingInvoiceFontSize" class="w-full p-2 rounded-md border bg-input-bg-light border-input-border-light text-left text-sm" placeholder="مثال: 10">
+                                </div>
+                                <div class="responsive-input-group flex flex-col">
+                                    <label for="settingInvoiceHeaderSize" class="text-sm font-semibold text-dark-text mb-2">عناوین سربرگ (rem):</label>
+                                    <input type="number" id="settingInvoiceHeaderSize" step="0.1" class="w-full p-2 rounded-md border bg-input-bg-light border-input-border-light text-left text-sm" placeholder="مثال: 1.2">
+                                </div>
+                                <div class="responsive-input-group flex flex-col">
+                                    <label for="settingInvoiceTableFontSize" class="text-sm font-semibold text-dark-text mb-2">جدول اقلام:</label>
+                                    <input type="number" id="settingInvoiceTableFontSize" class="w-full p-2 rounded-md border bg-input-bg-light border-input-border-light text-left text-sm" placeholder="مثال: 8.5">
+                                </div>
+                                <div class="responsive-input-group flex flex-col">
+                                    <label for="settingInvoiceFooterFontSize" class="text-sm font-semibold text-dark-text mb-2">پاورقی:</label>
+                                    <input type="number" id="settingInvoiceFooterFontSize" class="w-full p-2 rounded-md border bg-input-bg-light border-input-border-light text-left text-sm" placeholder="مثال: 10">
+                                </div>
+                                <div class="responsive-input-group flex flex-col">
+                                    <label for="settingInvoiceFinalPriceFontSize" class="text-sm font-semibold text-dark-text mb-2">مبلغ نهایی:</label>
+                                    <input type="number" id="settingInvoiceFinalPriceFontSize" class="w-full p-2 rounded-md border bg-input-bg-light border-input-border-light text-left text-sm" placeholder="مثال: 14">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Colors & Borders -->
+                        <div class="border-b pb-4 mb-4">
+                            <h4 class="text-md font-semibold mb-3 text-gray-700">تنظیمات کلی فونت و رنگ</h4>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                                <div class="responsive-input-group flex flex-col">
+                                    <label for="settingInvoiceMainFont" class="text-sm font-semibold text-dark-text mb-2">فونت اصلی:</label>
+                                    <select id="settingInvoiceMainFont" class="w-full p-2 rounded-md border bg-input-bg-light border-input-border-light text-sm">
+                                        <option value="IranSans, sans-serif">ایران سنس</option>
+                                        <option value="Tahoma, sans-serif">تاهما</option>
+                                        <option value="Arial, sans-serif">آریال</option>
+                                    </select>
+                                </div>
+                                <div class="responsive-input-group flex flex-col">
+                                    <label for="settingInvoiceNumbersFont" class="text-sm font-semibold text-dark-text mb-2">فونت اعداد:</label>
+                                    <select id="settingInvoiceNumbersFont" class="w-full p-2 rounded-md border bg-input-bg-light border-input-border-light text-sm">
+                                        <option value="IranSans, sans-serif">ایران سنس</option>
+                                        <option value="Tahoma, sans-serif">تاهما</option>
+                                        <option value="Arial, sans-serif">آریال</option>
+                                    </select>
+                                </div>
+                                <div class="responsive-input-group flex flex-col">
+                                    <label for="settingInvoiceTextColor" class="text-sm font-semibold text-dark-text mb-2">رنگ متن:</label>
+                                    <input type="color" id="settingInvoiceTextColor" class="w-full p-1 h-10 rounded-md border bg-input-bg-light border-input-border-light">
+                                </div>
+                                <div class="responsive-input-group flex flex-col">
+                                    <label for="settingInvoiceHeaderColor" class="text-sm font-semibold text-dark-text mb-2">رنگ عناوین:</label>
+                                    <input type="color" id="settingInvoiceHeaderColor" class="w-full p-1 h-10 rounded-md border bg-input-bg-light border-input-border-light">
+                                </div>
+                                <div class="responsive-input-group flex flex-col">
+                                    <label for="settingInvoiceTableBgColor" class="text-sm font-semibold text-dark-text mb-2">رنگ پس‌زمینه جدول:</label>
+                                    <input type="color" id="settingInvoiceTableBgColor" class="w-full p-1 h-10 rounded-md border bg-input-bg-light border-input-border-light">
+                                </div>
+                                <div class="responsive-input-group flex flex-col">
+                                    <label for="settingInvoiceTableHeaderBgColor" class="text-sm font-semibold text-dark-text mb-2">رنگ سربرگ جدول:</label>
+                                    <input type="color" id="settingInvoiceTableHeaderBgColor" class="w-full p-1 h-10 rounded-md border bg-input-bg-light border-input-border-light">
+                                </div>
+                                <div class="responsive-input-group flex flex-col">
+                                    <label for="settingInvoiceFinalPriceBgColor" class="text-sm font-semibold text-dark-text mb-2">رنگ پس‌زمینه مبلغ:</label>
+                                    <input type="color" id="settingInvoiceFinalPriceBgColor" class="w-full p-1 h-10 rounded-md border bg-input-bg-light border-input-border-light">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h4 class="text-md font-semibold mb-3 text-gray-700">تنظیمات حاشیه (Border)</h4>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                                <div class="responsive-input-group flex flex-col">
+                                    <label for="settingInvoiceBorderColor" class="text-sm font-semibold text-dark-text mb-2">رنگ حاشیه سربرگ:</label>
+                                    <input type="color" id="settingInvoiceBorderColor" class="w-full p-1 h-10 rounded-md border bg-input-bg-light border-input-border-light">
+                                </div>
+                                <div class="responsive-input-group flex flex-col">
+                                    <label for="settingInvoiceTableBorderColor" class="text-sm font-semibold text-dark-text mb-2">رنگ حاشیه جدول:</label>
+                                    <input type="color" id="settingInvoiceTableBorderColor" class="w-full p-1 h-10 rounded-md border bg-input-bg-light border-input-border-light">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NEW: App Appearance Settings -->
+                <div id="settings-app-appearance" class="settings-tab-content hidden">
+                    <div class="mb-6 p-4 border rounded-lg bg-gray-50 dark:bg-gray-800/50">
+                        <h3 class="text-lg font-semibold mb-3 text-gold-dark">تم برنامه</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">یکی از تم‌های آماده را انتخاب کنید یا رنگ‌ها را به دلخواه خود شخصی‌سازی کنید.</p>
+                        
+                        <div id="theme-selector" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                            <!-- Theme options will be injected by JS -->
+                        </div>
+
+                        <button id="toggle-custom-colors" class="w-full text-left px-4 py-2 rounded-md bg-gray-200 dark:bg-gray-700 font-semibold text-dark-text mb-4">
+                            <i class="fas fa-chevron-down ml-2 transition-transform"></i>
+                            شخصی‌سازی رنگ‌ها (پیشرفته)
+                        </button>
+
+                        <div id="custom-colors-container" class="hidden space-y-4">
+                            <p class="text-sm text-yellow-600 dark:text-yellow-400">توجه: با انتخاب یک تم آماده، این رنگ‌ها بازنشانی می‌شوند.</p>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                                <div class="responsive-input-group flex flex-col">
+                                    <label for="custom-color-gold-light" class="text-sm font-semibold text-dark-text mb-2">طلایی روشن:</label>
+                                    <input type="color" id="custom-color-gold-light" class="w-full p-1 h-10 rounded-md border bg-input-bg-light border-input-border-light">
+                                </div>
+                                <div class="responsive-input-group flex flex-col">
+                                    <label for="custom-color-gold-dark" class="text-sm font-semibold text-dark-text mb-2">طلایی تیره:</label>
+                                    <input type="color" id="custom-color-gold-dark" class="w-full p-1 h-10 rounded-md border bg-input-bg-light border-input-border-light">
+                                </div>
+                                <div class="responsive-input-group flex flex-col">
+                                    <label for="custom-color-light-bg" class="text-sm font-semibold text-dark-text mb-2">پس‌زمینه اصلی:</label>
+                                    <input type="color" id="custom-color-light-bg" class="w-full p-1 h-10 rounded-md border bg-input-bg-light border-input-border-light">
+                                </div>
+                                <div class="responsive-input-group flex flex-col">
+                                    <label for="custom-color-card-light-bg" class="text-sm font-semibold text-dark-text mb-2">پس‌زمینه کارت:</label>
+                                    <input type="color" id="custom-color-card-light-bg" class="w-full p-1 h-10 rounded-md border bg-input-bg-light border-input-border-light">
+                                </div>
+                                <div class="responsive-input-group flex flex-col">
+                                    <label for="custom-color-dark-text" class="text-sm font-semibold text-dark-text mb-2">رنگ متن اصلی:</label>
+                                    <input type="color" id="custom-color-dark-text" class="w-full p-1 h-10 rounded-md border bg-input-bg-light border-input-border-light">
+                                </div>
+                                <div class="responsive-input-group flex flex-col">
+                                    <label for="custom-color-btn-text" class="text-sm font-semibold text-dark-text mb-2">رنگ متن دکمه:</label>
+                                    <input type="color" id="custom-color-btn-text" class="w-full p-1 h-10 rounded-md border bg-input-bg-light border-input-border-light">
+                                </div>
+                                <div class="responsive-input-group flex flex-col">
+                                    <label for="custom-color-gold-accent" class="text-sm font-semibold text-dark-text mb-2">رنگ تاکید (Accent):</label>
+                                    <input type="color" id="custom-color-gold-accent" class="w-full p-1 h-10 rounded-md border bg-input-bg-light border-input-border-light">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NEW: Customization Settings -->
+                <div id="settings-customization" class="settings-tab-content hidden">
+                    <div class="mb-6 p-4 border rounded-lg bg-gray-50">
+                        <h3 class="text-lg font-semibold mb-3 text-gold-dark">شخصی‌سازی ترتیب ابزارها</h3>
+                        <p class="text-sm text-gray-600 mb-4">برای تغییر ترتیب نمایش ابزارها در منوی کناری، آیتم‌ها را بکشید و در جایگاه مورد نظر رها کنید.</p>
+                        <div class="p-2 border-l-4 border-blue-400 bg-blue-50 text-blue-800 text-sm mb-4">
+                            <strong>راهنما:</strong> با برداشتن تیک هر ابزار، آن را از منوی اصلی مخفی کنید.
+                        </div>
+                        <div id="tool-order-list" class="space-y-3">
+                            <!-- Draggable tool items will be injected here by JavaScript -->
+                        </div>
+                    </div>
+                    <div class="mb-6 p-4 border rounded-lg bg-gray-50">
+                        <h3 class="text-lg font-semibold mb-3 text-gold-dark">شخصی‌سازی نوار اطلاعات بالا</h3>
+                        <p class="text-sm text-gray-600 mb-4">ترتیب آیتم‌ها را با کشیدن و رها کردن تغییر دهید و نمایش آن‌ها را با چک‌باکس کنترل کنید.</p>
+                        <div class="mb-4">
+                            <label for="settingTimeFormat" class="text-sm font-semibold text-dark-text mb-2">فرمت نمایش زمان بروزرسانی:</label>
+                            <select id="settingTimeFormat" class="w-full p-2 rounded-md border bg-input-bg-light border-input-border-light text-sm">
+                                <option value="relative">نسبی (مثال: ۵ دقیقه پیش)</option>
+                                <option value="time">فقط ساعت (مثال: ۱۱:۴۵)</option>
+                                <option value="full">کامل (تاریخ و ساعت)</option>
+                            </select>
+                        </div>
+                        <div id="navbar-order-list" class="space-y-2">
+                            <!-- Draggable navbar items will be injected here by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+
+
+                <div id="settings-security" class="settings-tab-content hidden">
+                    <div class="mb-6 p-4 border rounded-lg bg-gray-50">
+                        <h3 class="text-lg font-semibold mb-3 text-gold-dark">تغییر رمز عبور</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label for="currentPassword" class="text-sm font-semibold text-dark-text mb-2 block">رمز عبور فعلی:</label>
+                                <input type="password" id="currentPassword" class="w-full p-2 rounded-md border bg-input-bg-light border-input-border-light text-sm">
+                            </div>
+                            <div>
+                                <label for="newPassword" class="text-sm font-semibold text-dark-text mb-2 block">رمز عبور جدید:</label>
+                                <input type="password" id="newPassword" class="w-full p-2 rounded-md border bg-input-bg-light border-input-border-light text-sm">
+                            </div>
+                            <div>
+                                <label for="confirmNewPassword" class="text-sm font-semibold text-dark-text mb-2 block">تکرار رمز عبور جدید:</label>
+                                <input type="password" id="confirmNewPassword" class="w-full p-2 rounded-md border bg-input-bg-light border-input-border-light text-sm">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="settings-data-management" class="settings-tab-content hidden">
                 <!-- Data Management -->
                 <div class="mb-6 p-4 border rounded-lg bg-red-50 border-red-200">
                     <h3 class="text-lg font-semibold mb-3 text-red-700">مدیریت داده‌ها (بسیار مهم)</h3>
@@ -1121,6 +1464,12 @@
                         <input type="file" id="restoreFileInput" class="hidden" accept=".json">
                     </div>
                 </div>
+                </div>
+                
+                <!-- Save All Settings Button -->
+                <button id="saveSettingsBtn" class="btn-gold-gradient w-full py-3 rounded-lg font-bold text-lg mb-6">
+                    <i class="fas fa-save mr-2"></i>ذخیره تمام تنظیمات
+                </button>
             </div>
 
         </div>
@@ -1240,6 +1589,7 @@
                 document.getElementById('saveSettingsBtn').addEventListener('click', () => this.saveSettings());
                 document.getElementById('backupDataBtn').addEventListener('click', () => this.backupData());
                 document.getElementById('restoreDataBtn').addEventListener('click', () => {
+                    document.getElementById('add-new-purity-btn').addEventListener('click', () => this.addNewPurity());
                     document.getElementById('restoreFileInput').click();
                 });
                 document.getElementById('restoreFileInput').addEventListener('change', (e) => this.handleRestoreFile(e));
@@ -1254,16 +1604,78 @@
                     defaultProfit: localStorage.getItem('settingDefaultProfit') || '7',
                     defaultVAT: localStorage.getItem('settingDefaultVAT') || '10',
                     oldGoldDeduction: localStorage.getItem('settingOldGoldDeduction') || '15', // Load new setting
-                    storeLogo: localStorage.getItem('settingStoreLogo') || ''
+                    storeLogo: localStorage.getItem('settingStoreLogo') || '',
+                    invoiceFooter: localStorage.getItem('settingInvoiceFooter') || 'جنس فوق با اجرت مشخص و سود مشخص شده و مالیات ارزش افزوده از اجرت و سود عرضه شده و در موقع فروش با فاکتور و به نرخ روز خریداری خواهد شد.',
+                    // Melted Gold
+                    meltedProfit: localStorage.getItem('settingDefaultMeltedProfit') || '2',
+                    meltedVAT: localStorage.getItem('settingDefaultMeltedVAT') || '0',
+                    meltedDeduction: localStorage.getItem('settingDefaultMeltedDeduction') || '100000',
+                    // Invoice Appearance
+                    invoiceMainFont: localStorage.getItem('settingInvoiceMainFont') || 'IranSans, sans-serif',
+                    invoiceNumbersFont: localStorage.getItem('settingInvoiceNumbersFont') || 'IranSans, sans-serif',
+                    invoiceFontSize: localStorage.getItem('settingInvoiceFontSize') || '10',
+                    invoiceHeaderSize: localStorage.getItem('settingInvoiceHeaderSize') || '1.2', // This is in rem
+                    invoiceTextColor: localStorage.getItem('settingInvoiceTextColor') || '#000000',
+                    invoiceHeaderColor: localStorage.getItem('settingInvoiceHeaderColor') || '#DAA520',
+                    invoiceTableFontSize: localStorage.getItem('settingInvoiceTableFontSize') || '10',
+                    invoiceFooterFontSize: localStorage.getItem('settingInvoiceFooterFontSize') || '10',
+                    invoiceFinalPriceFontSize: localStorage.getItem('settingInvoiceFinalPriceFontSize') || '14',
+                    toolOrder: JSON.parse(localStorage.getItem('settingToolOrder') || 'null'),
+                    navbarSettings: JSON.parse(localStorage.getItem('settingNavbar') || 'null'),
+                    puritySettings: JSON.parse(localStorage.getItem('settingPurity') || 'null'),
+                    customColors: JSON.parse(localStorage.getItem('settingCustomColors') || 'null'),
+                    appTheme: localStorage.getItem('settingAppTheme') || 'light',
+                    // More Appearance Settings
+                    invoiceTableBgColor: localStorage.getItem('settingInvoiceTableBgColor') || '#FFFFFF',
+                    invoiceTableHeaderBgColor: localStorage.getItem('settingInvoiceTableHeaderBgColor') || '#f0f0f0',
+                    invoiceFinalPriceBgColor: localStorage.getItem('settingInvoiceFinalPriceBgColor') || '#fefae0',
+                    invoiceBorderColor: localStorage.getItem('settingInvoiceBorderColor') || '#DAA520',
+                    invoiceTableBorderColor: localStorage.getItem('settingInvoiceTableBorderColor') || '#ccc',
+                    showLogoInInvoice: localStorage.getItem('settingShowLogoInInvoice') === 'true', // Default to false if not set
+                    showFooterInInvoice: localStorage.getItem('settingShowFooterInInvoice') === 'false' ? false : true // Default to true
                 };
 
+                // Load Store Profile & Defaults
                 document.getElementById('settingStoreName').value = settings.storeName;
                 document.getElementById('settingStoreAddress').value = settings.storeAddress;
                 document.getElementById('settingStorePhone').value = settings.storePhone;
+                document.getElementById('settingInvoiceFooter').value = settings.invoiceFooter;
                 document.getElementById('settingDefaultProfit').value = settings.defaultProfit;
                 document.getElementById('settingDefaultVAT').value = settings.defaultVAT;
                 document.getElementById('settingOldGoldDeduction').value = settings.oldGoldDeduction;
+                document.getElementById('settingDefaultMeltedProfit').value = settings.meltedProfit;
+                document.getElementById('settingDefaultMeltedVAT').value = settings.meltedVAT;
+                document.getElementById('settingDefaultMeltedDeduction').value = App.Utils.formatNumber(settings.meltedDeduction);
 
+                // Load Invoice Appearance
+                document.getElementById('settingInvoiceMainFont').value = settings.invoiceMainFont;
+                document.getElementById('settingInvoiceNumbersFont').value = settings.invoiceNumbersFont;
+                document.getElementById('settingInvoiceFontSize').value = settings.invoiceFontSize;
+                document.getElementById('settingInvoiceHeaderSize').value = settings.invoiceHeaderSize;
+                document.getElementById('settingInvoiceTextColor').value = settings.invoiceTextColor;
+                document.getElementById('settingInvoiceHeaderColor').value = settings.invoiceHeaderColor;
+                document.getElementById('settingInvoiceTableFontSize').value = settings.invoiceTableFontSize;
+                document.getElementById('settingInvoiceFooterFontSize').value = settings.invoiceFooterFontSize;
+                document.getElementById('settingInvoiceFinalPriceFontSize').value = settings.invoiceFinalPriceFontSize;
+                document.getElementById('settingInvoiceTableBgColor').value = settings.invoiceTableBgColor;
+                document.getElementById('settingInvoiceTableHeaderBgColor').value = settings.invoiceTableHeaderBgColor;
+                document.getElementById('settingInvoiceFinalPriceBgColor').value = settings.invoiceFinalPriceBgColor;
+                document.getElementById('settingInvoiceBorderColor').value = settings.invoiceBorderColor;
+                document.getElementById('settingInvoiceTableBorderColor').value = settings.invoiceTableBorderColor;
+                document.getElementById('settingShowLogoInInvoice').checked = settings.showLogoInInvoice;
+                document.getElementById('settingShowFooterInInvoice').checked = settings.showFooterInInvoice;
+
+
+
+                // Load Customization settings
+                this.renderToolOrderList(settings.toolOrder);
+                this.renderNavbarSettings(settings.navbarSettings);
+                this.renderPurityManagementList(settings.puritySettings);
+
+                // Load App Appearance settings
+                this.renderThemeSelector(settings.appTheme);
+                this.loadCustomColors(settings.customColors);
+                
                 // Update default invoice profit/VAT inputs as well
                 document.getElementById('invoiceProfit').value = settings.defaultProfit;
                 document.getElementById('invoiceVAT').value = settings.defaultVAT;
@@ -1278,18 +1690,112 @@
             },
 
             saveSettings: function() {
+                // Security: Change Password
+                const currentPassword = document.getElementById('currentPassword').value;
+                const newPassword = document.getElementById('newPassword').value;
+                const confirmNewPassword = document.getElementById('confirmNewPassword').value;
+
+                if (currentPassword && newPassword && confirmNewPassword) {
+                    if (newPassword !== confirmNewPassword) {
+                        App.UI.showMessage('رمز عبور جدید و تکرار آن مطابقت ندارند.');
+                        return;
+                    }
+                    this.changePassword(currentPassword, newPassword);
+                    // Clear fields after attempting change
+                    document.getElementById('currentPassword').value = '';
+                    document.getElementById('newPassword').value = '';
+                    document.getElementById('confirmNewPassword').value = '';
+                } else if (currentPassword || newPassword || confirmNewPassword) {
+                    // If any password field is filled but not all, show an error
+                    App.UI.showMessage('برای تغییر رمز عبور، باید تمام سه فیلد مربوطه را پر کنید.');
+                    return; // Stop saving other settings until password issue is resolved
+                }
+
+                // Purity Management
+                const purityItems = Array.from(document.querySelectorAll('#purity-management-list .purity-item')).map(item => ({
+                    value: item.dataset.value,
+                    label: item.querySelector('span').textContent,
+                    enabled: item.querySelector('input[type="checkbox"]').checked,
+                    isDefault: item.dataset.isDefault === 'true'
+                }));
+                localStorage.setItem('settingPurity', JSON.stringify(purityItems));
+                this.applyPuritySettings(purityItems);
+
+
+
+
                 const logoFile = document.getElementById('settingStoreLogo').files[0];
                 
                 const saveToStorage = (logoDataUrl = null) => {
+                    // Store Profile
                     localStorage.setItem('settingStoreName', document.getElementById('settingStoreName').value);
                     localStorage.setItem('settingStoreAddress', document.getElementById('settingStoreAddress').value);
                     localStorage.setItem('settingStorePhone', document.getElementById('settingStorePhone').value);
                     localStorage.setItem('settingDefaultProfit', document.getElementById('settingDefaultProfit').value);
+                    localStorage.setItem('settingInvoiceFooter', document.getElementById('settingInvoiceFooter').value);
                     localStorage.setItem('settingDefaultVAT', document.getElementById('settingDefaultVAT').value);
                     localStorage.setItem('settingOldGoldDeduction', document.getElementById('settingOldGoldDeduction').value); // Save new setting
+                    // Melted Gold Defaults
+                    localStorage.setItem('settingDefaultMeltedProfit', document.getElementById('settingDefaultMeltedProfit').value);
+                    localStorage.setItem('settingDefaultMeltedVAT', document.getElementById('settingDefaultMeltedVAT').value);
+                    localStorage.setItem('settingDefaultMeltedDeduction', App.Utils.unformatNumber(document.getElementById('settingDefaultMeltedDeduction').value));
+                    // Invoice Appearance
+                    localStorage.setItem('settingInvoiceMainFont', document.getElementById('settingInvoiceMainFont').value);
+                    localStorage.setItem('settingInvoiceNumbersFont', document.getElementById('settingInvoiceNumbersFont').value);
+                    // Invoice Appearance
+                    localStorage.setItem('settingInvoiceFontSize', document.getElementById('settingInvoiceFontSize').value);
+                    localStorage.setItem('settingInvoiceHeaderSize', document.getElementById('settingInvoiceHeaderSize').value);
+                    localStorage.setItem('settingInvoiceTextColor', document.getElementById('settingInvoiceTextColor').value);
+                    localStorage.setItem('settingInvoiceHeaderColor', document.getElementById('settingInvoiceHeaderColor').value);
+                    localStorage.setItem('settingInvoiceTableFontSize', document.getElementById('settingInvoiceTableFontSize').value);
+                    localStorage.setItem('settingInvoiceFooterFontSize', document.getElementById('settingInvoiceFooterFontSize').value);
+                    localStorage.setItem('settingInvoiceFinalPriceFontSize', document.getElementById('settingInvoiceFinalPriceFontSize').value);
+                    localStorage.setItem('settingInvoiceTableBgColor', document.getElementById('settingInvoiceTableBgColor').value);
+                    localStorage.setItem('settingInvoiceTableHeaderBgColor', document.getElementById('settingInvoiceTableHeaderBgColor').value);
+                    localStorage.setItem('settingInvoiceFinalPriceBgColor', document.getElementById('settingInvoiceFinalPriceBgColor').value);
+                    localStorage.setItem('settingInvoiceBorderColor', document.getElementById('settingInvoiceBorderColor').value);
+                    localStorage.setItem('settingInvoiceTableBorderColor', document.getElementById('settingInvoiceTableBorderColor').value);
+                    localStorage.setItem('settingShowLogoInInvoice', document.getElementById('settingShowLogoInInvoice').checked);
+                    localStorage.setItem('settingShowFooterInInvoice', document.getElementById('settingShowFooterInInvoice').checked);
+                    
+                    // Customization
+                    const toolOrderList = document.getElementById('tool-order-list');
+                    const newToolSettings = Array.from(toolOrderList.children).map(item => ({
+                        id: item.dataset.toolId,
+                        visible: item.querySelector('input[type="checkbox"]').checked
+                    }));
+                    const newOrder = { order: newToolSettings.map(t => t.id), visibility: newToolSettings.reduce((acc, t) => ({...acc, [t.id]: t.visible }), {}) };
+                    localStorage.setItem('settingToolOrder', JSON.stringify(newOrder));
+                    // Apply the new order immediately
+                    const navbarItems = Array.from(document.getElementById('navbar-order-list').children).map(item => ({
+                        id: item.dataset.itemId,
+                        visible: item.querySelector('input[type="checkbox"]').checked
+                    }));
+                    const timeFormat = document.getElementById('settingTimeFormat').value;
+                    const navbarSettings = { order: navbarItems.map(i => i.id), visibility: navbarItems.reduce((acc, i) => ({...acc, [i.id]: i.visible }), {}), timeFormat };
+                    localStorage.setItem('settingNavbar', JSON.stringify(navbarSettings));
+
+                    // App Appearance
+                    const selectedTheme = document.querySelector('input[name="appTheme"]:checked')?.value || 'light';
+                    localStorage.setItem('settingAppTheme', selectedTheme);
+
+                    // Save custom colors if any are set
+                    const customColors = this.getCustomColorsFromInputs();
+                    if (Object.values(customColors).some(c => c)) { // Only save if at least one color is set
+                        localStorage.setItem('settingCustomColors', JSON.stringify(customColors));
+                        this.applyCustomColors(customColors);
+                    } else {
+                        localStorage.removeItem('settingCustomColors');
+                        this.applyAppTheme(selectedTheme);
+                    }
+
+                    this.applyNavbarSettings(navbarSettings);
+                    this.applyToolOrder(newOrder);
+
                     if (logoDataUrl) {
                         localStorage.setItem('settingStoreLogo', logoDataUrl);
                     }
+
                     App.UI.showMessage('تنظیمات با موفقیت ذخیره شد.', 'success');
                     this.loadSettings(); // Reload to reflect changes everywhere
                 };
@@ -1309,6 +1815,231 @@
                 }
             },
 
+            applyCustomColors: function(colors) {
+                if (!colors) return;
+                const root = document.documentElement;
+                root.className = 'custom'; // Use a generic class for custom theme
+                for (const [key, value] of Object.entries(colors)) {
+                    if (value) { // Only set if a value exists
+                        root.style.setProperty(key, value);
+                    }
+                }
+            },
+            applyInvoiceStyles: function() {
+                if (document.getElementById('invoicePreviewContainerWrapper').classList.contains('hidden')) {
+                    App.Invoice.generateInvoice();
+                }
+            },
+
+            applyAppTheme: function(themeName) {
+                const html = document.documentElement;
+                html.className = ''; // Reset all theme classes
+                if (themeName === 'dark' || themeName === 'theme-dark-gold') {
+                    html.classList.add(themeName);
+                }
+                // 'light' theme has no class
+            },
+
+            renderThemeSelector: function(activeTheme) {
+                const themes = [
+                    { id: 'light', name: 'روشن', colors: ['#F8F8F8', '#FFD700'] },
+                    { id: 'dark', name: 'تاریک', colors: ['#1a202c', '#FFD700'] },
+                    { id: 'theme-dark-gold', name: 'طلایی تیره', colors: ['#1f1d1a', '#D97706'] },
+                    { id: 'custom', name: 'سفارشی', colors: ['#4a5568', '#a0aec0'] }
+                ];
+                const container = document.getElementById('theme-selector');
+                container.innerHTML = '';
+
+                themes.forEach(theme => {
+                    const isChecked = theme.id === activeTheme;
+                    const card = document.createElement('label');
+                    card.className = `p-4 border-2 rounded-lg cursor-pointer transition-all ${isChecked ? 'border-gold-dark ring-2 ring-gold-dark' : 'border-gray-300 dark:border-gray-600'}`;
+                    card.innerHTML = `
+                        <input type="radio" name="appTheme" value="${theme.id}" class="hidden" ${isChecked ? 'checked' : ''}>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="font-semibold text-dark-text">${theme.name}</span>
+                            <div class="flex -space-x-2">
+                                <div class="w-6 h-6 rounded-full border-2 border-white dark:border-gray-800" style="background-color: ${theme.colors[0]};"></div>
+                                <div class="w-6 h-6 rounded-full border-2 border-white dark:border-gray-800" style="background-color: ${theme.colors[1]};"></div>
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(card);
+
+                    card.addEventListener('click', () => {
+                        container.querySelectorAll('label').forEach(l => l.classList.remove('border-gold-dark', 'ring-2', 'ring-gold-dark'));
+                        card.classList.add('border-gold-dark', 'ring-2', 'ring-gold-dark');
+                        if (theme.id !== 'custom') {
+                            this.applyAppTheme(theme.id);
+                            localStorage.removeItem('settingCustomColors'); // Clear custom colors when a preset is chosen
+                        }
+                    });
+                });
+            },
+
+            loadCustomColors: function(colors) {
+                if (!colors) return;
+                const colorMap = {
+                    '--color-gold-light': 'custom-color-gold-light',
+                    '--color-gold-dark': 'custom-color-gold-dark',
+                    '--color-light-bg': 'custom-color-light-bg',
+                    '--color-card-light-bg': 'custom-color-card-light-bg',
+                    '--color-dark-text': 'custom-color-dark-text',
+                    '--color-btn-text': 'custom-color-btn-text',
+                    '--color-gold-accent': 'custom-color-gold-accent',
+                };
+                for (const [cssVar, inputId] of Object.entries(colorMap)) {
+                    if (colors[cssVar]) {
+                        document.getElementById(inputId).value = colors[cssVar];
+                    }
+                }
+            },
+
+            getCustomColorsFromInputs: function() {
+                const colors = {};
+                const colorMap = {
+                    '--color-gold-light': 'custom-color-gold-light',
+                    '--color-gold-dark': 'custom-color-gold-dark',
+                    '--color-light-bg': 'custom-color-light-bg',
+                    '--color-card-light-bg': 'custom-color-card-light-bg',
+                    '--color-dark-text': 'custom-color-dark-text',
+                    '--color-btn-text': 'custom-color-btn-text',
+                    '--color-gold-accent': 'custom-color-gold-accent',
+                };
+                for (const [cssVar, inputId] of Object.entries(colorMap)) {
+                    colors[cssVar] = document.getElementById(inputId).value;
+                }
+                return colors;
+            },
+
+            renderNavbarSettings: function(settings) {
+                const container = document.getElementById('navbar-order-list');
+                container.innerHTML = '';
+
+                const defaultOrder = [
+                    { id: 'display-dollar-price', text: 'دلار' },
+                    { id: 'display-gold18k-price', text: 'گرم ۱۸ عیار' },
+                    { id: 'display-ounce-price', text: 'اونس جهانی' },
+                    { id: 'display-mesghal-price', text: 'مثقال' },
+                    { id: 'display-sekke-jadid-price', text: 'سکه جدید' },
+                    { id: 'display-sekke-nim-price', text: 'نیم سکه' },
+                    { id: 'display-sekke-rob-price', text: 'ربع سکه' },
+                    { id: 'display-last-updated', text: 'زمان بروزرسانی' },
+                    { id: 'display-gold18k-ounce-price', text: 'گرم (اونس/دلار)' }
+                ];
+
+                const visibility = settings?.visibility || {};
+                const order = settings?.order || defaultOrder.map(i => i.id);
+
+                const sortedItems = order.map(id => defaultOrder.find(item => item.id === id)).filter(Boolean);
+                // Add any new items not in the saved order to the end
+                defaultOrder.forEach(item => {
+                    if (!sortedItems.find(i => i.id === item.id)) {
+                        sortedItems.push(item);
+                    }
+                });
+
+                sortedItems.forEach(({ id, text }) => {
+                    const isVisible = visibility[id] !== false; // Default to true
+                    const item = document.createElement('div');
+                    item.className = 'draggable-tool-item';
+                    item.draggable = true;
+                    item.dataset.itemId = id;
+                    item.innerHTML = `
+                        <i class="fas fa-grip-vertical text-gray-400"></i>
+                        <label class="flex items-center gap-3 flex-grow cursor-pointer">
+                            <input type="checkbox" class="form-checkbox h-5 w-5 text-gold-dark focus:ring-gold-accent" ${isVisible ? 'checked' : ''}>
+                            <span class="font-semibold">${text}</span>
+                        </label>
+                    `;
+                    container.appendChild(item);
+                });
+
+                document.getElementById('settingTimeFormat').value = settings?.timeFormat || 'relative';
+
+                // Add drag-and-drop listeners
+                container.querySelectorAll('.draggable-tool-item').forEach(draggable => {
+                    draggable.addEventListener('dragstart', () => draggable.classList.add('dragging'));
+                    draggable.addEventListener('dragend', () => draggable.classList.remove('dragging'));
+                });
+
+                container.addEventListener('dragover', e => {
+                    e.preventDefault();
+                    const afterElement = this.getDragAfterElement(container, e.clientY);
+                    const dragging = document.querySelector('#navbar-order-list .dragging');
+                    if (dragging) {
+                        if (afterElement == null) {
+                            container.appendChild(dragging);
+                        } else {
+                            container.insertBefore(dragging, afterElement);
+                        }
+                    }
+                });
+            },
+
+            applyNavbarSettings: function(settings) {
+                App.Navbar.applyCustomSettings(settings);
+            },
+
+            renderToolOrderList: function(savedOrder) {
+                const container = document.getElementById('tool-order-list');
+                container.innerHTML = ''; // Clear previous list
+
+                const allToolButtons = Array.from(document.getElementById('tools-menu').children);
+                const order = savedOrder?.order || allToolButtons.map(b => b.id);
+                const visibility = savedOrder?.visibility || {};
+
+                const sortedButtons = order.map(id => allToolButtons.find(b => b.id === id)).filter(Boolean);
+
+                sortedButtons.forEach(button => {
+                    if (!button || !button.id) return;
+                    const iconClass = button.querySelector('i')?.className || 'fas fa-question-circle';
+                    const text = button.querySelector('.tab-button-content')?.textContent || 'ابزار ناشناخته';
+                    const item = document.createElement('div');
+                    item.className = 'draggable-tool-item';
+                    item.draggable = true;
+                    item.dataset.toolId = button.id;
+                    item.innerHTML = `
+                        <i class="fas fa-grip-vertical text-gray-400"></i>
+                        <i class="${iconClass} text-gold-dark"></i>
+                        <span class="font-semibold flex-grow">${text}</span>
+                        <input type="checkbox" class="form-checkbox h-5 w-5 text-gold-dark focus:ring-gold-accent" ${visibility[button.id] !== false ? 'checked' : ''}>
+                    `;
+                    container.appendChild(item);
+                });
+
+                // Add drag-and-drop event listeners
+                const draggables = container.querySelectorAll('.draggable-tool-item');
+                draggables.forEach(draggable => {
+                    draggable.addEventListener('dragstart', () => {
+                        draggable.classList.add('dragging');
+                    });
+                    draggable.addEventListener('dragend', () => {
+                        draggable.classList.remove('dragging');
+                    });
+                });
+
+                container.addEventListener('dragover', e => {
+                    e.preventDefault();
+                    const afterElement = this.getDragAfterElement(container, e.clientY);
+                    const dragging = document.querySelector('.dragging');
+                    if (afterElement == null) {
+                        container.appendChild(dragging);
+                    } else {
+                        container.insertBefore(dragging, afterElement);
+                    }
+                });
+            },
+
+            getDragAfterElement: function(container, y) {
+                const draggableElements = [...container.querySelectorAll('.draggable-tool-item:not(.dragging)')];
+                return draggableElements.reduce((closest, child) => {
+                    const box = child.getBoundingClientRect();
+                    const offset = y - box.top - box.height / 2;
+                    return (offset < 0 && offset > closest.offset) ? { offset: offset, element: child } : closest;
+                }, { offset: Number.NEGATIVE_INFINITY }).element;
+            },
+
             previewLogo: function(event) {
                 const file = event.target.files[0];
                 if (file) {
@@ -1320,6 +2051,105 @@
                     };
                     reader.readAsDataURL(file);
                 }
+            },
+
+            applyToolOrder: function(settings) {
+                if (!settings) return;
+                const { order, visibility } = settings;
+                
+                const toolsMenu = document.getElementById('tools-menu');
+                const fragment = document.createDocumentFragment();
+                
+                // Apply visibility first
+                Array.from(toolsMenu.children).forEach(button => {
+                    if (visibility && visibility[button.id] === false) {
+                        button.style.display = 'none';
+                    } else {
+                        button.style.display = '';
+                    }
+                });
+
+                // Then apply order
+                if (order && Array.isArray(order)) {
+                    order.forEach(toolId => {
+                    const toolButton = toolsMenu.querySelector(`#${toolId}`);
+                    if (toolButton) fragment.appendChild(toolButton);
+                    });
+                    toolsMenu.innerHTML = ''; // Clear existing buttons
+                    toolsMenu.appendChild(fragment);
+                }
+            },
+
+            getDefaultPurities: function() {
+                return [
+                    { value: "750", label: "18 عیار", enabled: true, isDefault: true },
+                    { value: "583.3", label: "14 عیار", enabled: true, isDefault: true },
+                    { value: "708.3", label: "17 عیار", enabled: true, isDefault: true },
+                    { value: "791.6", label: "19 عیار", enabled: false, isDefault: true },
+                    { value: "875", label: "21 عیار", enabled: false, isDefault: true },
+                    { value: "916", label: "22 عیار", enabled: false, isDefault: true },
+                    { value: "999.9", label: "24 عیار", enabled: false, isDefault: true },
+                ];
+            },
+
+            renderPurityManagementList: function(savedSettings) {
+                const container = document.getElementById('purity-management-list');
+                container.innerHTML = '';
+                let purities = this.getDefaultPurities();
+
+                if (savedSettings && Array.isArray(savedSettings)) {
+                    // Merge saved settings with defaults
+                    purities = savedSettings;
+                }
+
+                purities.forEach(purity => {
+                    const item = document.createElement('div');
+                    item.className = 'purity-item flex items-center justify-between p-2 rounded-md bg-white border';
+                    item.dataset.value = purity.value;
+                    item.dataset.isDefault = purity.isDefault;
+                    item.innerHTML = `
+                        <label class="flex items-center gap-3 flex-grow cursor-pointer">
+                            <input type="checkbox" class="form-checkbox h-5 w-5 text-gold-dark focus:ring-gold-accent" ${purity.enabled ? 'checked' : ''}>
+                            <span class="font-semibold text-dark-text">${purity.label} (${purity.value})</span>
+                        </label>
+                        ${!purity.isDefault ? `<button class="remove-purity-btn text-red-500 hover:text-red-700 text-lg">&times;</button>` : ''}
+                    `;
+                    container.appendChild(item);
+                });
+
+                container.querySelectorAll('.remove-purity-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => e.target.closest('.purity-item').remove());
+                });
+            },
+
+            addNewPurity: function() {
+                const valueInput = document.getElementById('new-purity-value');
+                const labelInput = document.getElementById('new-purity-label');
+                const value = valueInput.value.trim();
+                const label = labelInput.value.trim();
+
+                if (!value || !label || isNaN(parseFloat(value))) {
+                    App.UI.showMessage('لطفاً مقدار و برچسب معتبری برای عیار جدید وارد کنید.');
+                    return;
+                }
+
+                const container = document.getElementById('purity-management-list');
+                const item = document.createElement('div');
+                item.className = 'purity-item flex items-center justify-between p-2 rounded-md bg-white border';
+                item.dataset.value = value;
+                item.dataset.isDefault = false;
+                item.innerHTML = `
+                    <label class="flex items-center gap-3 flex-grow cursor-pointer">
+                        <input type="checkbox" class="form-checkbox h-5 w-5 text-gold-dark focus:ring-gold-accent" checked>
+                        <span class="font-semibold text-dark-text">${label} (${value})</span>
+                    </label>
+                    <button class="remove-purity-btn text-red-500 hover:text-red-700 text-lg">&times;</button>
+                `;
+                container.appendChild(item);
+                item.querySelector('.remove-purity-btn').addEventListener('click', (e) => e.target.closest('.purity-item').remove());
+
+                valueInput.value = '';
+                labelInput.value = '';
             },
 
             backupData: async function() {
@@ -1436,6 +2266,32 @@
                 );
                 // Clear the input value so the same file can be selected again
                 event.target.value = null;
+            }
+            ,
+            changePassword: async function(currentPassword, newPassword) {
+                const storedPassHash = localStorage.getItem('passwordHash') || App.Auth.CORRECT_PASSWORD_HASH;
+                const currentPasswordHash = await App.Auth.hashString(currentPassword + App.Auth.SECRET_SALT);
+
+                if (currentPasswordHash !== storedPassHash) {
+                    App.UI.showMessage('رمز عبور فعلی اشتباه است.');
+                    return;
+                }
+
+                const newPasswordHash = await App.Auth.hashString(newPassword + App.Auth.SECRET_SALT);
+                localStorage.setItem('passwordHash', newPasswordHash);
+                App.UI.showMessage('رمز عبور با موفقیت تغییر کرد.', 'success');
+            },
+            applyPuritySettings: function(settings) {
+                const datalist = document.getElementById('purity-list');
+                datalist.innerHTML = ''; // Clear existing options
+
+                if (!settings || settings.length === 0) {
+                    settings = this.getDefaultPurities();
+                }
+
+                settings.filter(p => p.enabled).forEach(purity => {
+                    datalist.innerHTML += `<option value="${purity.value}">${purity.label}</option>`;
+                });
             }
         },
 
@@ -2435,7 +3291,7 @@
                 const U = App.Utils;
                 const updateDisplay = (id, value) => {
                     const el = document.getElementById(id);
-                    if (el) el.textContent = value !== undefined && !isNaN(value) ? U.formatNumber(Math.round(value)) : '--';
+                    if (el) el.parentElement.querySelector('strong').textContent = value !== undefined && !isNaN(value) ? U.formatNumber(Math.round(value)) : '--';
                 };
                 
                 updateDisplay('display-dollar-price', data.dollar_toman/10);
@@ -2447,11 +3303,24 @@
                 updateDisplay('display-sekke-nim-price', data.sekke_nim_toman);
                 updateDisplay('display-sekke-rob-price', data.sekke_rob_toman);
 
-                const updatedEl = document.getElementById('display-last-updated');
-                if (updatedEl && data.timestamp) {
-                    const date = new Date(data.timestamp);
-                    const formattedTime = new Intl.DateTimeFormat('fa-IR', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Tehran', numberingSystem: 'arab' }).format(date);
-                    updatedEl.textContent = ` ${formattedTime} ${source}`;
+                const updatedStrongEl = document.getElementById('display-last-updated');
+                if (updatedStrongEl && data.timestamp) {
+                    const now = new Date();
+                    const updateDate = new Date(data.timestamp);
+                    const diffSeconds = Math.round((now - updateDate) / 1000);
+                    const timeFormat = localStorage.getItem('settingNavbar') ? JSON.parse(localStorage.getItem('settingNavbar')).timeFormat : 'relative';
+
+                    let formattedTime;
+                    if (timeFormat === 'full') {
+                        formattedTime = new Intl.DateTimeFormat('fa-IR', { dateStyle: 'short', timeStyle: 'short', timeZone: 'Asia/Tehran', numberingSystem: 'arab' }).format(updateDate);
+                    } else if (timeFormat === 'time') {
+                        formattedTime = new Intl.DateTimeFormat('fa-IR', { timeStyle: 'short', timeZone: 'Asia/Tehran', numberingSystem: 'arab' }).format(updateDate);
+                    } else { // relative
+                        if (diffSeconds < 60) formattedTime = `لحظاتی پیش`;
+                        else if (diffSeconds < 3600) formattedTime = `${Math.floor(diffSeconds / 60)} دقیقه پیش`;
+                        else formattedTime = `${Math.floor(diffSeconds / 3600)} ساعت پیش`;
+                    }
+                    updatedStrongEl.parentElement.querySelector('strong').textContent = ` ${formattedTime} ${source}`;
                 }
             },
 
@@ -2691,16 +3560,26 @@
                 newItem.className = 'gold-item-row border-b pb-4 mb-4 pt-4'; // Add a class for easy selection
                 newItem.dataset.itemId = newId;
                 newItem.dataset.itemType = itemData.itemType || 'manual'; 
-
+                
                 newItem.innerHTML = `
-                    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4 items-end">
-                        <div class="responsive-input-group flex flex-col col-span-2">
+                    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-9 gap-4 items-end">
+                        <div class="responsive-input-group flex flex-col col-span-2 lg:col-span-2">
+                            <label for="itemTransactionType_${newId}" class="text-xs font-semibold text-dark-text mb-1">نوع معامله:</label>
+                            <select id="itemTransactionType_${newId}" class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-sm">
+                                <option value="manual-sell">فروش طلا (ساخته)</option>
+                                <option value="old-gold-buy">خرید طلای کهنه</option>
+                                <option value="melted-sell">فروش آبشده</option>
+                                <option value="melted-buy">خرید آبشده</option>
+                                <option value="coin">خرید/فروش سکه</option>
+                            </select>
+                        </div>
+                        <div class="responsive-input-group flex flex-col col-span-2 lg:col-span-2">
                             <label for="itemDescription_${newId}" class="text-xs font-semibold text-dark-text mb-1">توضیحات:</label>
                             <input type="text" id="itemDescription_${newId}" class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-right text-sm">
                         </div>
                         <div class="responsive-input-group flex flex-col">
                             <label for="itemWeight_${newId}" class="text-xs font-semibold text-dark-text mb-1">وزن:</label>
-                            <input type="number" id="itemWeight_${newId}" class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-left text-sm" value="1" min="0" step="0.01">
+                            <input type="text" id="itemWeight_${newId}" class="w-full p-2 rounded-md bg-input-bg-light border border-input-border-light text-left text-sm" value="1" oninput="App.Utils.formatNumberInput(this)">
                         </div>
                         <div class="responsive-input-group flex flex-col">
                             <label for="itemPurity_${newId}" class="text-xs font-semibold text-dark-text mb-1">عیار:</label>
@@ -2733,46 +3612,72 @@
 
                 const defaultProfit = App.Utils.getInputValue('invoiceProfit', 7);
                 const defaultVAT = App.Utils.getInputValue('invoiceVAT', 10);
-
-                document.getElementById(`itemDescription_${newId}`).value = itemData.description || itemData.name || '';
-                document.getElementById(`itemWeight_${newId}`).value = itemData.weight || 1;
-                document.getElementById(`itemPurity_${newId}`).value = itemData.purity || 750;
-
+                const transactionTypeSelect = document.getElementById(`itemTransactionType_${newId}`);
                 const wageInput = document.getElementById(`itemWage_${newId}`);
                 const profitInput = document.getElementById(`itemProfit_${newId}`);
                 const vatInput = document.getElementById(`itemVAT_${newId}`);
                 const deductionContainer = document.getElementById(`itemDeductionContainer_${newId}`);
                 const deductionInput = document.getElementById(`itemBuyDeduction_${newId}`);
-
-                const allInputs = [wageInput, profitInput, vatInput, deductionInput];
-                allInputs.forEach(input => {
-                    input.disabled = false;
-                    input.style.backgroundColor = '';
-                    input.parentElement.classList.add('hidden');
-                });
+                const purityInput = document.getElementById(`itemPurity_${newId}`);
+                const gramPriceInput = document.getElementById(`itemGramPrice_${newId}`);
+                const weightInput = document.getElementById(`itemWeight_${newId}`);
+                const weightLabel = weightInput.previousElementSibling;
                 
-                if (itemData.itemType === 'old-gold' || itemData.itemType === 'melted-buy' || (itemData.itemType && itemData.itemType.startsWith('coin'))) {
-                    wageInput.value = 0;
-                    profitInput.value = 0;
-                    vatInput.value = 0;
-                    [wageInput, profitInput, vatInput].forEach(input => {
+                const updateItemRowUI = () => {
+                    const type = transactionTypeSelect.value;
+                    const U = App.Utils;
+
+                    // Reset all fields visibility and state
+                    [wageInput, profitInput, vatInput, deductionInput, purityInput, gramPriceInput].forEach(input => {
+                        input.parentElement.classList.add('hidden');
                         input.disabled = true;
-                        input.style.backgroundColor = '#e9ecef';
                     });
-                     if(itemData.itemType === 'melted-buy') {
-                        deductionContainer.classList.remove('hidden');
-                        deductionInput.value = App.Utils.formatNumber(itemData.buyDeduction || 100000);
-                     }
-                } else {
-                    wageInput.parentElement.classList.remove('hidden');
-                    profitInput.parentElement.classList.remove('hidden');
-                    vatInput.parentElement.classList.remove('hidden');
-                    wageInput.value = itemData.wage !== undefined ? itemData.wage : 20;
-                    profitInput.value = itemData.profit !== undefined ? itemData.profit : defaultProfit;
-                    vatInput.value = itemData.vat !== undefined ? itemData.vat : defaultVAT;
+                    weightLabel.textContent = 'وزن (گرم):';
+                    weightInput.setAttribute('oninput', 'App.Utils.formatNumberInput(this)');
+
+                    if (type === 'manual-sell') { // فروش ساخته
+                        [wageInput, profitInput, vatInput, purityInput, gramPriceInput].forEach(input => {
+                            input.parentElement.classList.remove('hidden');
+                            input.disabled = false;
+                        });
+                    } else if (type === 'old-gold-buy') { // خرید کهنه
+                        [purityInput, gramPriceInput].forEach(input => {
+                            input.parentElement.classList.remove('hidden');
+                            input.disabled = false;
+                        });
+                    } else if (type === 'melted-sell') { // فروش آبشده
+                        [profitInput, vatInput, purityInput, gramPriceInput].forEach(input => {
+                            input.parentElement.classList.remove('hidden');
+                            input.disabled = false;
+                        });
+                    } else if (type === 'melted-buy') { // خرید آبشده
+                        [deductionInput, purityInput, gramPriceInput].forEach(input => {
+                            input.parentElement.classList.remove('hidden');
+                            input.disabled = false;
+                        });
+                    } else if (type === 'coin') { // سکه
+                        weightLabel.textContent = 'مبلغ کل:';
+                        weightInput.setAttribute('oninput', 'App.Utils.formatNumberInput(this)');
+                    }
+                    App.Invoice.updateTotal();
+                };
+
+                transactionTypeSelect.addEventListener('change', updateItemRowUI);
+
+                // Set initial values from itemData
+                document.getElementById(`itemDescription_${newId}`).value = itemData.description || itemData.name || '';
+                document.getElementById(`itemWeight_${newId}`).value = App.Utils.formatNumber(itemData.weight || 1);
+                purityInput.value = itemData.purity || 750;
+                wageInput.value = itemData.wage !== undefined ? itemData.wage : 20;
+                profitInput.value = itemData.profit !== undefined ? itemData.profit : defaultProfit;
+                vatInput.value = itemData.vat !== undefined ? itemData.vat : defaultVAT;
+                deductionInput.value = App.Utils.formatNumber(itemData.buyDeduction || localStorage.getItem('settingOldGoldDeduction') || 100000);
+
+                if (itemData.itemType) {
+                    transactionTypeSelect.value = itemData.itemType;
                 }
                 
-                const priceInput = document.getElementById(`itemGramPrice_${newId}`);
+                const priceInput = gramPriceInput;
                 let gramPriceToSet = itemData.gramPrice;
 
                 if (gramPriceToSet) {
@@ -2781,8 +3686,8 @@
                 } else if (App.liveGoldPrice18k > 0) {
                     priceInput.value = App.Utils.formatNumber(App.liveGoldPrice18k);
                 }
-
-                this.updateTotal();
+                
+                updateItemRowUI(); // Set initial UI state based on the type
             },
             removeGoldItemRow: function(button) {
                 const itemRow = button.closest('.gold-item-row');
@@ -2855,11 +3760,11 @@
                 document.querySelectorAll('.gold-item-row').forEach(row => {
                     hasItems = true;
                     const U = App.Utils;
-                    const itemId = row.dataset.itemId;                    
-                    const itemType = row.dataset.itemType || 'manual';           
+                    const itemId = row.dataset.itemId;
+                    const itemType = document.getElementById(`itemTransactionType_${itemId}`).value;
                     const { finalPrice, profitAmount, taxAmount, transactionType } = this.calculateItemFinalPrice(row);
                     // Any item that is not a melted-gold type should invalidate the flag.
-                    if (itemType !== 'melted-sell' && itemType !== 'melted-buy') { // Corrected logic
+                    if (itemType !== 'melted-sell' && itemType !== 'melted-buy') {
                         onlyMeltedItems = false;
                     }   
 
@@ -2871,7 +3776,7 @@
                         totalVAT += taxAmount;
                     }
 
-                    if (!itemType.startsWith('coin')) {
+                    if (itemType !== 'coin') {
                         const weight = U.getInputValue(`itemWeight_${itemId}`);
                         const purity = U.getInputValue(`itemPurity_${itemId}`);
                         totalConvertedWeight750 += weight * (purity / 750);
@@ -2897,6 +3802,7 @@
                 document.querySelectorAll('.gold-item-row').forEach(row => {
                     const itemId = row.dataset.itemId;
                     const item = {
+                        itemType: document.getElementById(`itemTransactionType_${itemId}`).value,
                         description: document.getElementById(`itemDescription_${itemId}`).value,
                         weight: App.Utils.getInputValue(`itemWeight_${itemId}`),
                         purity: App.Utils.getInputValue(`itemPurity_${itemId}`),
@@ -2904,8 +3810,7 @@
                         profit: App.Utils.getInputValue(`itemProfit_${itemId}`),
                         vat: App.Utils.getInputValue(`itemVAT_${itemId}`),
                         gramPrice: App.Utils.getInputValue(`itemGramPrice_${itemId}`),
-                        itemType: row.dataset.itemType,
-                        buyDeduction: row.dataset.itemType === 'melted-buy' ? App.Utils.getInputValue(`itemBuyDeduction_${itemId}`) : 0
+                        buyDeduction: App.Utils.getInputValue(`itemBuyDeduction_${itemId}`)
                     };
                     items.push(item);
                 });
@@ -2961,20 +3866,21 @@
                 document.querySelectorAll('.gold-item-row').forEach(row => {
                     const itemId = row.dataset.itemId;
                     const description = document.getElementById(`itemDescription_${itemId}`).value;
+                    const itemType = document.getElementById(`itemTransactionType_${itemId}`).value;
 
-                    if (U.getInputValue(`itemWeight_${itemId}`) <= 0 && !row.dataset.itemType.startsWith('coin')) return;
+                    if (U.getInputValue(`itemWeight_${itemId}`) <= 0) return;
 
-                    const { finalPrice, transactionType } = this.calculateItemFinalPrice(row);
+                    const { finalPrice, transactionType } = this.calculateItemFinalPrice(row); // transactionType is 'buy' or 'sell'
 
                     const item = {
                         description: description,
                         weight: U.getInputValue(`itemWeight_${itemId}`),
                         purity: U.getInputValue(`itemPurity_${itemId}`),
-                        transactionType: description.toLowerCase().includes('خرید') ? 'buy' : 'sell',
+                        transactionType: transactionType,
                         finalPrice: finalPrice,
                         wage: U.getInputValue(`itemWage_${itemId}`), // Corrected from itemWage_
                         gramPrice: U.getInputValue(`itemGramPrice_${itemId}`), 
-                        itemType: row.dataset.itemType
+                        itemType: itemType // This is 'manual-sell', 'old-gold-buy', etc.
                     };
 
                     if(item.wage > 0) showWage = true;
@@ -2994,32 +3900,32 @@
                 }
 
                 let tableHeaders = `
-                    <th style="padding: 4px; border: 1px solid #ccc;">ردیف</th>
-                    <th style="padding: 4px; border: 1px solid #ccc; text-align: right; width: 40%;">شرح کالا</th>
-                    <th style="padding: 4px; border: 1px solid #ccc;">وزن (گرم)</th>
-                    <th style="padding: 4px; border: 1px solid #ccc;">عیار</th>
-                    <th style="padding: 4px; border: 1px solid #ccc;">وزن (750)</th>
+                    <th style="padding: 4px; border: 1px solid var(--table-border-color);">ردیف</th>
+                    <th style="padding: 4px; border: 1px solid var(--table-border-color); text-align: right; width: 40%;">شرح کالا</th>
+                    <th style="padding: 4px; border: 1px solid var(--table-border-color);">وزن (گرم)</th>
+                    <th style="padding: 4px; border: 1px solid var(--table-border-color);">عیار</th>
+                    <th style="padding: 4px; border: 1px solid var(--table-border-color);">وزن (750)</th>
                 `;
-                if(showWage) tableHeaders += `<th style="padding: 4px; border: 1px solid #ccc;">اجرت (%)</th>`;
-                tableHeaders += `<th style="padding: 4px; border: 1px solid #ccc;">مبلغ نهایی (تومان)</th>`;
+                if(showWage) tableHeaders += `<th style="padding: 4px; border: 1px solid var(--table-border-color);">اجرت (%)</th>`;
+                tableHeaders += `<th style="padding: 4px; border: 1px solid var(--table-border-color);">مبلغ نهایی (تومان)</th>`;
 
 
                 let itemsHtml = '';
                 invoiceItemsData.forEach((item, i) => {
-                    const isCoin = item.itemType.startsWith('coin');
+                    const isCoin = item.itemType === 'coin';
                     const convertedWeight = item.weight * (item.purity / 750);
                     const convertedWeight750Cell = isCoin ? `<td style="padding: 4px; text-align: center;">---</td>` : `<td style="padding: 4px; text-align: center; background-color: #fefce8;">${U.formatNumber(convertedWeight.toFixed(3))}</td>`;
                     
                     let rowHtml = `
-                        <tr style="border-bottom: 1px solid #ccc; ${item.transactionType === 'buy' ? 'background-color: #fff5f5;' : ''}">
-                            <td style="padding: 4px; text-align: center;">${i + 1}</td>
-                            <td style="padding: 4px;">${item.description}</td>
-                            <td style="padding: 4px; text-align: center;">${isCoin ? '---' : U.formatNumber(item.weight.toFixed(3))}</td>
-                            <td style="padding: 4px; text-align: center;">${isCoin ? '---' : item.purity}</td>
+                        <tr style="border-bottom: 1px solid var(--table-border-color); ${item.transactionType === 'buy' ? 'background-color: #fff5f5;' : ''}">
+                            <td style="padding: 4px; text-align: center; border: 1px solid var(--table-border-color);">${i + 1}</td>
+                            <td style="padding: 4px; border: 1px solid var(--table-border-color);">${item.description}</td>
+                            <td style="padding: 4px; text-align: center; border: 1px solid var(--table-border-color);">${isCoin ? '---' : U.formatNumber(item.weight)}</td>
+                            <td style="padding: 4px; text-align: center; border: 1px solid var(--table-border-color);">${isCoin ? '---' : item.purity}</td>
                             ${convertedWeight750Cell}
                     `;
-                    if(showWage) rowHtml += `<td style="padding: 4px; text-align: center;">${item.wage > 0 ? item.wage + '%' : '---'}</td>`;
-                    rowHtml += `<td style="padding: 4px; text-align: center;">${U.formatNumber(Math.round(item.finalPrice))}</td></tr>`;
+                    if(showWage) rowHtml += `<td style="padding: 4px; text-align: center; border: 1px solid var(--table-border-color);">${item.wage > 0 ? item.wage + '%' : '---'}</td>`;
+                    rowHtml += `<td style="padding: 4px; text-align: center; border: 1px solid var(--table-border-color);">${U.formatNumber(Math.round(item.finalPrice))}</td></tr>`;
                     itemsHtml += rowHtml;
                 });
                 
@@ -3038,11 +3944,11 @@
                         <div style="font-size: 10pt; line-height: 1.6;">
                             ${hasBuyAndSell ? `<div>جمع کل فروش: <span style="font-weight: bold;">${U.formatNumber(Math.round(totals.totalSales))}</span> تومان</div>` : ''}
                             ${hasBuyAndSell ? `<div>جمع کل خرید: <span style="font-weight: bold;">${U.formatNumber(Math.round(totals.totalPurchases))}</span> تومان</div>` : ''}
-                            ${hasBuyAndSell ? `<hr style="border: 0; border-top: 1px solid #ccc; margin: 4px 0;" />` : ''}
+                            ${hasBuyAndSell ? `<hr style="border: 0; border-top: 1px solid var(--table-border-color); margin: 4px 0;" />` : ''}
                             <div><strong>مبلغ کل فاکتور: </strong><span style="font-weight: bold;">${U.formatNumber(Math.round(totals.finalAmount))}</span> تومان</div>
                             ${cashPayment > 0 ? `<div>پرداخت نقدی: <span style="font-weight: bold;">${U.formatNumber(Math.round(cashPayment))}</span> تومان</div>` : ''}
                             ${oldGoldPayment.weight > 0 ? `<div>پرداخت با طلای کهنه (${oldGoldPayment.weight} گرم): <span style="font-weight: bold;">${U.formatNumber(Math.round(oldGoldValue))}</span> تومان</div>` : ''}
-                            <hr style="border: 0; border-top: 1px solid #ccc; margin: 4px 0;" />
+                            <hr style="border: 0; border-top: 1px solid var(--table-border-color); margin: 4px 0;" />
                             <div style="font-size: 11pt;"><strong>مبلغ باقیمانده: </strong>
                                 <span style="font-size: 1.4rem; font-weight: bold;">${U.formatNumber(Math.round(Math.abs(remainingAmount)))}</span> تومان
                                 <span style="font-size: 1rem;">(${remainingAmount > 0 ? 'بدهکار' : remainingAmount < 0 ? 'بستانکار' : 'تسویه شد'})</span>
@@ -3059,16 +3965,16 @@
                 if (totals.totalSales > 0 || totals.totalPurchases > 0) {
                     const colspan = 4;
                     const totalWeightCell = totals.onlyMeltedItems
-                        ? `<td style="padding: 8px; text-align: center; border: 1px solid #ccc;">${U.formatNumber(totals.totalConvertedWeight750.toFixed(3))}</td>`
-                        : `<td style="padding: 8px; border: 1px solid #ccc;"></td>`;
+                        ? `<td style="padding: 8px; text-align: center; border: 1px solid var(--table-border-color);">${U.formatNumber(totals.totalConvertedWeight750.toFixed(3))}</td>`
+                        : `<td style="padding: 8px; border: 1px solid var(--table-border-color);"></td>`;
 
                     tableFooterHtml = `
-                        <tfoot style="font-weight: bold; background-color: #f0f0f0;">
+                        <tfoot style="font-weight: bold; background-color: var(--table-header-bg);">
                             <tr>
-                                <td colspan="${colspan}" style="padding: 8px; text-align: right; border: 1px solid #ccc;">جمع کل</td>
+                                <td colspan="${colspan}" style="padding: 8px; text-align: right; border: 1px solid var(--table-border-color);">جمع کل</td>
                                 ${totalWeightCell}
-                                ${showWage ? '<td style="padding: 8px; border: 1px solid #ccc;"></td>' : ''}
-                                <td style="padding: 8px; text-align: center; border: 1px solid #ccc;">${U.formatNumber(Math.round(totals.finalAmount))}</td>
+                                ${showWage ? '<td style="padding: 8px; border: 1px solid var(--table-border-color);"></td>' : ''}
+                                <td style="padding: 8px; text-align: center; border: 1px solid var(--table-border-color);">${U.formatNumber(Math.round(totals.finalAmount))}</td>
                             </tr>
                         </tfoot>
                     `;
@@ -3076,10 +3982,11 @@
 
                 let footnoteHtml = '';
                 if (totals.totalSales > 0) {
-                    const defaultProfit = U.getInputValue('invoiceProfit');
-                    const defaultVAT = U.getInputValue('invoiceVAT');
+                    const footerText = localStorage.getItem('settingInvoiceFooter') || 
+                        `جنس فوق با اجرت مشخص و سود ${U.getInputValue('invoiceProfit')}% و مالیات ارزش افزوده ${U.getInputValue('invoiceVAT')}% از اجرت و سود عرضه شده و در موقع فروش با فاکتور و به نرخ روز خریداری خواهد شد.`;
+
                     footnoteHtml = `<div style="font-size: 8pt; color: #555; margin-top: 15px; border-top: 1px dashed #ccc; padding-top: 5px;">`;
-                    footnoteHtml += `<span>جنس فوق با اجرت مشخص و سود ${defaultProfit}% و مالیات ارزش افزوده ${defaultVAT}% از اجرت و سود عرضه شده و در موقع فروش با فاکتور و به نرخ روز خریداری خواهد شد.</span>`;
+                    footnoteHtml += `<span>${footerText}</span>`;
                     footnoteHtml += `</div>`;
                 }
                 
@@ -3088,42 +3995,62 @@
                 const storeAddress = localStorage.getItem('settingStoreAddress') || 'آدرس شما';
                 const storePhone = localStorage.getItem('settingStorePhone') || 'شماره تماس شما';
                 const storeLogoUrl = localStorage.getItem('settingStoreLogo') || 'logo.png'; // Fallback to logo.png
+                // Get appearance settings
+                const fontSize = localStorage.getItem('settingInvoiceFontSize') || '10';
+                const tableFontSize = localStorage.getItem('settingInvoiceTableFontSize') || '10';
+                const footerFontSize = localStorage.getItem('settingInvoiceFooterFontSize') || '10';
+                const finalPriceFontSize = localStorage.getItem('settingInvoiceFinalPriceFontSize') || '14';
+                const mainFont = localStorage.getItem('settingInvoiceMainFont') || 'IranSans, sans-serif';
+                const numbersFont = localStorage.getItem('settingInvoiceNumbersFont') || 'IranSans, sans-serif';
+                const headerSize = localStorage.getItem('settingInvoiceHeaderSize') || '1.2'; // in rem
+                const textColor = localStorage.getItem('settingInvoiceTextColor') || '#000000';
+                const headerColor = localStorage.getItem('settingInvoiceHeaderColor') || '#DAA520';
+                const tableBgColor = localStorage.getItem('settingInvoiceTableBgColor') || '#FFFFFF';
+                const tableHeaderBgColor = localStorage.getItem('settingInvoiceTableHeaderBgColor') || '#f0f0f0';
+                const finalPriceBgColor = localStorage.getItem('settingInvoiceFinalPriceBgColor') || '#fefae0';
+                const borderColor = localStorage.getItem('settingInvoiceBorderColor') || '#DAA520';
+                const tableBorderColor = localStorage.getItem('settingInvoiceTableBorderColor') || '#ccc';
+                const showLogo = localStorage.getItem('settingShowLogoInInvoice') === 'true';
+                const showFooter = localStorage.getItem('settingShowFooterInInvoice') === 'false' ? false : true;
+
+                const logoHtml = showLogo ? `<img src="${storeLogoUrl}" alt="لوگو" style="height: 50px; width: auto; max-width: 100px; object-fit: contain;" onerror="this.style.display='none'">` : '';
+                
 
                 const invoiceContent = `
-<div style="font-family: sans-serif; direction: rtl; width: 190mm; margin: auto; font-size: 10pt; color: #333;">
-    <header style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #DAA520; padding-bottom: 10px; margin-bottom: 15px;">
-        <p style="margin: 4px 0;"><i class="fas fa-map-marker-alt" style="margin-left: 5px; color: #DAA520;"></i>${storeAddress}</p>
+<div class="invoice-font-main" style="--invoice-main-font: ${mainFont}; --invoice-numbers-font: ${numbersFont}; direction: rtl; width: 190mm; margin: auto; font-size: ${fontSize}pt; color: ${textColor};">
+    <header style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid ${borderColor}; padding-bottom: 10px; margin-bottom: 15px;">
+        <p style="margin: 4px 0;"><i class="fas fa-map-marker-alt" style="margin-left: 5px; color: ${headerColor};"></i> ${storeAddress}</p>
         <div style="display: flex; flex-direction: column; align-items: center;">
-            <img src="${storeLogoUrl}" alt="لوگو" style="height: 50px; width: auto; max-width: 100px; object-fit: contain;" onerror="this.style.display='none'">
-            <h1 style="margin: 5px 0 0; color: #DAA520; font-size: 1.2rem; text-align: center;">${storeName}</h1>
+            ${logoHtml}
+            <h1 style="margin: 5px 0 0; color: ${headerColor}; font-size: ${headerSize}rem; text-align: center;" class="invoice-font-main">${storeName}</h1>
         </div>
-        <p style="margin: 4px 0;"><i class="fas fa-phone-alt" style="margin-left: 5px; color: #DAA520;"></i>${storePhone}</p>
+        <p style="margin: 4px 0;"><i class="fas fa-phone-alt" style="margin-left: 5px; color: ${headerColor};"></i> <span class="invoice-font-numbers">${storePhone}</span></p>
     </header>
     <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 9pt;">
-        <div><strong>شماره فاکتور:</strong> ${invoiceNumber}</div>
+        <div><strong>شماره فاکتور:</strong> <span class="invoice-font-numbers">${invoiceNumber}</span></div>
         <div><strong>نام مشتری:</strong> ${customerName || 'نامشخص'}</div>
-        <div><strong>شماره تماس:</strong> ${customerPhone || 'نامشخص'}</div>
-        <div><strong>تاریخ:</strong> ${invoiceDate}</div>
+        <div><strong>شماره تماس:</strong> <span class="invoice-font-numbers">${customerPhone || 'نامشخص'}</span></div>
+        <div><strong>تاریخ:</strong> <span class="invoice-font-numbers">${invoiceDate}</span></div>
     </div>
-    <div style="text-align: center; margin-bottom: 10px; font-size: 10pt; background-color: #fefae0; padding: 5px; border-radius: 5px;">
-        <strong>نرخ هر گرم طلای ۱۸ عیار (۷۵۰) در این فاکتور:</strong> ${U.formatNumber(Math.round(baseGramPriceForDisplay))} تومان
+    <div style="text-align: center; margin-bottom: 10px; font-size: ${fontSize}pt; background-color: ${finalPriceBgColor}; padding: 5px; border-radius: 5px;">
+        <strong>نرخ هر گرم طلای ۱۸ عیار (۷۵۰) در این فاکتور:</strong> <span class="invoice-font-numbers">${U.formatNumber(Math.round(baseGramPriceForDisplay))}</span> تومان
     </div>
-    <table style="width: 100%; border-collapse: collapse; font-size: 8.5pt;">
+    <table style="width: 100%; border-collapse: collapse; font-size: ${tableFontSize}pt; --table-border-color: ${tableBorderColor}; --table-header-bg: ${tableHeaderBgColor}; background-color: ${tableBgColor};">
         <thead>
-            <tr style="background-color: #f0f0f0;">${tableHeaders}</tr>
+            <tr style="background-color: var(--table-header-bg);">${tableHeaders}</tr>
         </thead>
         <tbody>${itemsHtml}</tbody>
         ${tableFooterHtml}
     </table>
-    <footer style="margin-top: 20px; display: flex; justify-content: space-between; align-items: flex-end;">
+    <footer style="margin-top: 20px; display: flex; justify-content: space-between; align-items: flex-end; font-size: ${footerFontSize}pt;">
         ${footerHtml}
         <div style="text-align: center;">
             <p style="margin-bottom: 25px;">امضای فروشنده</p>
             <div style="border-top: 1px solid #333; width: 150px;"></div>
         </div>
     </footer>
-    ${footnoteHtml}
-</div>`;
+    ${showFooter ? footnoteHtml : ''}
+</div>`.replace(/<span class="invoice-font-numbers">/g, `<span class="invoice-font-numbers" style="font-family: ${numbersFont};">`);
 
                 // Create a savable object
                 const invoiceDataToSave = {
@@ -3217,6 +4144,27 @@
                 this.adjustItems();
             },
 
+            applyCustomSettings: function(settings) {
+                if (!settings) return;
+                const { order, visibility } = settings;
+                const wrapper = this.container;
+
+                // Apply visibility
+                this.items.forEach(item => {
+                    const strongEl = item.querySelector('strong');
+                    if (strongEl && strongEl.id) {
+                        item.style.display = visibility[strongEl.id] === false ? 'none' : '';
+                    }
+                });
+
+                // Apply order
+                order.forEach(id => {
+                    const itemEl = wrapper.querySelector(`#${id}`)?.parentElement;
+                    if (itemEl) wrapper.appendChild(itemEl);
+                });
+                this.adjustItems();
+            },
+
             setBodyPadding: function() {
                 const navbarHeight = this.navbar.offsetHeight;
                 document.body.style.paddingTop = `${navbarHeight + 10}px`;
@@ -3279,6 +4227,28 @@
             this.Tools.init();
             this.Navbar.init();
             this.UI.showTab('tab-column1');
+            
+            // Apply custom tool order on startup
+            const savedToolOrder = JSON.parse(localStorage.getItem('settingToolOrder') || 'null');
+            if (savedToolOrder) this.Settings.applyToolOrder(savedToolOrder);
+            // Apply custom navbar settings on startup
+            // Apply custom purity settings on startup
+            const savedPuritySettings = JSON.parse(localStorage.getItem('settingPurity') || 'null');
+            this.Settings.applyPuritySettings(savedPuritySettings);
+
+            const savedNavbarSettings = JSON.parse(localStorage.getItem('settingNavbar') || 'null');
+            if (savedNavbarSettings) this.Settings.applyNavbarSettings(savedNavbarSettings);
+            
+            // Apply custom appearance on startup
+            const savedCustomColors = JSON.parse(localStorage.getItem('settingCustomColors') || 'null');
+            if (savedCustomColors) {
+                this.Settings.applyCustomColors(savedCustomColors);
+            } else {
+                const savedAppTheme = localStorage.getItem('settingAppTheme') || 'light';
+                this.Settings.applyAppTheme(savedAppTheme);
+            }
+
+
 
             document.querySelectorAll('.tab-button').forEach(btn => {
                 btn.addEventListener('click', () => {
@@ -3290,6 +4260,42 @@
                     if (tabId === 'tab-column-customers') {
                         this.DB.renderCustomers();
                     }
+                    if (tabId === 'tab-column-settings') {
+                        this.Settings.renderToolOrderList(JSON.parse(localStorage.getItem('settingToolOrder') || 'null'));
+                        this.Settings.renderNavbarSettings(JSON.parse(localStorage.getItem('settingNavbar') || 'null'));
+                        this.Settings.renderPurityManagementList(JSON.parse(localStorage.getItem('settingPurity') || 'null'));
+                        // Initialize settings tabs
+                        document.querySelectorAll('.settings-tab-button').forEach(button => {
+                            button.addEventListener('click', () => {
+                                document.querySelectorAll('.settings-tab-button').forEach(btn => btn.classList.remove('active'));
+                                button.classList.add('active');
+                                document.querySelectorAll('.settings-tab-content').forEach(content => content.classList.add('hidden'));
+                                document.getElementById(button.dataset.target).classList.remove('hidden');
+                            });
+                        });
+                        // Toggle for custom colors section
+                        document.getElementById('toggle-custom-colors').addEventListener('click', function() {
+                            const container = document.getElementById('custom-colors-container');
+                            container.classList.toggle('hidden');
+                            this.querySelector('i').classList.toggle('rotate-180');
+                        });
+                    }
+                    if (tabId === 'tab-column6') {
+                        // Set default values for melted gold calculator from settings
+                        const defaultMeltedProfit = localStorage.getItem('settingDefaultMeltedProfit') || '2';
+                        const defaultMeltedVAT = localStorage.getItem('settingDefaultMeltedVAT') || '0';
+                        const defaultMeltedDeduction = localStorage.getItem('settingDefaultMeltedDeduction') || '100000';
+                        document.getElementById('profit_melted').value = defaultMeltedProfit;
+                        document.getElementById('VAT6').value = defaultMeltedVAT;
+                        document.getElementById('buy_deduction6').value = App.Utils.formatNumber(defaultMeltedDeduction);
+                    }
+                });
+            });
+
+            // Live update for invoice appearance settings
+            ['settingInvoiceFontSize', 'settingInvoiceHeaderSize', 'settingInvoiceTextColor', 'settingInvoiceHeaderColor', 'settingInvoiceMainFont', 'settingInvoiceNumbersFont', 'settingInvoiceTableFontSize', 'settingInvoiceFooterFontSize', 'settingInvoiceFinalPriceFontSize', 'settingInvoiceTableBgColor', 'settingInvoiceTableHeaderBgColor', 'settingInvoiceFinalPriceBgColor', 'settingInvoiceBorderColor', 'settingInvoiceTableBorderColor', 'settingShowLogoInInvoice', 'settingShowFooterInInvoice'].forEach(id => {
+                document.getElementById(id).addEventListener('input', () => {
+                    this.Settings.applyInvoiceStyles();
                 });
             });
 
@@ -3419,7 +4425,7 @@
                         profit: U.getInputValue('profit1'),
                         vat: U.getInputValue('VAT1'),
                         gramPrice: U.getInputValue('price_gram1'),
-                        itemType: 'manual'
+                        itemType: 'manual-sell'
                     };
                     App.UI.showTab('tab-column4');
                     App.Invoice.addGoldItemRow(itemData);
@@ -3439,7 +4445,7 @@
                         profit: U.getInputValue('profit2'),
                         vat: U.getInputValue('VAT2'),
                         gramPrice: U.getInputValue('price_gram2'),
-                        itemType: 'manual'
+                        itemType: 'manual-sell'
                     };
                     App.UI.showTab('tab-column4');
                     App.Invoice.addGoldItemRow(itemData);
@@ -3456,7 +4462,7 @@
                         weight: weight,
                         purity: U.getInputValue('goldPurity3'),
                         gramPrice: U.getInputValue('price_gram3'), // Corrected from price_gram_3
-                        itemType: 'old-gold'
+                        itemType: 'old-gold-buy'
                     };
                     App.UI.showTab('tab-column4');
                     App.Invoice.addGoldItemRow(itemData);
@@ -3508,7 +4514,7 @@
                         weight: totalPrice, // Store total price in weight field for simplicity in invoice calculation
                         purity: 0,
                         gramPrice: 0, // Corrected from gram_price
-                        itemType: 'coin'
+                        itemType: 'coin' // This will be used to set the dropdown
                     };
                     App.UI.showTab('tab-column4');
                     App.Invoice.addGoldItemRow(itemData);
