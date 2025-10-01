@@ -480,16 +480,16 @@
             <span class="last-updated-span">
                 <strong id="display-last-updated">--</strong>
             </span>
-            <span>گرم: <strong id="display-gold18k-price">--</strong> تومان</span>
-            <span>گرم (درهم): <strong id="display-gold18k-dirham-price">--</strong> تومان</span>
-            <span>گرم (دلار): <strong id="display-gold18k-ounce-price">--</strong> تومان</span>
-            <span>اونس: <strong id="display-ounce-price">--</strong> دلار</span>
-            <span>مثقال: <strong id="display-mesghal-price">--</strong> تومان</span>
-            <span>دلار: <strong id="display-dollar-price">--</strong> تومان</span>
-            <span>دلار (درهم): <strong id="display-dollar-dirham-price">--</strong> تومان</span>
-            <span>سکه: <strong id="display-sekke-jadid-price">--</strong> تومان</span>
-            <span>نیم سکه: <strong id="display-sekke-nim-price">--</strong> تومان</span>
-            <span>ربع سکه: <strong id="display-sekke-rob-price">--</strong> تومان</span>
+            <span>گرم: <strong id="display-gold18k-price">--</strong> </span>
+            <span>گرم (درهم): <strong id="display-gold18k-dirham-price">--</strong> </span>
+            <span>گرم ($): <strong id="display-gold18k-ounce-price">--</strong> </span>
+            <span>اونس: <strong id="display-ounce-price">--</strong>$</span>
+            <span>مثقال: <strong id="display-mesghal-price">--</strong> </span>
+            <span>دلار: <strong id="display-dollar-price">--</strong> </span>
+            <span>دلار (درهم): <strong id="display-dollar-dirham-price">--</strong> </span>
+            <span>سکه: <strong id="display-sekke-jadid-price">--</strong> </span>
+            <span>نیم سکه: <strong id="display-sekke-nim-price">--</strong> </span>
+            <span>ربع سکه: <strong id="display-sekke-rob-price">--</strong> </span>
         </div>
 
         <!-- Toggle button for mobile -->
@@ -1924,15 +1924,17 @@
                 container.innerHTML = '';
 
                 const defaultOrder = [
-                    { id: 'display-dollar-price', text: 'دلار' },
+                    { id: 'display-last-updated', text: 'زمان بروزرسانی' },
                     { id: 'display-gold18k-price', text: 'گرم ۱۸ عیار' },
+                    { id: 'display-gold18k-dirham-price', text: ' گرم ۱۸ عیار برحسب درهم' },
+                    { id: 'display-gold18k-ounce-price', text: 'گرم (اونس/دلار)' },
                     { id: 'display-ounce-price', text: 'اونس جهانی' },
                     { id: 'display-mesghal-price', text: 'مثقال' },
+                    { id: 'display-dollar-price', text: 'دلار' },
+                    { id: 'display-dollar-dirham-price', text: 'دلار برحسب درهم' },
                     { id: 'display-sekke-jadid-price', text: 'سکه جدید' },
                     { id: 'display-sekke-nim-price', text: 'نیم سکه' },
-                    { id: 'display-sekke-rob-price', text: 'ربع سکه' },
-                    { id: 'display-last-updated', text: 'زمان بروزرسانی' },
-                    { id: 'display-gold18k-ounce-price', text: 'گرم (اونس/دلار)' }
+                    { id: 'display-sekke-rob-price', text: 'ربع سکه' }
                 ];
 
                 const visibility = settings?.visibility || {};
@@ -3301,13 +3303,14 @@
                     if (el) el.parentElement.querySelector('strong').textContent = value !== undefined && !isNaN(value) ? U.formatNumber(Math.round(value)) : '--';
                 };
                 
-                updateDisplay('display-dollar-price', data.dollar_toman/10);
+                
                 updateDisplay('display-gold18k-price', data.gold_18k_toman);
+                updateDisplay('display-gold18k-dirham-price', data.dirham_toman/10*3.6725*0.75*(data.gold_ounce_dollar)/31.1035);
+                updateDisplay('display-gold18k-ounce-price', data.gold_ounce_dollar*0.75*(data.dollar_toman/10)/31.1035);                
                 updateDisplay('display-ounce-price', data.gold_ounce_dollar);
                 updateDisplay('display-mesghal-price', data.gold_mesghal_toman);
-                updateDisplay('display-gold18k-ounce-price', data.gold_ounce_dollar*0.75*(data.dollar_toman/10)/31.1035);
+                updateDisplay('display-dollar-price', data.dollar_toman/10);
                 updateDisplay('display-dollar-dirham-price', data.dirham_toman/10*3.6725);
-                updateDisplay('display-gold18k-dirham-price', data.dirham_toman/10*3.6725*0.75*(data.gold_ounce_dollar)/31.1035);
                 updateDisplay('display-sekke-jadid-price', data.sekke_jadid_toman);
                 updateDisplay('display-sekke-nim-price', data.sekke_nim_toman);
                 updateDisplay('display-sekke-rob-price', data.sekke_rob_toman);
