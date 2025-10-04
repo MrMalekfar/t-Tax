@@ -3302,10 +3302,10 @@
                     const el = document.getElementById(id);
                     if (el) el.parentElement.querySelector('strong').textContent = value !== undefined && !isNaN(value) ? U.formatNumber(Math.round(value)) : '--';
                 };
-                                const updatedStrongEl = document.getElementById('display-last-updated');
-                if (updatedStrongEl && data.dollar_toman_Time) {
+                 const updatedStrongEl = document.getElementById('display-last-updated');
+                if (updatedStrongEl && data.last_update) {
                     const now = new Date();
-                    const updateDate = new Date(data.dollar_toman_Time);
+                    const updateDate = new Date(data.last_update);
                     const diffSeconds = Math.round((now - updateDate) / 1000);
                     const timeFormat = localStorage.getItem('settingNavbar') ? JSON.parse(localStorage.getItem('settingNavbar')).timeFormat : 'relative';
 
@@ -3315,7 +3315,7 @@
                     } else if (timeFormat === 'time') {
                         formattedTime = new Intl.DateTimeFormat('fa-IR', { timeStyle: 'short', timeZone: 'Asia/Tehran', numberingSystem: 'arab' }).format(updateDate);
                     } else { // relative
-                        if (diffSeconds < 60) formattedTime = `لحظاتی پیش`;
+                        if (diffSeconds < 10) formattedTime = `لحظاتی پیش`;
                         else if (diffSeconds < 3600) formattedTime = `${Math.floor(diffSeconds / 60)} دقیقه پیش`;
                         else formattedTime = `${Math.floor(diffSeconds / 3600)} ساعت پیش`;
                     }
