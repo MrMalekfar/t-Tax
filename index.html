@@ -582,7 +582,7 @@
                     <div class="responsive-input-group flex flex-col mb-4">
                         <label for="wage1" class="text-sm sm:text-base font-semibold text-dark-text mb-2">اجرت (%):</label>
                         <div class="input-wrapper flex-1 flex items-center w-full">
-                            <input type="number" id="wage1" value="5" class="w-full p-2 sm:p-3 rounded-md border text-left text-sm bg-input-bg-light text-dark-text border-input-border-light">
+                            <input type="number" id="wage1" value="0" class="w-full p-2 sm:p-3 rounded-md border text-left text-sm bg-input-bg-light text-dark-text border-input-border-light">
                         </div>
                     </div>
 
@@ -603,7 +603,7 @@
                     <div class="responsive-input-group flex flex-col mb-4">
                         <label for="price_whole1" class="text-sm sm:text-base font-semibold text-dark-text mb-2">قیمت هدف :</label>
                         <div class="input-wrapper flex-1 flex items-center w-full">
-                            <input type="text" id="price_whole1" value="68,000,000" oninput="App.Utils.formatNumberInput(this)" class="w-full p-2 sm:p-3 rounded-md border text-left text-sm bg-input-bg-light text-dark-text border-input-border-light">
+                            <input type="text" id="price_whole1" value="0" oninput="App.Utils.formatNumberInput(this)" class="w-full p-2 sm:p-3 rounded-md border text-left text-sm bg-input-bg-light text-dark-text border-input-border-light">
                         </div>
                     </div>
                 </div>
@@ -652,7 +652,7 @@
                     <div class="responsive-input-group flex flex-col mb-4">
                         <label for="wage2" class="text-sm sm:text-base font-semibold text-dark-text mb-2">اجرت (%):</label>
                         <div class="input-wrapper flex-1 flex items-center w-full">
-                            <input type="number" id="wage2" value="20" class="w-full p-2 sm:p-3 rounded-md border text-left text-sm bg-input-bg-light text-dark-text border-input-border-light">
+                            <input type="number" id="wage2" value="0" class="w-full p-2 sm:p-3 rounded-md border text-left text-sm bg-input-bg-light text-dark-text border-input-border-light">
                         </div>
                     </div>
 
@@ -709,7 +709,7 @@
                     <div class="responsive-input-group flex flex-col mb-4">
                         <label for="weight_input3" class="text-sm sm:text-base font-semibold text-dark-text mb-2">وزن:</label>
                         <div class="input-wrapper flex-1 flex items-center w-full">
-                            <input type="number" id="weight_input3" value="1" class="w-full p-2 sm:p-3 rounded-md border text-left text-sm bg-input-bg-light text-dark-text border-input-border-light">
+                            <input type="number" id="weight_input3" value="0" class="w-full p-2 sm:p-3 rounded-md border text-left text-sm bg-input-bg-light text-dark-text border-input-border-light">
                             <span class="text-gold-dark mr-2 text-sm"></span>
                         </div>
                     </div>
@@ -720,6 +720,7 @@
 
                 <div class="results mt-4 sm:mt-6 p-3 sm:p-5 bg-results-bg rounded-lg border border-results-border">
                     <p class="highlighted-result">قیمت نهایی: <span id="display-total-price3" class="font-bold text-gold-dark">0</span> تومان</p>
+                    <p class="text-sm sm:text-base mb-1 sm:mb-2 text-dark-text">وزن در عیار 750: <span id="display-adjusted-weight-750-3" class="font-bold text-gold-dark">0</span> گرم</p>
                     <button id="invoiceFromCalc3" class="btn-gold-gradient w-full py-2 rounded-lg text-sm font-bold mt-4 hidden">
                         <i class="fas fa-file-invoice-dollar mr-2"></i>صدور فاکتور برای این محاسبه
                     </button>
@@ -1484,8 +1485,6 @@
     
     <div id="print-area" class="print-only"></div>
     <input type="file" id="import-file-input" class="hidden" accept=".csv">
-
-
     <datalist id="purity-list">
         <option value="750">18 عیار</option>
         <option value="583.3">14 عیار</option>
@@ -1495,7 +1494,7 @@
         <option value="916">22 عیار</option>
         <option value="999.9">24 عیار</option>
     </datalist>
-
+    <script type="module" src="src/js/app.js"></script>
 <script>
     // Main application object to organize the code
     const App = {
@@ -2095,8 +2094,8 @@
                     { value: "583.3", label: "14 عیار", enabled: true, isDefault: true },
                     { value: "708.3", label: "17 عیار", enabled: true, isDefault: true },
                     { value: "791.6", label: "19 عیار", enabled: false, isDefault: true },
-                    { value: "875", label: "21 عیار", enabled: false, isDefault: true },
-                    { value: "916", label: "22 عیار", enabled: false, isDefault: true },
+                    { value: "875", label: "21 عیار", enabled: true, isDefault: true },
+                    { value: "916", label: "22 عیار", enabled: true, isDefault: true },
                     { value: "999.9", label: "24 عیار", enabled: false, isDefault: true },
                 ];
             },
@@ -3174,11 +3173,11 @@
             },
             loadValuesFromLocalStorage: function() {
                 const inputs = [
-                    'price_whole1', 'wage1', 'profit1', 'VAT1', 'price_gram1', 'goldPurity1',
-                    'weight2', 'wage2', 'profit2', 'VAT2', 'price_gram2', 'goldPurity2',
-                    'weight_input3', 'price_gram3', 'goldPurity3',
-                    'price_gram6', 'weight_gram6', 'goldPurity6', 'profit_melted', 'buy_deduction6', 'VAT6',
-                    'customerName', 'customerPhone', 'invoiceProfit', 'invoiceVAT'
+                    'profit1', 'VAT1', 'price_gram1', 'goldPurity1',
+                    'weight2',          'profit2', 'VAT2', 'price_gram2', 'goldPurity2',
+                    'price_gram3', 'goldPurity3',
+                    'price_gram6', 'goldPurity6', 'profit_melted', 'buy_deduction6', 'VAT6',
+                    'invoiceProfit', 'invoiceVAT'
                 ];
                 inputs.forEach(id => {
                     const savedValue = localStorage.getItem(id);
@@ -3252,10 +3251,11 @@
                 if (content) content.classList.add('active');
                 if (button) button.classList.add('active');
 
-                if (tabId === 'tab-column4') {
-                    App.Invoice.setCurrentInvoiceDate();
-                    App.Invoice.updateAllItemPrices();
-                }
+                    if (tabId === 'tab-column4') {
+                        App.Invoice.clearInvoiceForm();
+                        App.Invoice.setCurrentInvoiceDate();
+                        App.Invoice.updateAllItemPrices();
+                    }
             },
 
             fetchLivePrices: async function() {
@@ -3425,12 +3425,14 @@
                 const price_gram_18k = U.getInputValue('price_gram3');
                 const purity = U.getInputValue('goldPurity3');
 
+                const adjusted_weight_to_750 = weight * (purity / 750);
                 const oldGoldDeduction = U.getInputValue('settingOldGoldDeduction', 15);
                 const adjusted_price_gram = price_gram_18k * (purity / 750) * ((750 - oldGoldDeduction) / 750);
-                
+
                 const final_price = weight * adjusted_price_gram;
                 document.getElementById('display-total-price3').textContent = U.formatNumber(Math.round(final_price));
-                
+                document.getElementById('display-adjusted-weight-750-3').textContent = U.formatNumber(adjusted_weight_to_750.toFixed(3));
+
                 if (weight > 0) {
                     document.getElementById('invoiceFromCalc3').classList.remove('hidden');
                 }
@@ -3568,7 +3570,7 @@
                 const newItem = document.createElement('div'); 
                 newItem.className = 'gold-item-row border-b pb-4 mb-4 pt-4'; // Add a class for easy selection
                 newItem.dataset.itemId = newId;
-                newItem.dataset.itemType = itemData.itemType || 'manual'; 
+                newItem.dataset.itemType = itemData.itemType || 'manual-sell';
                 
                 newItem.innerHTML = `
                     <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-9 gap-4 items-end">
@@ -3619,8 +3621,21 @@
                 `;
                 container.appendChild(newItem);
 
-                const defaultProfit = App.Utils.getInputValue('invoiceProfit', 7);
-                const defaultVAT = App.Utils.getInputValue('invoiceVAT', 10);
+                // Determine default values based on item type
+                let defaultProfit, defaultVAT, defaultWage;
+
+                if (itemData.itemType === 'melted-sell') {
+                    // Use melted gold defaults from settings
+                    defaultProfit = localStorage.getItem('settingDefaultMeltedProfit') || '2';
+                    defaultVAT = localStorage.getItem('settingDefaultMeltedVAT') || '0';
+                    defaultWage = '0'; // Wage is 0 for melted gold
+                } else {
+                    // Use regular invoice defaults
+                    defaultProfit = App.Utils.getInputValue('invoiceProfit', 7);
+                    defaultVAT = App.Utils.getInputValue('invoiceVAT', 10);
+                    defaultWage = '20'; // Default wage for other items
+                }
+
                 const transactionTypeSelect = document.getElementById(`itemTransactionType_${newId}`);
                 const wageInput = document.getElementById(`itemWage_${newId}`);
                 const profitInput = document.getElementById(`itemProfit_${newId}`);
@@ -3631,7 +3646,7 @@
                 const gramPriceInput = document.getElementById(`itemGramPrice_${newId}`);
                 const weightInput = document.getElementById(`itemWeight_${newId}`);
                 const weightLabel = weightInput.previousElementSibling;
-                
+
                 const updateItemRowUI = () => {
                     const type = transactionTypeSelect.value;
                     const U = App.Utils;
@@ -3649,6 +3664,10 @@
                             input.parentElement.classList.remove('hidden');
                             input.disabled = false;
                         });
+                        // Set defaults for manual-sell, keeping user changes if present
+                        wageInput.value = wageInput.value !== '' ? wageInput.value : '20';
+                        profitInput.value = profitInput.value !== '' ? profitInput.value : U.getInputValue('invoiceProfit', 7);
+                        vatInput.value = vatInput.value !== '' ? vatInput.value : U.getInputValue('invoiceVAT', 10);
                     } else if (type === 'old-gold-buy') { // خرید کهنه
                         [purityInput, gramPriceInput].forEach(input => {
                             input.parentElement.classList.remove('hidden');
@@ -3659,11 +3678,18 @@
                             input.parentElement.classList.remove('hidden');
                             input.disabled = false;
                         });
+                        // Set melted gold sell defaults, always override on type change
+                        wageInput.value = '0';
+                        profitInput.value = localStorage.getItem('settingDefaultMeltedProfit') || '2';
+                        vatInput.value = localStorage.getItem('settingDefaultMeltedVAT') || '0';
                     } else if (type === 'melted-buy') { // خرید آبشده
                         [deductionInput, purityInput, gramPriceInput].forEach(input => {
                             input.parentElement.classList.remove('hidden');
                             input.disabled = false;
                         });
+                        // Set melted gold buy defaults, always override on type change
+                        wageInput.value = '0';
+                        deductionInput.value = App.Utils.formatNumber(localStorage.getItem('settingDefaultMeltedDeduction') || 100000);
                     } else if (type === 'coin') { // سکه
                         weightLabel.textContent = 'مبلغ کل:';
                         weightInput.setAttribute('oninput', 'App.Utils.formatNumberInput(this)');
@@ -3677,15 +3703,15 @@
                 document.getElementById(`itemDescription_${newId}`).value = itemData.description || itemData.name || '';
                 document.getElementById(`itemWeight_${newId}`).value = App.Utils.formatNumber(itemData.weight || 1);
                 purityInput.value = itemData.purity || 750;
-                wageInput.value = itemData.wage !== undefined ? itemData.wage : 20;
+                wageInput.value = itemData.wage !== undefined ? itemData.wage : defaultWage;
                 profitInput.value = itemData.profit !== undefined ? itemData.profit : defaultProfit;
                 vatInput.value = itemData.vat !== undefined ? itemData.vat : defaultVAT;
-                deductionInput.value = App.Utils.formatNumber(itemData.buyDeduction || localStorage.getItem('settingOldGoldDeduction') || 100000);
+                deductionInput.value = App.Utils.formatNumber(itemData.buyDeduction || localStorage.getItem('settingDefaultMeltedDeduction') || 100000);
 
                 if (itemData.itemType) {
                     transactionTypeSelect.value = itemData.itemType;
                 }
-                
+
                 const priceInput = gramPriceInput;
                 let gramPriceToSet = itemData.gramPrice;
 
@@ -3695,7 +3721,7 @@
                 } else if (App.liveGoldPrice18k > 0) {
                     priceInput.value = App.Utils.formatNumber(App.liveGoldPrice18k);
                 }
-                
+
                 updateItemRowUI(); // Set initial UI state based on the type
             },
             removeGoldItemRow: function(button) {
@@ -3704,9 +3730,6 @@
                     const itemId = itemRow.dataset.itemId;
                     delete App.userModifiedPrices[`itemGramPrice_${itemId}`];
                     itemRow.remove();
-                    if (document.getElementById('goldItemsContainer').children.length === 0) {
-                        this.addGoldItemRow();
-                    }
                     this.updateTotal();
                 }
             },
@@ -3802,8 +3825,13 @@
             },
             clearInvoiceForm: function() {
                 document.getElementById('goldItemsContainer').innerHTML = '';
-                this.addGoldItemRow(); // Add one empty row back
+                // Do not add default row - start empty
                 document.getElementById('cashPayment').value = '';
+                document.getElementById('customerName').value = '';
+                document.getElementById('customerPhone').value = '';
+                document.getElementById('customerName').dataset.customerId = '';
+                document.getElementById('oldGoldPaymentWeight').value = '';
+                document.getElementById('oldGoldPaymentPurity').value = '750';
             },
 
             updateTotal: function() {
@@ -3865,8 +3893,7 @@
                     value: 0 // Will be calculated
                 };
 
-                U.setInputValueAndLocalStorage('customerName', customerName);
-                U.setInputValueAndLocalStorage('customerPhone', customerPhone);
+                // Customer name and phone are not saved to localStorage to keep them default empty
 
                 const invoiceItemsData = [];
                 const totals = this.calculateInvoiceTotals();
@@ -3990,9 +4017,34 @@
                 }
 
                 let footnoteHtml = '';
+                let hasMeltedSell = false;
+                let meltedProfit = 0;
+                let meltedVAT = 0;
+
+                // Check for melted gold sell items and get their profit/VAT
+                invoiceItemsData.forEach(item => {
+                    if (item.itemType === 'melted-sell') {
+                        hasMeltedSell = true;
+                        const meltedItem = document.querySelector(`#goldItemsContainer .gold-item-row[data-item-type="melted-sell"] [id^="itemProfit_"]`);
+                        if (meltedItem) meltedProfit = parseFloat(meltedItem.value) || 0;
+                        const meltedVatItem = document.querySelector(`#goldItemsContainer .gold-item-row[data-item-type="melted-sell"] [id^="itemVAT_"]`);
+                        if (meltedVatItem) meltedVAT = parseFloat(meltedVatItem.value) || 0;
+                    }
+                });
+
                 if (totals.totalSales > 0) {
-                    const footerText = localStorage.getItem('settingInvoiceFooter') || 
-                        `جنس فوق با اجرت مشخص و سود ${U.getInputValue('invoiceProfit')}% و مالیات ارزش افزوده ${U.getInputValue('invoiceVAT')}% از اجرت و سود عرضه شده و در موقع فروش با فاکتور و به نرخ روز خریداری خواهد شد.`;
+                    let footerText = localStorage.getItem('settingInvoiceFooter') || '';
+
+                    if (!footerText) {
+                        const defaultProfit = U.getInputValue('invoiceProfit');
+                        const defaultVAT = U.getInputValue('invoiceVAT');
+
+                        // Use melted gold values if selling melted gold
+                        const usedProfit = hasMeltedSell ? meltedProfit : defaultProfit;
+                        const usedVAT = hasMeltedSell ? meltedVAT : defaultVAT;
+
+                        footerText = `جنس فوق با اجرت مشخص و سود ${usedProfit}% و مالیات ارزش افزوده ${usedVAT}% از اجرت و سود عرضه شده و در موقع فروش با فاکتور و به نرخ روز خریداری خواهد شد.`;
+                    }
 
                     footnoteHtml = `<div style="font-size: 8pt; color: #555; margin-top: 15px; border-top: 1px dashed #ccc; padding-top: 5px;">`;
                     footnoteHtml += `<span>${footerText}</span>`;
@@ -4220,15 +4272,11 @@
         initAppLogic: function() {
             this.DB.initDB();
             this.Utils.loadValuesFromLocalStorage();
-            this.Settings.init(); 
-            
-            const savedItems = JSON.parse(localStorage.getItem('goldInvoiceItems') || '[]');
-            if (savedItems.length > 0) {
-                document.getElementById('goldItemsContainer').innerHTML = ''; // Clear default
-                savedItems.forEach(itemData => this.Invoice.addGoldItemRow(itemData));
-            } else {
-                 this.Invoice.addGoldItemRow();
-            }
+            this.Settings.init();
+
+            // Always start with completely empty invoice - no automatic items, clear any saved state
+            document.getElementById('goldItemsContainer').innerHTML = '';
+            localStorage.removeItem('goldInvoiceItems'); // Remove any saved invoice items to prevent loading
 
             this.UI.fetchLivePrices();
             setInterval(() => this.UI.fetchLivePrices(), 60000); 
