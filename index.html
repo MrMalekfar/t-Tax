@@ -3915,7 +3915,9 @@
                         transactionType: transactionType,
                         finalPrice: finalPrice,
                         wage: U.getInputValue(`itemWage_${itemId}`), // Corrected from itemWage_
-                        gramPrice: U.getInputValue(`itemGramPrice_${itemId}`), 
+                        gramPrice: U.getInputValue(`itemGramPrice_${itemId}`),
+                        profit: U.getInputValue(`itemProfit_${itemId}`),
+                        vat: U.getInputValue(`itemVAT_${itemId}`),
                         itemType: itemType // This is 'manual-sell', 'old-gold-buy', etc.
                     };
 
@@ -4016,34 +4018,31 @@
                     `;
                 }
 
-                let footnoteHtml = '';
-                let hasMeltedSell = false;
-                let meltedProfit = 0;
-                let meltedVAT = 0;
-
-                // Check for melted gold sell items and get their profit/VAT
-                invoiceItemsData.forEach(item => {
-                    if (item.itemType === 'melted-sell') {
-                        hasMeltedSell = true;
-                        const meltedItem = document.querySelector(`#goldItemsContainer .gold-item-row[data-item-type="melted-sell"] [id^="itemProfit_"]`);
-                        if (meltedItem) meltedProfit = parseFloat(meltedItem.value) || 0;
-                        const meltedVatItem = document.querySelector(`#goldItemsContainer .gold-item-row[data-item-type="melted-sell"] [id^="itemVAT_"]`);
-                        if (meltedVatItem) meltedVAT = parseFloat(meltedVatItem.value) || 0;
-                    }
-                });
-
                 if (totals.totalSales > 0) {
                     let footerText = localStorage.getItem('settingInvoiceFooter') || '';
 
+                    // Calculate usedProfit and usedVAT based on sell items
+                    let usedProfit = App.Utils.getInputValue('invoiceProfit', 7);
+                    let usedVAT = App.Utils.getInputValue('invoiceVAT', 10);
+                    const sellItems = invoiceItemsData.filter(item => item.transactionType === 'sell' && item.finalPrice > 0);
+                    if (sellItems.length > 0) {
+                        let totalProfit = 0, totalVAT = 0, count = 0;
+                        sellItems.forEach(item => {
+                            totalProfit += item.profit || 0;
+                            totalVAT += item.vat || 0;
+                            count++;
+                        });
+                        if (count > 0) {
+                            usedProfit = Math.round(totalProfit / count);
+                            usedVAT = Math.round(totalVAT / count);
+                        }
+                    }
+
                     if (!footerText) {
-                        const defaultProfit = U.getInputValue('invoiceProfit');
-                        const defaultVAT = U.getInputValue('invoiceVAT');
-
-                        // Use melted gold values if selling melted gold
-                        const usedProfit = hasMeltedSell ? meltedProfit : defaultProfit;
-                        const usedVAT = hasMeltedSell ? meltedVAT : defaultVAT;
-
                         footerText = `جنس فوق با اجرت مشخص و سود ${usedProfit}% و مالیات ارزش افزوده ${usedVAT}% از اجرت و سود عرضه شده و در موقع فروش با فاکتور و به نرخ روز خریداری خواهد شد.`;
+                    } else {
+                        // Replace placeholders in custom footer if any
+                        footerText = footerText.replace(/سود/g, usedProfit + '%').replace(/مالیات ارزش افزوده/g, usedVAT + '%');
                     }
 
                     footnoteHtml = `<div style="font-size: 8pt; color: #555; margin-top: 15px; border-top: 1px dashed #ccc; padding-top: 5px;">`;
